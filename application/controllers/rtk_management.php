@@ -660,7 +660,7 @@ public function get_lab_report($order_no, $report_type) {
 
                     $data['graphdata'] = $reporting_rates;
                     $data['county_perc'] = $this->get_county_reporting_percentage($month_db,$countyid);
-                    
+
                     
             //$data['graphdata'] = $this->county_reporting_percentages($countyid, $year, $month);        
                     //$data['county_summary'] = $this->_requested_vs_allocated($year, $month, $countyid); 
@@ -673,6 +673,7 @@ public function get_lab_report($order_no, $report_type) {
                     $data['content_view'] = "rtk/rtk/clc/home";
                     $this->load->view("rtk/template", $data);
                 }
+
 
 
 public function get_county_reporting_percentage($month=null,$countyid){
@@ -5126,8 +5127,9 @@ public function allocation($zone = NULL, $county = NULL, $district = NULL, $faci
         }else{
             $month = date('mY',time());        
         }
-        $this->get_county_percentages_month($month);
-        $this->get_district_percentages_month($month);
+        echo "$month";die();
+        $this->update_county_percentages_month($month);
+        $this->update_district_percentages_month($month);
     }
 function update_county_percentages_month($month=null){
     if(isset($month)){           
