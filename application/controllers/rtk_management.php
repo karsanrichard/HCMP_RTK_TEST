@@ -655,10 +655,12 @@ public function get_lab_report($order_no, $report_type) {
                     $reported = json_encode($reported);
                     $nonreported = json_encode($nonreported);
 
+
                     $reporting_rates = array('districts'=>$districts,'reported'=>$reported,'nonreported'=>$nonreported);       
 
                     $data['graphdata'] = $reporting_rates;
-
+                    $data['county_perc'] = $this->get_county_reporting_percentage($month_db,$countyid);
+                    
                     
             //$data['graphdata'] = $this->county_reporting_percentages($countyid, $year, $month);        
                     //$data['county_summary'] = $this->_requested_vs_allocated($year, $month, $countyid); 
@@ -671,6 +673,22 @@ public function get_lab_report($order_no, $report_type) {
                     $data['content_view'] = "rtk/rtk/clc/home";
                     $this->load->view("rtk/template", $data);
                 }
+
+
+public function get_county_reporting_percentage($month=null,$countyid){
+   if(isset($month)){           
+        $year = substr($month, -4);
+        $month = substr($month, 0,2);            
+        $monthyear = $month.$year;                    
+    }
+
+    $sql = "select percentage from rtk_county_percentage where month='$monthyear' and county_id='$countyid'";
+    $result = $this->db->query($sql)->result_array();
+    foreach ($result as $key => $value) {
+        $percentage = number_format($value['percentage']);
+    }
+    return $percentage;
+}
 public function county_stock() {
     $lastday = date('Y-m-d', strtotime("last day of previous month"));
     $countyid = $this->session->userdata('county_id');

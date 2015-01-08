@@ -115,7 +115,14 @@ $current_month = date('mY', strtotime('-1 month'));
         </div-->
 
         <div id="container" style="min-width: 310px; height: auto; margin: 0 auto"></div>
-
+        <div style="margin-top:10px;">
+        County Progress: <?php echo $county_perc; ?>%
+        <div class="progress">
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $county_perc; ?>%;">
+                <?php echo $county_perc; ?>%
+            </div>
+        </div>
     </div>
 
 </div>
