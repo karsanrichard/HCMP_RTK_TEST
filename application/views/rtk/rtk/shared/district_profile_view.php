@@ -61,7 +61,8 @@
     <div class="span5" style="margin-left: 5px;width:20%;">
         <dl class="dl-horizontal">
                <dt>Reporting Period</dt>
-               <dd><?php echo $district_summary['Month'] .', '.$district_summary['Year']; ?></dd>
+               <!--dd><?php echo $district_summary['Month'] .', '.$district_summary['Year']; ?></dd-->
+               <dd><?php echo $district_summary['reporting_month']; ?></dd>
                <dt>Facilities</dt>
                <dd><?php echo $district_summary['total_facilities']; ?></dd>
                <dt>Reported (%)</dt>

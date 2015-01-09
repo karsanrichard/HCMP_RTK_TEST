@@ -920,16 +920,17 @@ public function county_profile($county) {
                     $lastday = date('Y-m-d', strtotime("last day of previous month"));
 
                     $current_month = $this->session->userdata('Month');
+
                     if ($current_month == '') {
                         $current_month = date('mY', time());
                     }
-
                     $previous_month = date('m', strtotime("last day of previous month"));
                     $previous_month_1 = date('mY', strtotime('-2 month'));
                     $previous_month_2 = date('mY', strtotime('-3 month'));
 
 
                     $year_current = substr($current_month, -4);
+                    
                     $year_previous = date('Y', strtotime("last day of previous month"));
                     $year_previous_1 = substr($previous_month_1, -4);
                     $year_previous_2 = substr($previous_month_2, -4);
@@ -958,7 +959,7 @@ public function county_profile($county) {
                     $district_summary1 = $this->rtk_summary_district($district, $year_previous_1, $previous_month_1);
                     $district_summary2 = $this->rtk_summary_district($district, $year_previous_2, $previous_month_2);
 
-
+                   
                     $county_id = districts::get_county_id($district);
                     $county_name = counties::get_county_name($county_id['county']);
 
@@ -969,12 +970,12 @@ public function county_profile($county) {
                    }
                    $mycounties = $this->db->select('districts.district,districts.id')->get_where('districts', array('county' =>$myres))->result_array(); 
 
-                   $data['district_balances_current'] = $this->district_totals($year_current, $previous_month, $district);
+                   $data['district_balances_current'] = $this->district_totals($year_current, $current_month, $district);
                    $data['district_balances_previous'] = $this->district_totals($year_previous, $previous_month, $district);
                    $data['district_balances_previous_1'] = $this->district_totals($year_previous_1, $previous_month_1, $district);
                    $data['district_balances_previous_2'] = $this->district_totals($year_previous_2, $previous_month_2, $district);
 
-
+                  
                    $data['district_summary'] = $district_summary;
 
                    $data['districts'] = $mycounties;
@@ -4141,12 +4142,14 @@ public function rtk_summary_county($county, $year, $month) {
         $first_day_current_month = date('Y-m-', mktime(0, 0, 0, $month, 0, $year));
         $first_day_current_month .= '01';
         $lastday_thismonth = date('Y-m-d', strtotime("last day of this month"));
-        $month -= 1;
+        $month -= 1;        
         $day10 = $year . '-' . $month . '-10';
         $day11 = $year . '-' . $month . '-11';
         $day12 = $year . '-' . $month . '-12';
         $late_reporting = 0;
         $text_month = date('F', strtotime($day10));
+
+        $reporting_month = date('F,Y', strtotime('first day of previous month'));
 
         $q = "SELECT * 
         FROM facilities, districts, counties
@@ -4217,7 +4220,7 @@ public function rtk_summary_county($county, $year, $month) {
             $late_reporting = $total_reporting_facilities;
             $late_percentage = $reported_percentage;
         }
-        $returnable = array('Month' => $text_month, 'Year' => $year, 'district' => $districtname, 'district_id' => $district_id, 'total_facilities' => $total_reporting_facilities, 'reported' => $total_reported_facilities, 'reported_percentage' => $reported_percentage, 'nonreported' => $nonreported, 'nonreported_percentage' => $non_reported_percentage, 'late_reports' => $late_reporting, 'late_reports_percentage' => $late_percentage);
+        $returnable = array('reporting_month'=>$reporting_month,'Month' => $text_month, 'Year' => $year, 'district' => $districtname, 'district_id' => $district_id, 'total_facilities' => $total_reporting_facilities, 'reported' => $total_reported_facilities, 'reported_percentage' => $reported_percentage, 'nonreported' => $nonreported, 'nonreported_percentage' => $non_reported_percentage, 'late_reports' => $late_reporting, 'late_reports_percentage' => $late_percentage);
         return $returnable;
     }
 
@@ -4857,10 +4860,10 @@ private function _facilities_in_district($district) {
 function district_totals($year, $month, $district = NULL) {
 
     $firstdate = $year . '-' . $month . '-01';
-    $firstday = date("Y-m-d", strtotime("$firstdate +1 Month "));
-
-    $month = date("m", strtotime("$firstdate +1 Month "));
-    $year = date("Y", strtotime("$firstdate +1 Month "));
+    //$firstday = date("Y-m-d", strtotime("$firstdate +1 Month "));
+    //echo "$firstday";die();
+    // $month = date("m", strtotime("$firstdate +1 Month "));
+    // $year = date("Y", strtotime("$firstdate +1 Month "));
     $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
     $lastdate = $year . '-' . $month . '-' . $num_days;
 
@@ -4884,7 +4887,7 @@ function district_totals($year, $month, $district = NULL) {
     AND lab_commodity_orders.id = lab_commodity_details.order_id 
     AND facilities.facility_code = lab_commodity_details.facility_code AND facilities.district = districts.id 
     AND districts.county = counties.id 
-    AND lab_commodity_orders.order_date BETWEEN  '$firstday' AND  '$lastdate'
+    AND lab_commodity_orders.order_date BETWEEN  '$firstdate' AND  '$lastdate'
     AND lab_commodities.id in (select lab_commodities.id from lab_commodities,lab_commodity_categories 
         where lab_commodities.category = lab_commodity_categories.id and lab_commodity_categories.active = '1')";
 
@@ -4893,7 +4896,7 @@ if (isset($district)) {
 }
 
 $common_q.= ' group by lab_commodities.id';
-
+//echo "$common_q";die();
 $res = $this->db->query($common_q)->result_array();       
 
 return $res;
