@@ -1186,6 +1186,26 @@ public function rtk_manager_users() {
     $this->load->view('rtk/template', $data);
 }
 
+public function delete_user($user, $district, $redirect_url = null) {
+        $sql = 'DELETE FROM `user` WHERE `id` =' . $user
+                . ' AND  `usertype_id` =7'
+                . ' AND  `district` =' . $district;
+
+        $object_id = $user;
+        $this->logData('2', $object_id);
+        $this->db->query($sql);
+
+
+        if ($redirect_url == 'county_user') {
+            redirect('rtk_management/county_admin/users');
+        }
+        if ($redirect_url == 'rtk_manager') {
+            redirect('rtk_management/rtk_manager_admin');
+        } else {
+            redirect('home_controller');
+        }
+    }
+
 public function delete_user_gen($user, $redirect_url = null) {
         $sql = 'DELETE FROM `user` WHERE `id` =' . $user;
 
