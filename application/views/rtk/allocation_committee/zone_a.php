@@ -86,18 +86,18 @@ table{
 
     <tbody>
       <?php
-      if(count($facilities)>0){
-       foreach ($facilities as $value) {
+      if(count($final_dets)>0){
+       foreach ($final_dets as $value) {
         //$zone = str_replace(' ', '-',$value['zone']);
-        $facil = $value['facility_code'];
+        $facil = $value['code'];
 
-        $ending_bal_s =ceil(($amcs[$facil][2]['closing_stock'])/50); 
-        $ending_bal_c =ceil(($amcs[$facil][3]['closing_stock'])/30); 
-        $ending_bal_t =ceil(($amcs[$facil][4]['closing_stock'])/20);
+        $ending_bal_s =ceil(($value['end_bal'][0]['closing_stock'])/50); 
+        $ending_bal_c =ceil(($value['end_bal'][1]['closing_stock'])/30); 
+        $ending_bal_t =ceil(($value['end_bal'][2]['closing_stock'])/20);
 
-        $amc_s = str_replace(',', '', $amcs[$facil][2]['amc']);
-        $amc_c = str_replace(',', '',$amcs[$facil][3]['amc']);
-        $amc_t = str_replace(',', '',$amcs[$facil][4]['amc']);
+        $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
+        $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
+        $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);
 
         if($amc_s==''){
           $amc_s = 0;
@@ -138,8 +138,8 @@ table{
         <tr>   
           <td align=""><?php echo $value['county'];?></td>
           <td align=""><?php echo $value['district'];?></td>              
-          <td align=""><?php echo $value['facility_code'];?></td>
-          <td align=""><?php echo $value['facility_name'];?></td>
+          <td align=""><?php echo $value['code'];?></td>
+          <td align=""><?php echo $value['name'];?></td>
 
           <td align="center"><?php echo $ending_bal_s;?></td>     
           <td align="center"><?php echo $amc_s;?></td>     

@@ -2108,6 +2108,87 @@ public function download_county_mos($county = null,$report_type) {
     // $data['title'] = "National Allocation Stock Card for $county_name County";
     // $this->load->view("rtk/template", $data);
 }
+
+public function allocation_details($zone){
+
+        $sql = "SELECT 
+                    facilities.facility_code,
+                    facilities.facility_name,
+                    districts.district,
+                    counties.county
+                FROM
+                    facilities,
+                    districts,
+                    counties
+                WHERE
+                    facilities.district = districts.id
+                        AND districts.county = counties.id
+                        AND facilities.rtk_enabled = 1
+                        and facilities.zone='Zone $zone'
+                ORDER BY facilities.facility_code ASC";
+
+        $result = $this->db->query($sql)->result_array();
+
+        $final_dets = array();
+
+        foreach ($result as $key => $id_details) {
+
+            $fcode = $id_details['facility_code'];
+            $county = $id_details['county'];
+            $district = $id_details['district'];
+            $facilityname = $id_details['facility_name'];
+
+
+
+            $sql2 = "SELECT 
+                        facility_amc.amc
+                    FROM
+                        facilities,
+                        facility_amc,
+                        lab_commodities
+                    WHERE
+                        facilities.facility_code = facility_amc.facility_code
+                            AND facilities.facility_code = '$fcode'
+                            AND facility_amc.commodity_id = lab_commodities.id
+                            AND lab_commodities.category = 1
+                            AND facility_amc.commodity_id between 4 and 6            
+                    ORDER BY facility_amc.commodity_id ASC";
+
+            $result2 = $this->db->query($sql2)->result_array();
+
+            $sql3 = "SELECT 
+                        closing_stock
+                    FROM
+                        lab_commodity_details AS a
+                    WHERE
+                        facility_code = $fcode
+                        AND commodity_id between 4 and 6
+                            AND created_at in (SELECT 
+                                MAX(created_at)
+                            FROM
+                                lab_commodity_details AS b
+                            WHERE
+                                a.facility_code = b.facility_code)";
+
+            $result3 = $this->db->query($sql3)->result_array();
+            
+            $final_dets[$fcode]['name'] = $facilityname;
+            $final_dets[$fcode]['district'] = $district;
+            $final_dets[$fcode]['county'] = $county;
+            $final_dets[$fcode]['amcs'] = $result2;
+            $final_dets[$fcode]['code'] = $fcode;
+            $final_dets[$fcode]['end_bal'] = $result3;
+        }
+
+        // echo "<pre>";
+        // print_r($final_dets);
+
+        $data['title'] = "Zone A";
+        $data['banner_text'] = "Facilities in Zone A";
+        $data['content_view'] = 'rtk/allocation_committee/zone_a';        
+        $data['final_dets'] = $final_dets;
+        $this->load->view('rtk/template', $data); 
+    }  
     function zone_allocation_stats($zone) {
 
         $last_allocation_sql = "SELECT lab_commodity_details.allocated_date 
