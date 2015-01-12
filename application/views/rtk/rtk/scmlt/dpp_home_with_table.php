@@ -21,7 +21,7 @@ $englishdate = date('F, Y', strtotime($monthyear));
     }
 </style>
 
-<?php if ($this->session->userdata('switched_as') == 'scmlt') { ?>
+<?php if ($this->session->userdata('switched_from') == 'rtk_manager') { ?>
 <div id="fixed-topbar" style="position: fixed;margin-left:18%; top: 74px;background: rgb(164, 213, 58); width: 100%;padding: 7px 1px 0px 13px;border-bottom: 1px solid #ccc;border-bottom: 1px solid #ccc;border-radius: 4px 0px 0px 4px;">
     <span class="lead" style="color: #fff;">Switch back to RTK Manager</span>
     &nbsp;
