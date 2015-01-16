@@ -6,8 +6,8 @@ if ($month==''){
 $year= substr($month, -4);
 $month= substr_replace($month,"", -4);
 $monthyear = $year . '-' . $month . '-1';
-$englishdate = date('F, Y', strtotime($monthyear));
-$englishdate = date('F, Y', strtotime('previous month'));
+// $englishdate = date('F, Y', strtotime($monthyear));
+// $englishdate = date('F, Y', strtotime('previous month'));
 $this->load->database();
 $q = 'SELECT id,county FROM  `counties` ORDER BY  `counties`.`county` ASC ';
 $res_arr = $this->db->query($q);
@@ -30,12 +30,13 @@ foreach ($res_arr2->result_array() as $key => $value) {
 
 
 
-$thismonthname  = date('F',strtotime("-1 month", time()));
-$prevmonthname = date('F',strtotime("-2 month", time()));
-$prev_prevmonthname = date('F',strtotime("-3 month", time()));
+// $thismonthname  = date('F',strtotime("-1 month", time()));
+// $prevmonthname = date('F',strtotime("-2 month", time()));
+// $prev_prevmonthname = date('F',strtotime("-3 month", time()));
 
 
 ?>
+
 <script type="text/javascript">
   function loadcountysummary(county){
             $(".dash_main").load("<?php echo base_url(); ?>rtk_management/rtk_reporting_by_county/" + county);
@@ -52,30 +53,37 @@ $(document).ready(function(){
    $( "#selectedcounty" ).html(clicked);
 });
  
-  $("#user_switch").change(function(){
-  var val = $('#user_switch').val();
-  if(val == 'scmlt'){
-  $('#county_switch').attr('disabled','disabled');
-  $('#district_switch').removeAttr('disabled');    
-  }
-  if(val == 'rtk_county_admin'){
-  $('#county_switch').removeAttr('disabled');
-  $('#district_switch').attr('disabled','disabled');
-  
-  }
-  if(val == 'rtk_partner_super'){
-  $('#county_switch').attr('disabled','disabled');
-  $('#district_switch').attr('disabled','disabled');  
-  }
-  });
+  // $("#user_switch").change(function(){
+  // var val = $('#user_switch').val();
+  // if(val == 'scmlt'){
+  // $('#county_switch').attr('disabled','disabled');
+  // $('#district_switch').removeAttr('disabled');  
+  // $('#partner_switch').attr('disabled','disabled');
+  // }
+  // if(val == 'rtk_county_admin'){
+  // $('#county_switch').removeAttr('disabled');
+  // $('#district_switch').attr('disabled','disabled');
 
+  // $('#partner_switch').attr('disabled','disabled');
+  // }
+  // if(val == 'rtk_partner_admin'){
+  // $('#county_switch').attr('disabled','disabled');
+  // $('#district_switch').attr('disabled','disabled');
+  // $('#partner_switch').removeAttr('disabled');
+  // }
+  // });
+   $('#switch_month').change(function() {
+            var value = $('#switch_month').val();
+            var path = "<?php echo base_url() . 'rtk_management/switch_month/'; ?>" + value + "/partner_super_home";
+           
+window.location.href = path;
+});
   $("#switch_idenity").click(function(event)
   {
-  var switch_as = $('#user_switch').val();
-  var switch_county = $('#county_switch option:selected').val();
-  var switch_dist = $('#district_switch').val();
-  //var switch_partner = $('#partner_switch').val();
-  var switch_partner = 1;
+  var switch_as = 'rtk_partner_admin';
+  var switch_county = 0;
+  var switch_dist = 0;
+  var switch_partner = $('#partner_switch').val();
   
   var ending;
   if(switch_partner!=0){
@@ -85,31 +93,16 @@ $(document).ready(function(){
   }
 
 
-if (switch_dist>0){
-  switch_county = $('#district_switch option:selected').attr('county');
-//  switch_county = $('#district_switch:selected').attr('county').val();
-//alert(switch_county);
-var path = "<?php echo base_url() . 'rtk_management/switch_district'; ?>/"+switch_dist+"/"+switch_as+"/0/0/"+switch_county+"/rtk_manager/";
-  window.location.href=path;
-
-
-}
 
   var path = "<?php echo base_url() . 'rtk_management/switch_district'; ?>/"+switch_dist+"/"+switch_as+"/0/0/"+switch_county+"/rtk_manager"+"/"+ending;
-
+  
 //  rtk_management/switch_district/district/switched_as/month/redirect_url/county
   window.location.href=path;
 
   });
 
 
-            $('#switch_month').change(function(){
-                var value = $('#switch_month').val();
-              var path = "<?php echo base_url().'rtk_management/switch_district/0/rtk_manager/';?>"+value + "/";
-//              alert (path);
-                 window.location.href=path;
-            });
-
+           
    
                });
 </script>
@@ -203,14 +196,25 @@ code {
 <div>
 <?php { ?>
 <div id="fixed-topbar" style="z-index:10;position: fixed; top: 74px;background:#009933; width: 100%;padding: 7px 1px 0px 13px;border-bottom: 1px solid #ccc;border-bottom: 1px solid #ccc;border-radius: 4px 0px 0px 4px;">
-<span class="lead" style="color: #fff;float:left;">Switch Identities</span>
+<span class="lead" style="color: #fff;float:left;">Select : </span>
 &nbsp;
-<select id="user_switch" class="form-control" style="width:15%;float:left;margin-left:200px;"><option value="0"> -- Select UserType--</option><option value="scmlt">SCMLT</option><option value="rtk_county_admin">County Administrator</option><option value="rtk_partner_super">Partner</option>
-</select>
+<select id="switch_month" class="form-control" style="width:15%;float:left;margin-left:250px;">       
+  <option value="<?php echo $month_value ?>"><?php echo $englishdate ?></option>;
+        <?php 
+
+            for ($i=1; $i <=12 ; $i++) { 
+            $month = date('m', strtotime("-$i month")); 
+            $year = date('Y', strtotime("-$i month")); 
+            $month_value = $month.$year;
+            $month_text =  date('F', strtotime("-$i month")); 
+            $month_text = "-- ".$month_text." ".$year." --";
+         ?>
+        <option value="<?php echo $month_value ?>"><?php echo $month_text ?></option>;
+    <?php } ?>
+    </select>
+<span class="lead" style="color: #fff;float:left;">&nbsp;&nbsp;&nbsp;</span>
 &nbsp;
-<select id="county_switch" class="form-control" style="width:15%;float:left"><option value="0"> -- Select County --</option><?php echo $counties_option_html;?></select>
-&nbsp;
-<select id="district_switch" class="form-control" style="width:15%;float:left"><option value="0"> -- Select Sub-County --</option><?php echo $districts_option_html;?></select>
+<select id="partner_switch" class="form-control" style="width:15%;float:left"><option value="0"> -- Select Partner --</option><?php echo $partners_option_html;?></select>
 &nbsp;
 <a href="#" class="btn btn-primary" id="switch_idenity" style="margin-top: 0px;float:left">Go</a>
 </div>
@@ -222,7 +226,7 @@ code {
 <div class="well" style="width:97%;"> 
 <div class="page-header">
  
-     <h1 style="font-size: 140%;">County Summary <?php echo $englishdate;?><small> Kenya</small></h1>
+     <h1 style="font-size: 140%;">Partner Summary <?php echo $englishdate;?><small> Kenya</small></h1>
    </div>
 <!--     <h4>Leading County in reporting: Nakuru</h4>-->
      <div id="county_graph"></div>
@@ -244,13 +248,13 @@ code {
                 type: 'bar'
             },
             title: {
-                text: 'RTK Monthly reporting rates'
+                text: 'RTK Partners Monthly reporting rates'
             },
             subtitle: {
                 text: 'RTK Data'
             },
             xAxis: {
-                categories: <?php echo $counties_json; ?>
+                categories: <?php echo $partners_json; ?>
             },
             yAxis: {
                 min: 0,

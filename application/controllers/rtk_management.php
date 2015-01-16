@@ -282,7 +282,16 @@ public function save_lab_report_data() {
     foreach ($res as $key => $value) {
         $county = $value['county'];
     }
-    $this->_update_reports_count('add',$county,$district_id);
+
+    $r = "select partner from facilities where facility_code='$facility_code'";
+    $resr = $this->db->query($r)->result_array();
+    foreach ($resr as $key => $value) {
+        $partner = $value['partner'];
+    }
+    if($partner=0){
+        $partner = null;
+    }
+    $this->_update_reports_count('add',$county,$district_id,$partner);
     $this->session->set_flashdata('message', 'The report has been saved');
     redirect('rtk_management/scmlt_home');
 
@@ -1096,6 +1105,138 @@ public function rtk_manager_home() {
     $data['prev_prev_monthjson'] = $prev_prev_monthjson;
     $this->load->view('rtk/template', $data);
 }
+
+public function partner_super_home() {
+    $data = array();
+    $data['title'] = 'RTK Partner Admin';
+    $data['banner_text'] = 'RTK Partner Admin';
+    $data['content_view'] = "rtk/rtk/partner/partner_admin";
+    $partners = $this->_all_partners();
+    $partner_arr = array();
+    foreach ($partners as $partner) {
+        array_push($partner_arr, $partner['name']);
+    }
+    $partners_json = json_encode($partner_arr);
+    $partners_json = str_replace('"', "'", $partners_json);
+    $data['partners_json'] = $partners_json;
+    $session_month = $this->session->userdata('Month');    
+    if($session_month!=''){
+        $month = $this->session->userdata('Month');
+        $thismonth = substr($month,0,2);       
+        $thismonth_year = substr($month,-4);          
+        $this_month_full = $thismonth.$thismonth_year;
+        //echo "$this_month_full";die();
+        
+        $m_prev = substr($this_month_full, 0,2);
+        $y_prev = substr($this_month_full, -4);
+        $f_prev = $y_prev.'-'.$m_prev.'-01';
+        
+        $previous_month = new DateTime($f_prev);
+        $previous_month->modify('-1 month');
+        $previous_month_full =  $previous_month->format('mY');
+        
+        $m_prev1 = substr($previous_month_full, 0,2);
+        $y_prev1 = substr($previous_month_full, -4);
+        $f_prev1 = $y_prev1.'-'.$m_prev1.'-01';
+        
+        $prev_prev = new DateTime($f_prev1);
+        $prev_prev->modify('-1 month');
+        $prev_prev_month_full =  $prev_prev->format('mY');
+
+        $thismonthname  = date('F',strtotime("$thismonth_year-$thismonth-01"));
+        $prevmonthname  = $previous_month->format('F');
+        $englishdate  = date('F,Y',strtotime("$thismonth_year-$thismonth-01"));
+        $prev_prevmonthname  = $prev_prev->format('F');
+
+    }else{
+
+        $thismonth = date('m', time());
+        $thismonth_year = date('Y', time());
+        $this_month_full = $thismonth.$thismonth_year;
+
+        $previous_month = date('m', strtotime("-1 month", time()));
+        $previous_month_year = date('Y', strtotime("-1 month", time()));
+        $previous_month_full = $previous_month.$previous_month_year;
+
+        $prev_prev = date('m', strtotime("-2 month", time()));
+        $prev_prev_year = date('Y', strtotime("-2 month", time()));
+        $prev_prev_month_full = $prev_prev.$prev_prev_year;
+
+        $new_prev = date('m', strtotime("-3 month", time()));
+        $new_prev_year = date('Y', strtotime("-3 month", time()));
+
+        $englishdate  = date('F,Y',strtotime("$previous_month_year-$previous_month-01"));
+
+        $thismonthname  = date('F',strtotime("$previous_month_year-$previous_month-01"));
+        $prevmonthname  = date('F',strtotime("$prev_prev_year-$prev_prev-01"));
+        $prev_prevmonthname  = date('F',strtotime("$new_prev_year-$new_prev-01"));
+    }
+
+    
+
+
+    
+
+    //echo"Current $thismonthname, Previous $prevmonthname ,Previous1 $prev_prevmonthname";die();
+    $thismonth_arr1 = array();
+
+    foreach ($partners as $key => $value) {
+        $id = $value['ID'];
+        $q = "select percentage from rtk_partner_percentage where month='$this_month_full' and partner_id=$id";       
+        $result = $this->db->query($q)->result_array();
+        foreach ($result as $key => $value) {            
+            $percentage = intval($value['percentage']);  
+                if( $percentage >100){
+                    $percentage = 100;
+                }else{
+                $percentage = intval($value['percentage']);
+                }
+        }        
+        array_push($thismonth_arr1, $percentage);
+    }     
+
+    $previous_month_arr1 = array();
+
+    foreach ($partners as $key => $value) {
+        $id = $value['ID'];
+        $q = "select percentage from rtk_partner_percentage where month='$previous_month_full' and partner_id=$id";
+        $result = $this->db->query($q)->result_array();
+        foreach ($result as $key => $value) {            
+            $percentage = intval($value['percentage']);                               
+        } 
+        array_push($previous_month_arr1, $percentage);
+    }  
+
+    $prev_prev_month_arr1 = array();    
+    foreach ($partners as $key => $value) {
+        $id = $value['ID'];
+        $q = "select percentage from rtk_partner_percentage where month='$prev_prev_month_full' and partner_id=$id";
+        $result = $this->db->query($q)->result_array();
+        foreach ($result as $key => $value) {            
+            $percentage = intval($value['percentage']);                                           
+        } 
+        array_push($prev_prev_month_arr1, $percentage);
+    }         
+   
+    $thismonthjson = json_encode($thismonth_arr1);
+    $thismonthjson = str_replace('"', "", $thismonthjson);
+    $data['thismonthjson'] = $thismonthjson;
+
+    $previous_monthjson = json_encode($previous_month_arr1);
+    $previous_monthjson = str_replace('"', "", $previous_monthjson);
+    $data['previous_monthjson'] = $previous_monthjson;   
+
+    $data['thismonthname'] = $thismonthname;
+    $data['prevmonthname'] = $prevmonthname;
+    $data['prev_prevmonthname'] = $prev_prevmonthname;
+
+    $data['englishdate'] = $englishdate;
+
+    $prev_prev_monthjson = json_encode($prev_prev_month_arr1);
+    $prev_prev_monthjson = str_replace('"', "", $prev_prev_monthjson);
+    $data['prev_prev_monthjson'] = $prev_prev_monthjson;
+    $this->load->view('rtk/template', $data);
+} 
 public function rtk_manager($month=null) {
        if(isset($month)){           
         $year = substr($month, -4);
@@ -4490,7 +4631,7 @@ function facility_amc_compute($zone) {
         }
  }
     //Update the Number of Reports Online
-    function _update_reports_count($state,$county,$district){ 
+    function _update_reports_count($state,$county,$district,$partner=null){ 
         $month = date('mY',time());  
         $q = "select * from  rtk_county_percentage where month='$month' and county_id = '$county'";
         $q1 = "select * from rtk_district_percentage where month='$month' and district_id = '$district'";
@@ -4507,16 +4648,33 @@ function facility_amc_compute($zone) {
         if($state=="add"){
             $sql = "update rtk_county_percentage set reported = (reported + 1) where month='$month' and county_id = '$county'";
             $sql1 = "update rtk_district_percentage set reported = (reported + 1) where month='$month' and district_id = '$district'";
+            $sql2 = "update rtk_partner_percentage set reported = (reported + 1) where month='$month' and partner_id = '$partner'";
         }elseif ($state=="remove") {
             $sql = "update rtk_county_percentage set reported = (reported - 1) where month='$month' and county_id = '$county'";
             $sql1 = "update rtk_district_percentage set reported = (reported - 1) where month='$month' and district_id = '$district'";                
+            $sql2 = "update rtk_partner_percentage set reported = (reported - 1) where month='$month' and partner_id = '$partner'";
+
         }
+
+        $q2 = "update rtk_partner_percentage set percentage = round(((reported/facilities)*100),0) where month='$month' and partner_id = '$partner'";
+
         $this->db->query($sql);
         $this->db->query($sql1);
+        if($partner ==null){
+
+        }else{
+            $this->db->query($sql2); 
+            $this->db->query($q2);
+        }
+       
         $q = "update rtk_district_percentage set percentage = round(((reported/facilities)*100),0) where month='$month' and district_id = '$district'";                
         $q1 = "update rtk_county_percentage set percentage = round(((reported/facilities)*100),0) where month='$month' and county_id = '$county'";
+       
+
         $this->db->query($q);
         $this->db->query($q1);
+        
+        
     } 
 
     //Function for the Amounts Allocated versus those Requested 
@@ -5147,6 +5305,13 @@ function _all_counties() {
     return $returnable;
 }
 
+function _all_partners() {
+    $q = 'SELECT ID,name FROM  `partners` ';
+    $q_res = $this->db->query($q);
+    $returnable = $q_res->result_array();
+    return $returnable;
+}
+
 function flip_array_diff_key($b, $a) {
     $at = array_flip($a);
     $bt = array_flip($b);
@@ -5277,6 +5442,43 @@ function update_county_percentages_month($month=null){
         $percentage = ($reported/$total_facilities)*100;
         
         $q = "insert into rtk_county_percentage (county_id, facilities,reported,percentage,month) values ($id,$total_facilities,$reported,$percentage,'$monthyear')";
+        $this->db->query($q);
+    }
+}
+
+function update_partner_percentages_month($month=null){
+    if(isset($month)){           
+        $year = substr($month, -4);
+        $month = substr($month, 0,2);            
+        $monthyear = $month.$year;                    
+
+    }
+    $r = "delete from rtk_partner_percentage where month='$monthyear'";
+    $this->db->query($r);
+    $sql = "select id from partners";
+
+    $result = $this->db->query($sql)->result_array();
+     foreach ($result as $key => $value) {
+        $id = $value['id'];               
+        $sql = "select count(facilities.facility_code) as facilities from
+        facilities
+        where        
+        facilities.partner = '$id'
+        and facilities.rtk_enabled = 1";
+        $facilities = $this->db->query($sql)->result_array();            
+        foreach ($facilities as $key => $value) {
+            $facility_count = $value['facilities'];
+        }
+
+
+
+        $reports = $this->rtk_summary_county($id,$year,$month);                
+        $reported = $reports['reported']; 
+        $total_facilities = $reports['facilities']; 
+        //$percentage = ($reported/$facility_count)*100;
+        $percentage = ($reported/$total_facilities)*100;
+        
+        $q = "insert into rtk_partner_percentage (partner_id, facilities,reported,percentage,month) values ($id,$total_facilities,$reported,$percentage,'$monthyear')";
         $this->db->query($q);
     }
 }
