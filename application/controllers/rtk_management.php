@@ -2109,8 +2109,14 @@ public function download_county_mos($county = null,$report_type) {
     // $this->load->view("rtk/template", $data);
 }
 
-public function allocation_details($zone){
 
+
+public function test_php(){
+    phpinfo();
+}
+
+public function allocation_details($zone, $a,$b ){
+        ini_set(-1);
         $sql = "SELECT 
                     facilities.facility_code,
                     facilities.facility_name,
@@ -2125,7 +2131,7 @@ public function allocation_details($zone){
                         AND districts.county = counties.id
                         AND facilities.rtk_enabled = 1
                         and facilities.zone='Zone $zone'
-                ORDER BY facilities.facility_code ASC";
+                ORDER BY facilities.facility_code ASC limit $a, $b";
 
         $result = $this->db->query($sql)->result_array();
 
@@ -2155,7 +2161,7 @@ public function allocation_details($zone){
                     ORDER BY facility_amc.commodity_id ASC";
 
             $result2 = $this->db->query($sql2)->result_array();
-
+           
             $sql3 = "SELECT 
                         closing_stock
                     FROM
@@ -2181,7 +2187,7 @@ public function allocation_details($zone){
         }
 
         // echo "<pre>";
-        // print_r($final_dets);
+        // print_r($final_dets);die;
 
         $data['title'] = "Zone A";
         $data['banner_text'] = "Facilities in Zone A";
@@ -5230,8 +5236,7 @@ public function allocation($zone = NULL, $county = NULL, $district = NULL, $faci
             $monthyear = $month.$year;
         }else{
             $month = date('mY',time());        
-        }
-        echo "$month";die();
+        }        
         $this->update_county_percentages_month($month);
         $this->update_district_percentages_month($month);
     }
@@ -6215,7 +6220,7 @@ public function get_all_zone_a_facilities($zone){
                     $lastdate = $year.'-'.$month.'-'.$num_days; 
                 }
                                
-                
+               
                 $sql = "select distinct facility_code from facilities where rtk_enabled=1 and zone='Zone $zone' and exists
                  (select distinct facility_code from lab_commodity_details where created_at between '$firstdate' and '$lastdate') order by facility_code asc";
 
@@ -6226,7 +6231,7 @@ public function get_all_zone_a_facilities($zone){
                     $code = $value['facility_code'];
                      $q = "select order_id,facility_code,q_used,commodity_id,unit_of_issue,created_at from lab_commodity_details 
                      where facility_code='$code' and created_at between '$firstdate' and '$lastdate'";                     
-                     $res = $this->db->query($q)->result_array();   
+                     $res = $this->db->query($q)->result_array();                       
                      if(count($res)<1){
                        // break 1;
                      }else{                         
