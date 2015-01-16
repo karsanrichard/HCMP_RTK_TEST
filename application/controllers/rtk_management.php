@@ -2109,6 +2109,204 @@ public function download_county_mos($county = null,$report_type) {
     // $this->load->view("rtk/template", $data);
 }
 
+// public function download_allocation() {  
+//     ini_set(-1);
+//         $sql = "SELECT 
+//                     facilities.facility_code,
+//                     facilities.facility_name,
+//                     districts.district,
+//                     counties.county
+//                 FROM
+//                     facilities,
+//                     districts,
+//                     counties
+//                 WHERE
+//                     facilities.district = districts.id
+//                         AND districts.county = counties.id
+//                         AND facilities.rtk_enabled = 1
+//                         and facilities.zone='Zone $zone'
+//                 ORDER BY facilities.facility_code ASC limit $a, $b";
+
+//         $result = $this->db->query($sql)->result_array();
+
+//         $final_dets = array();
+
+//         foreach ($result as $key => $id_details) {
+
+//             $fcode = $id_details['facility_code'];
+//             $county = $id_details['county'];
+//             $district = $id_details['district'];
+//             $facilityname = $id_details['facility_name'];
+
+
+
+//             $sql2 = "SELECT 
+//                         facility_amc.amc
+//                     FROM
+//                         facilities,
+//                         facility_amc,
+//                         lab_commodities
+//                     WHERE
+//                         facilities.facility_code = facility_amc.facility_code
+//                             AND facilities.facility_code = '$fcode'
+//                             AND facility_amc.commodity_id = lab_commodities.id
+//                             AND lab_commodities.category = 1
+//                             AND facility_amc.commodity_id between 4 and 6            
+//                     ORDER BY facility_amc.commodity_id ASC";
+
+//             $result2 = $this->db->query($sql2)->result_array();
+           
+//             $sql3 = "SELECT 
+//                         closing_stock
+//                     FROM
+//                         lab_commodity_details AS a
+//                     WHERE
+//                         facility_code = $fcode
+//                         AND commodity_id between 4 and 6
+//                             AND created_at in (SELECT 
+//                                 MAX(created_at)
+//                             FROM
+//                                 lab_commodity_details AS b
+//                             WHERE
+//                                 a.facility_code = b.facility_code)";
+
+//             $result3 = $this->db->query($sql3)->result_array();
+            
+//             $final_dets[$fcode]['name'] = $facilityname;
+//             $final_dets[$fcode]['district'] = $district;
+//             $final_dets[$fcode]['county'] = $county;
+//             $final_dets[$fcode]['amcs'] = $result2;
+//             $final_dets[$fcode]['code'] = $fcode;
+//             $final_dets[$fcode]['end_bal'] = $result3;
+//         }
+
+//      foreach ($final_dets as $value) {
+//         //$zone = str_replace(' ', '-',$value['zone']);
+//         $facil = $value['code'];
+
+//         $ending_bal_s =ceil(($value['end_bal'][0]['closing_stock'])/50); 
+//         $ending_bal_c =ceil(($value['end_bal'][1]['closing_stock'])/30); 
+//         $ending_bal_t =ceil(($value['end_bal'][2]['closing_stock'])/20);
+
+//         $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
+//         $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
+//         $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);
+
+//         if($amc_s==''){
+//           $amc_s = 0;
+//         }
+
+//         if($amc_c==''){
+//           $amc_c = 0;
+//         }
+
+//         if($amc_t==''){
+//           $amc_t = 0;
+//         }
+
+//         $mmos_s = ceil(($amc_s * 4)/50);
+//         $mmos_c = ceil(($amc_c * 4)/30);
+//         $mmos_t = ceil(($amc_t * 4)/20);
+
+//         if($mmos_s < $ending_bal_s){
+//           $qty_to_alloc_s = 0;
+//         }else{
+//           $qty_to_alloc_s = $mmos_s - $ending_bal_s;
+//         }
+
+//         if($mmos_c < $ending_bal_c){
+//           $qty_to_alloc_c = 0;
+//         }else{
+//           $qty_to_alloc_c = $mmos_c - $ending_bal_c;
+//         }
+
+//         if($mmos_t < $ending_bal_t){
+//           $qty_to_alloc_t = 0;
+//         }else{
+//           $qty_to_alloc_t = $mmos_t - $ending_bal_t;
+//         }
+
+//         $table_body .= '<tr>';
+//              $table_body .='<td>'.$dist.'</td>';
+//              $table_body .='<td>'.$fcode.'</td>';
+//              $table_body .='<td>'.$fname.'</td>';
+//              $table_body .='<td>'.$cname.'</td>';
+//              $table_body .='<td>'.$amc.'</td>';
+//              $table_body .='<td>'.$endbal.'</td>';
+//              $table_body .='<td>'.$ratio.'</td>';             
+//          $table_body .='</tr>';
+        
+        
+//         $table_body .= '<tr>';   
+//           $table_body .="<td>$value['county']></td>";
+//           $table_body .="<td>$value['district']</td>";             
+//           $table_body .="<td>$value['code']</td>";
+//           $table_body .="<td>$value['name']</td>";
+
+//           $table_body .="<td align=\"center\">$ending_bal_s</td>";     
+//           $table_body .="<td align=\"center\">$amc_s</td>";     
+//           $table_body .="<td align=\"center\">$mmos_s</td>";
+//           $table_body .="<td align=\"center\">$qty_to_alloc_s</td>";
+
+//           $table_body .="<td align=\"center\">$ending_bal_c</td>";     
+//           $table_body .="<td align=\"center\">$amc_c</td>";     
+//           $table_body .="<td align=\"center\">$mmos_c</td>";
+//          $table_body .="<td align=\"center\">$qty_to_alloc_c</td>";
+
+//           $table_body .="<td align=\"center\">$ending_bal_t</td>";     
+//           $table_body .="<td align=\"center\">$amc_t</td>";     
+//           $table_body .="<td align=\"center\">$mmos_t</td>";
+//           $table_body .="<td align=\"center\">$qty_to_alloc_t</td>";
+          
+         
+          
+//          $table_body .= '<tr>';   
+//     $table_head = '<thead>
+//     <tr>        
+//        <tr>        
+//       <th align="">County</th>
+//       <th align="">Sub-County</th>
+//       <th align="">MFL</th>
+//       <th align="">Facility Name</th>     
+//       <th align="center" colspan="4">Screening KHB</th>      
+//       <th align="center" colspan="4">Confirmatory First Response</th>      
+//       <th align="center" colspan="4">TieBreaker - Unigold</th> 
+//     </tr>    
+//     <tr>
+          
+//       <th align="center"></th>
+//       <th align="center"></th>
+//       <th align="center"></th>
+//       <th align="center"></th>      
+//       <th align="center">Ending Balance</th>      
+//       <th align="center">AMC</th>
+//       <th align="center">MMOS</th>
+//       <th align="center">Quantity to Allocate</th>
+//       <th align="center">Ending Balance</th>      
+//       <th align="center">AMC</th>
+//       <th align="center">MMOS</th>      
+//       <th align="center">Quantity to Allocate</th>
+//       <th align="center">Ending Balance</th>      
+//       <th align="center">AMC</th>
+//       <th align="center">MMOS</th>
+//       <th align="center">Quantity to Allocate</th>                
+//     </tr>
+      
+//     </thead>
+//     <tbody style="border-top: solid 1px #828274;">
+//                         '.$table_body.'
+//                      </tbody>';
+//     $table_foot = '</table>';   
+//     $report_name = "Zone $zone from $a to $b";
+//     $title = "REPORT FOR ZONE $zone";
+//     $html_data = $table_head . $table_body . $table_foot;
+//     //echo "$html_data";die();
+//     $this->_generate_lab_report_excel($report_name, $title, $html_data);
+    
+    
+// }
+
+
 public function allocation_details($zone){
 
         $sql = "SELECT 
@@ -2125,7 +2323,7 @@ public function allocation_details($zone){
                         AND districts.county = counties.id
                         AND facilities.rtk_enabled = 1
                         and facilities.zone='Zone $zone'
-                ORDER BY facilities.facility_code ASC";
+                ORDER BY facilities.facility_code ASC limit 0,200";
 
         $result = $this->db->query($sql)->result_array();
 
@@ -2157,7 +2355,7 @@ public function allocation_details($zone){
             $result2 = $this->db->query($sql2)->result_array();
 
             $sql3 = "SELECT 
-                        closing_stock
+                        closing_stock,order_id
                     FROM
                         lab_commodity_details AS a
                     WHERE
@@ -2183,9 +2381,10 @@ public function allocation_details($zone){
         // echo "<pre>";
         // print_r($final_dets);
 
-        $data['title'] = "Zone A";
-        $data['banner_text'] = "Facilities in Zone A";
+        $data['title'] = "Zone $zone";
+        $data['banner_text'] = "Facilities in Zone $zone";
         $data['content_view'] = 'rtk/allocation_committee/zone_a';        
+        //$data['content_view'] = "rtk/rtk/allocation/rtk_county_allocation_datatableonly_v";
         $data['final_dets'] = $final_dets;
         $this->load->view('rtk/template', $data); 
     }  
@@ -2378,7 +2577,7 @@ public function allocation_details($zone){
             and districts.id = facilities.district 
             and counties.id  = districts.county
             and facilities.facility_code = lab_commodity_orders.facility_code
-            and lab_commodity_orders.order_date between '$beg_date' and '$end_date' ORDER BY facilities.facility_code ASC" ;        
+            and lab_commodity_orders.order_date between '$beg_date' and '$end_date' ORDER BY facilities.facility_code ASC limit 0,2" ;        
                // echo($sql);die;
         $facilities = $this->db->query($sql)->result_array();
      //echo "<pre>";print_r($facilities);die;
@@ -2640,28 +2839,21 @@ WHERE
         }
         
         $data = $_POST['form_data'];       
-        // echo "<pre>";
-        // print_r($data);die();
-        $now = time();
         
-        $data = array_chunk($data,8);
-
-        $beg_date = date('Y-m', strtotime("-3 Month"));
-        $beg_date.='-01';
-        $end_date = date('Y-m-d', strtotime("last day of previous Month"));
+        $now = time();       
+        $data = array_chunk($data,4);                
 
         foreach ($data as $key => $value) {
-            $order_id = $value[0]['value'];
-            $facilitycode = $value[8]['value'];
-            $screening_id = $value[1]['value'];
-            $confirm_id = $value[2]['value'];
-            $tiebreaker_id = $value[3]['value'];
-           
-            $screening_allocate = $value[4]['value'];
-            $confirm_allocate = $value[5]['value'];
-            $tiebreaker_allocate = $value[6]['value'];
+            $order_id = $value[0]['value'];                        
+            $screening_allocate = $value[1]['value'];
+            $confirm_allocate = $value[2]['value'];
+            $tiebreaker_allocate = $value[3]['value'];
 
-            $query_s = "UPDATE  `lab_commodity_details` SET  `allocated` =  '$screening_allocate',`allocated_date` =  '$now' WHERE  `lab_commodity_details`.`created_at` between '$beg_date' and '$end_date' and `lab_commodity_details`.`commodity_id`='$screening_id'";
+            $screening_id = '4';
+            $confirm_id = '5';
+            $tiebreaker_id = '6';
+
+            $query_s = "UPDATE  `lab_commodity_details` SET  `allocated` =  '$screening_allocate',`allocated_date` =  '$now' WHERE  `lab_commodity_details`.`order_id` = '$order_id' and `lab_commodity_details`.`commodity_id`='$screening_id'";
             $query_c = "UPDATE  `lab_commodity_details` SET  `allocated` =  '$confirm_allocate',`allocated_date` =  '$now' WHERE  `lab_commodity_details`.`order_id` ='$order_id' and `lab_commodity_details`.`commodity_id`='$confirm_id'";
             $query_t = "UPDATE  `lab_commodity_details` SET  `allocated` =  '$tiebreaker_allocate',`allocated_date` =  '$now' WHERE  `lab_commodity_details`.`order_id` ='$order_id' and `lab_commodity_details`.`commodity_id`='$tiebreaker_id'";
             
@@ -6319,6 +6511,12 @@ public function add_user() {
 public function change_password() {        
     $this->load->model('user');
     $this->user->edit_user_password();
+    echo "Password Succesfully Changed";
+}
+
+public function reset_user_pass() {        
+    $this->load->model('user');
+    $this->user->reset_user_pass();
     echo "Password Succesfully Changed";
 }
 public function clean_data($month=null){

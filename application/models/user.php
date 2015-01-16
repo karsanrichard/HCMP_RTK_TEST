@@ -264,6 +264,17 @@ public function edit_user_password($id) {
 }
 
 
+public function reset_user_pass($id) {            
+    $salt = '#*seCrEt!@-*%';    
+    $password = '123456';
+    $user_id = mysql_real_escape_string($_POST['user_id']);        
+    $value=(md5($salt . $password));    
+    $sql = "update `user`set `password`='$value' where `id`='$user_id'";        
+    $q_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->execute($sql);
+    //$this->db->query($sql);    
+}
+
+
 
 
 }
