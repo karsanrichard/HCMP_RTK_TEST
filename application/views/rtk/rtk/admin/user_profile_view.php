@@ -54,7 +54,9 @@ foreach ($all_subcounties as $value) {
                     }
                     ?>
                 </p>
-                <p><a href="#" class="btn btn-primary" role="button">Deactivate</a>
+                <p>
+                <a href="<?php echo base_url().'rtk_management/reset_user_pass/' . $user_id; ?>" class="btn btn-primary" role="button">Reset Password</a>
+                <a href="#" class="btn btn-primary" role="button">Deactivate</a>
                     <?php if ($user_details[0]['user_indicator'] == 'rtk_county_admin') { ?> 
                             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add_county">
                                 <span class="glyphicon glyphicon-plus"></span> Add County to <?php echo $full_name; ?>

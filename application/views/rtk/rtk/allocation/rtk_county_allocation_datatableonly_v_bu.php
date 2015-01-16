@@ -8,27 +8,11 @@
 
         /* Build the DataTable with third column using our custom sort functions */
 
-        $('#allocation_table').dataTable({
-            "sDom": "T lfrtip",
-             "aaSorting": [],
-             "bJQueryUI": false,
-              "bPaginate": false,
-              "oLanguage": {
-                "sLengthMenu": "_MENU_ Records per page",
-                "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
-              },
-              "oTableTools": {
-              "aButtons": [      
-              "copy",
-              "print",
-              {
-                "sExtends": "collection",
-                "sButtonText": 'Save',
-                "aButtons": ["csv", "xls", "pdf"]
-              }
-              ],  
-              "sSwfPath": "<?php echo base_url();?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
-            }
+        $('#example').dataTable({
+            "bStateSave": true,
+            "iDisplayLength": 10,
+            "aaSorting": [[11, "desc"]],
+            "bPaginate": false,
         });
 
         $("#allocate").button().click(function() {
@@ -54,7 +38,7 @@
                     alert(response);                  
                     $('#allocation-response').html(response);
                     $('#allocation-response').addClass('alert alert-success');
-                   // location.reload(true);
+                    location.reload(true);
                     $( "#loading" ).hide();
                 }).fail(function(request,error) {
                     console.log(arguments);
@@ -134,123 +118,42 @@
     echo form_open('rtk_management/rtk_allocation_data/' . $county_id, $attributes);
     ?>
 
-    <table id="allocation_table" style="width:96%" border="0px ridge #ccc">
+    <table id="example" style="width:96%" border="0px ridge #ccc">
         <thead>
-            <tr>           
+            <tr>
             <th><b>County</b></th>
             <th><b>Sub-County</b></th>
             <th><b>MFL</b></th>
-            <th><b>Facility Name</b></th>                   
+            <th><b>Facility Name</b></th>    
+            <th><b>Contact Person</b></th>    
+            <th><b>Phone Number</b></th>    
             <th colspan="4" style="text-align:center"><b>Screening KHB</b></th>
             <th colspan="4" style="text-align:center"><b>Confirmatory Unigold</b></th>
             <th colspan="4" style="text-align:center"><b>Tie Breaker</b></th>                                                     
         </tr>
 
-        <tr>            
+        <tr>
             <th></th>
             <th></th>
-            <th></th>            
+            <th></th>
+            <th></th>
+            <th></th>
             <th></th>    
-            <th align="center">Ending Balance</th>      
-            <th align="center">AMC</th>
-            <th align="center">MMOS</th>
-            <th align="center">Quantity to Allocate</th>
-            <th align="center">Ending Balance</th>      
-            <th align="center">AMC</th>
-            <th align="center">MMOS</th>      
-            <th align="center">Quantity to Allocate</th>
-            <th align="center">Ending Balance</th>      
-            <th align="center">AMC</th>
-            <th align="center">MMOS</th>
-            <th align="center">Quantity to Allocate</th>        
+            <th>EB</th>
+            <th>MMOS</th>
+            <th>AMC</th>
+            <th>QTY</th>
+            <th>EB</th>
+            <th>MMOS</th>
+            <th>AMC</th>
+            <th>QTY</th>
+            <th>EB</th>
+            <th>MMOS</th>
+            <th>AMC</th>
+            <th>QTY</th>        
         </tr>
         </thead>
-        <tbody>
-      <?php
-      if(count($final_dets)>0){
-       foreach ($final_dets as $value) {
-        //$zone = str_replace(' ', '-',$value['zone']);
-        $facil = $value['code'];
-
-        $ending_bal_s =ceil(($value['end_bal'][0]['closing_stock'])/50); 
-        $ending_bal_c =ceil(($value['end_bal'][1]['closing_stock'])/30); 
-        $ending_bal_t =ceil(($value['end_bal'][2]['closing_stock'])/20);
-
-
-        $order_detail_id = $value['end_bal'][0]['order_id'];
-
-        $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
-        $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
-        $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);
-
-        if($amc_s==''){
-          $amc_s = 0;
-        }
-
-        if($amc_c==''){
-          $amc_c = 0;
-        }
-
-        if($amc_t==''){
-          $amc_t = 0;
-        }
-
-        $mmos_s = ceil(($amc_s * 4)/50);
-        $mmos_c = ceil(($amc_c * 4)/30);
-        $mmos_t = ceil(($amc_t * 4)/20);
-
-        if($mmos_s < $ending_bal_s){
-          $qty_to_alloc_s = 0;
-        }else{
-          $qty_to_alloc_s = $mmos_s - $ending_bal_s;
-        }
-
-        if($mmos_c < $ending_bal_c){
-          $qty_to_alloc_c = 0;
-        }else{
-          $qty_to_alloc_c = $mmos_c - $ending_bal_c;
-        }
-
-        if($mmos_t < $ending_bal_t){
-          $qty_to_alloc_t = 0;
-        }else{
-          $qty_to_alloc_t = $mmos_t - $ending_bal_t;
-        }
-
-        
-        ?> 
-        <tr>   
-
-          <input type ='hidden' size = '5' name ='order_detail_id' value ='<?php echo $order_detail_id;?>'>              
-          <td align=""><?php echo $value['county'];?></td>
-          <td align=""><?php echo $value['district'];?></td>              
-          <td align=""><?php echo $value['code'];?></td>
-          <td align=""><?php echo $value['name'];?></td>
-
-          <td align="center"><?php echo $ending_bal_s;?></td>     
-          <td align="center"><?php echo $amc_s;?></td>     
-          <td align="center"><?php echo $mmos_s;?></td>
-          <td contenteditable='true' name ='allocate_screening_khb'><?php echo $qty_to_alloc_s;?></td>    
-
-          <td align="center"><?php echo $ending_bal_c;?></td>     
-          <td align="center"><?php echo $amc_c;?></td>     
-          <td align="center"><?php echo $mmos_c;?></td>          
-          <td><input type ='text' size = '5' name ='allocate_confirmatory' value ='<?php echo $qty_to_alloc_c;?>'></td>    
-
-          <td align="center"><?php echo $ending_bal_t;?></td>     
-          <td align="center"><?php echo $amc_t;?></td>     
-          <td align="center"><?php echo $mmos_t;?></td>          
-          <td><input type ='text' size = '5' name ='allocate_tiebreaker' value ='<?php echo $qty_to_alloc_t;?>'></td>             
-         
-          
-        </tr>
-        <?php }
-      }else{ ?>
-      <tr>There are No Facilities which did not Report</tr>
-      <?php }
-      ?>      
-
-    </tbody>
+        <tbody><?php echo $table_body; ?></tbody>
     </table>
     <br />
 <div id="clear">&nbsp;</div>
