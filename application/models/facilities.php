@@ -573,6 +573,7 @@ public static function get_total_facilities_rtk_in_district($district_id){
 		WHERE rtk_enabled =1
 		AND d.id='$district_id'
 		AND f.`district` = '$district_id'");
+		
 return $q;
 }
 

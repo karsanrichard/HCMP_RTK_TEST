@@ -78,7 +78,7 @@ class Rtk_Management extends Home_controller {
         }
 
         $table_body .="</td>";
-    }
+    }   
     $county = $this->session->userdata('county_name');
     $countyid = $this->session->userdata('county_id');
     $data['countyid'] = $countyid;
@@ -88,7 +88,7 @@ class Rtk_Management extends Home_controller {
     $data['title'] = "Home";
     $data['link'] = "home";
     $total = $reported + $nonreported;
-    $percentage_complete = $reported / $total * 100;
+    $percentage_complete = ceil($reported / $total * 100);
     $percentage_complete = number_format($percentage_complete, 0);
     $data['percentage_complete'] = $percentage_complete;
     $data['reported'] = $reported;
@@ -3066,7 +3066,8 @@ WHERE
     public function partner_home() {
         $lastday = date('Y-m-d', strtotime("last day of previous month"));
         $countyid = $this->session->userdata('county_id');
-        $partner_id = $this->session->userdata('partner_id');  
+        $partner_id = $this->session->userdata('partner_id');     
+
         $partner_details = Partners::get_one_partner($partner_id);        
         $partner_name = $partner_details['name'];        
         $districts = districts::getDistrict($countyid);
@@ -3209,7 +3210,7 @@ WHERE
 
     }
     function partner_reporting_percentages($partner, $year, $month) {    
-        $q = 'SELECT 
+        $q = "SELECT 
                 count(lab_commodity_orders.id) as total,
                 extract(YEAR_MONTH FROM lab_commodity_orders.order_date) as current_month,
                 facilities.partner,
@@ -3219,8 +3220,9 @@ WHERE
                 facilities
             WHERE
                 facilities.facility_code = lab_commodity_orders.facility_code
-                    AND facilities.partner = 7
-            group by extract(YEAR_MONTH FROM lab_commodity_orders.order_date)';
+                    AND facilities.partner = '$partner'
+            group by extract(YEAR_MONTH FROM lab_commodity_orders.order_date)";
+            
         $query = $this->db->query($q);
 
         $sql = $this->db->select('count(id) as county_facility')->get_where('facilities', array('partner' =>$partner))->result_array();
@@ -5458,6 +5460,7 @@ function update_partner_percentages_month($month=null){
     $sql = "select id from partners";
 
     $result = $this->db->query($sql)->result_array();
+
      foreach ($result as $key => $value) {
         $id = $value['id'];               
         $sql = "select count(facilities.facility_code) as facilities from
@@ -5465,6 +5468,7 @@ function update_partner_percentages_month($month=null){
         where        
         facilities.partner = '$id'
         and facilities.rtk_enabled = 1";
+        
         $facilities = $this->db->query($sql)->result_array();            
         foreach ($facilities as $key => $value) {
             $facility_count = $value['facilities'];
@@ -5472,16 +5476,117 @@ function update_partner_percentages_month($month=null){
 
 
 
-        $reports = $this->rtk_summary_county($id,$year,$month);                
+        $reports = $this->rtk_summary_partner($id,$year,$month);                
         $reported = $reports['reported']; 
-        $total_facilities = $reports['facilities']; 
-        //$percentage = ($reported/$facility_count)*100;
-        $percentage = ($reported/$total_facilities)*100;
+        $total_facilities = $reports['total_facilities']; 
+        //$total_facilities = $facility_count; 
+
+        //$percentage = ceil(($reported/$facility_count)*100);
+        $percentage = ceil(($reported/$total_facilities)*100);
         
-        $q = "insert into rtk_partner_percentage (partner_id, facilities,reported,percentage,month) values ($id,$total_facilities,$reported,$percentage,'$monthyear')";
+        $q = "insert into rtk_partner_percentage (partner_id, facilities,reported,percentage,month) values ($id,$total_facilities,$reported,$percentage,'$monthyear')";        
         $this->db->query($q);
     }
 }
+
+public function rtk_summary_partner($partner, $year, $month) {                       
+        $returnable = array();
+        $nonreported;
+        $reported_percentage;
+        $late_percentage;
+        
+
+        // Sets the timezone and date variables for last day of previous month and this month
+        date_default_timezone_set('EUROPE/moscow');
+        $month = $month + 1;
+        $prev_month = $month - 1;
+        $last_day_current_month = date('Y-m-d', mktime(0, 0, 0, $month, 0, $year));
+        $first_day_current_month = date('Y-m-', mktime(0, 0, 0, $month, 0, $year));
+        $first_day_current_month .= '01';
+        $lastday_thismonth = date('Y-m-d', strtotime("last day of this month"));
+        $month -= 1;        
+        $day10 = $year . '-' . $month . '-10';
+        $day11 = $year . '-' . $month . '-11';
+        $day12 = $year . '-' . $month . '-12';
+        $late_reporting = 0;
+        $text_month = date('F', strtotime($day10));
+
+        $reporting_month = date('F,Y', strtotime('first day of previous month'));
+
+        $q = "SELECT * 
+        FROM facilities
+        WHERE facilities.partner = '$partner'
+        AND facilities.rtk_enabled =1
+        ORDER BY  `facilities`.`facility_name` ASC ";
+
+        $q_res = $this->db->query($q);
+        $total_reporting_facilities = $q_res->num_rows();
+
+        $q1 = "SELECT DISTINCT
+                lab_commodity_orders.facility_code,
+                lab_commodity_orders.id,
+                lab_commodity_orders.order_date
+            FROM
+                lab_commodity_orders,facilities
+            WHERE
+                lab_commodity_orders.facility_code = facilities.facility_code
+                    AND facilities.partner = '$partner'       
+                    AND lab_commodity_orders.order_date    BETWEEN '$first_day_current_month'  AND '$last_day_current_month'
+            and facilities.rtk_enabled= '1'
+            group by lab_commodity_orders.facility_code";
+        
+        $q_res1 = $this->db->query($q1);
+        $new_q_res1 = $q_res1 ->result_array();
+        $total_reported_facilities = $q_res1->num_rows();        
+        
+        foreach ($q_res1->result_array() as $vals) {
+            //            echo "<pre>";var_dump($vals);echo "</pre>";
+            if ($vals['order_date'] == $day10 || $vals['order_date'] == $day11 || $vals['order_date'] == $day12) {
+                $late_reporting += 1;
+                //                echo "<pre>";var_dump($vals);echo "</pre>";
+            }
+        }
+
+        $nonreported = $total_reporting_facilities - $total_reported_facilities;
+
+        if ($total_reporting_facilities == 0) {
+            $non_reported_percentage = 0;
+        } else {
+            $non_reported_percentage = $nonreported / $total_reporting_facilities * 100;
+        }
+
+        $non_reported_percentage = number_format($non_reported_percentage, 0);
+
+        if ($total_reporting_facilities == 0) {
+            $reported_percentage = 0;
+        } else {
+            $reported_percentage = $total_reported_facilities / $total_reporting_facilities * 100;
+        }
+
+        $reported_percentage = number_format($reported_percentage, 0);
+
+        if ($total_reporting_facilities == 0) {
+            $late_percentage = 0;
+        } else {
+            $late_percentage = $late_reporting / $total_reporting_facilities * 100;
+        }
+
+
+        $late_percentage = number_format($late_percentage, 0);
+        if ($total_reported_facilities > $total_reporting_facilities) {
+            $reported_percentage = 100;
+            $nonreported = 0;
+            $total_reported_facilities = $total_reporting_facilities;
+        }
+        if ($late_reporting > $total_reporting_facilities) {
+            $late_reporting = $total_reporting_facilities;
+            $late_percentage = $reported_percentage;
+        }
+        $returnable = array('reporting_month'=>$reporting_month,'Month' => $text_month, 'Year' => $year, 'district' => $districtname, 'district_id' => $district_id, 'total_facilities' => $total_reporting_facilities, 'reported' => $total_reported_facilities, 'reported_percentage' => $reported_percentage, 'nonreported' => $nonreported, 'nonreported_percentage' => $non_reported_percentage, 'late_reports' => $late_reporting, 'late_reports_percentage' => $late_percentage);
+       return $returnable;
+       
+    }
+
     function get_county_percentages_month($month=null){
     if(isset($month)){           
         $year = substr($month, -4);
