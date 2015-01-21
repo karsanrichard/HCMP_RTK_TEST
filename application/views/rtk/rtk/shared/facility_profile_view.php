@@ -95,59 +95,69 @@ $(function(){
     <div class="span12">
         <div class="accordion" id="accordion2">
 
-            <?php foreach ($reports as $key => $value) { ?>
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#report-<?php echo $value['id']; ?>">
-                        <?php echo $value['facility_name'] . ' ( ' . $value['district'] . ', ' . $value['county'] . ')'; ?> Summary Report for <?php echo date('F, Y', strtotime('-1 Month',strtotime($value['order_date'])) ); ?> Compiled by <?php echo($value['compiled_by']); ?>
-                    </a>
-                </div>
-                <div id="report-<?php echo $value['id']; ?>" class="accordion-body collapse" style="height: 0px;">
-                    <div class="accordion-inner">
-                        <table class="table" style="font-size:12px;">
-                            <thead>
-                                <tr>
-                                    <th>Kit</th>
-                                    <th> AMC </th>
-                                    <th>Beginning Balance</th>
-                                    <th>Received Quantity</th>
-                                    <th>Used Total</th>
-                                    <th>Total Tests</th>
-                                    <th>Positive Adjustments</th>
-                                    <th>Negative Adjustments</th>
-                                    <th>Losses</th>
-                                    <th>Closing Balance</th>
-                                    <th>Requested</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php
-                                $a = 0;
-                                foreach ($value[$a] as  $values) {
+            <?php 
+            $count = count($reports);
+            if($count>=1){
+                foreach ($reports as $key => $value) { ?>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#report-<?php echo $value['id']; ?>">
+                            <?php echo $value['facility_name'] . ' ( ' . $value['district'] . ', ' . $value['county'] . ')'; ?> Summary Report for <?php echo date('F, Y', strtotime('-1 Month',strtotime($value['order_date'])) ); ?> Compiled by <?php echo($value['compiled_by']); ?>
+                        </a>
+                    </div>
+                    <div id="report-<?php echo $value['id']; ?>" class="accordion-body collapse" style="height: 0px;">
+                        <div class="accordion-inner">
+                            <table class="table" style="font-size:12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Kit</th>
+                                        <th> AMC </th>
+                                        <th>Beginning Balance</th>
+                                        <th>Received Quantity</th>
+                                        <th>Used Total</th>
+                                        <th>Total Tests</th>
+                                        <th>Positive Adjustments</th>
+                                        <th>Negative Adjustments</th>
+                                        <th>Losses</th>
+                                        <th>Closing Balance</th>
+                                        <th>Requested</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                    $a = 0;
+                                    foreach ($value[$a] as  $values) {
+                                       
+                                        ?>
+                                       <tr>
+                                        <td><?php echo $values['commodity_name'];?></td>
+                                        <td><?php echo $values['amc'];?></td>                                    
+                                        <td><?php echo $values['beginning_bal']; ?></td>
+                                        <td><?php echo $values['q_received']; ?></td>
+                                        <td><?php echo $values['q_used']; ?></td>
+                                        <td><?php echo $values['no_of_tests_done']; ?></td>
+                                        <td><?php echo $values['positive_adj']; ?></td>
+                                        <td><?php echo $values['negative_adj']; ?></td>
+                                        <td><?php echo $values['losses']; ?></td>
+                                        <td><?php echo $values['closing_stock']; ?></td>
+                                        <td><?php echo $values['q_requested']; ?></td>
+                                    </tr> 
+                                    <?php $a++; }
+                                ?>
                                    
-                                    ?>
-                                   <tr>
-                                    <td><?php echo $values['commodity_name'];?></td>
-                                    <td><?php echo $values['amc'];?></td>                                    
-                                    <td><?php echo $values['beginning_bal']; ?></td>
-                                    <td><?php echo $values['q_received']; ?></td>
-                                    <td><?php echo $values['q_used']; ?></td>
-                                    <td><?php echo $values['no_of_tests_done']; ?></td>
-                                    <td><?php echo $values['positive_adj']; ?></td>
-                                    <td><?php echo $values['negative_adj']; ?></td>
-                                    <td><?php echo $values['losses']; ?></td>
-                                    <td><?php echo $values['closing_stock']; ?></td>
-                                    <td><?php echo $values['q_requested']; ?></td>
-                                </tr> 
-                                <?php $a++; }
-                            ?>
-                               
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <?php } ?>
+                <?php } 
+                
+                }else{
+                    echo "There is no Data to Display. There are no records found for that facility";
+                }         
+
+
+            ?>
 
         </div>
     </div>

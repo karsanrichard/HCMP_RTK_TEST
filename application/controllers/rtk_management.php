@@ -5024,11 +5024,10 @@ function rtk_logs($user = NULL, $UserType = NULL, $Action = NULL, $SinceDate = N
 public function facility_profile($mfl) {
     $data = array();
     $lastday = date('Y-m-d', strtotime("last day of previous month"));
-    $County = $this->session->userdata('county_name');
-    $Countyid = $this->session->userdata('county_id');
-    $districts = districts::getDistrict($Countyid);         
+    $County = $this->session->userdata('county_name');    
+    $Countyid = $this->session->userdata('county_id');    
+    $districts = districts::getDistrict($Countyid);   
     $sql = "select * from facilities where facility_code=$mfl"; 
-
     $facility = $this->db->query($sql)->result_array();        
     $mfl =  $facility[0]['facility_code'];       
     $data['reports'] = $this->_monthly_facility_reports($mfl);
@@ -5040,10 +5039,18 @@ public function facility_profile($mfl) {
     $data['facility_county'] = $data['reports'][0]['county'];
     $data['facility_district'] = $data['reports'][0]['district'];
     $data['district_id'] = $data['reports'][0]['district_id'];
-    $data['facilities_in_district'] = json_encode($this->_facilities_in_district($data['district_id']));
+
+    if($data['district_id']==null){
+        $new_dist =  $facility[0]['district'];       
+        $data['facilities_in_district'] = json_encode($this->_facilities_in_district($new_dist));
+    }else{
+        $data['facilities_in_district'] = json_encode($this->_facilities_in_district($data['district_id']));
+    }    
     $data['facilities_in_district'] = str_replace('"', "'", $data['facilities_in_district']);
 
-    $data['county_id'] = $data['reports'][0]['county_id'];
+    $data['county_id'] = $Countyid;
+    //$data['county_id'] = $data['reports'][0]['county_id'];
+
     $data['districts'] = $districts;
     $data['county'] = $County;
     $data['mfl'] = $mfl;
