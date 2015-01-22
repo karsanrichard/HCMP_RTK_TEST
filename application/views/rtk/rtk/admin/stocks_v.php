@@ -120,25 +120,25 @@ table{
                         "aButtons": ["csv", "xls", "pdf"]
                     }
                     ],
-                    "sSwfPath": "../assets/datatable/media/swf/copy_csv_xls_pdf.swf"
+                    "sSwfPath": "<?php echo base_url(); ?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
                 }
             });           
         });
 </script>
 
-<link rel="stylesheet" type="text/css" href="http://tableclothjs.com/assets/css/tablecloth.css">
-<script src="http://tableclothjs.com/assets/js/jquery.tablesorter.js"></script>
-<script src="http://tableclothjs.com/assets/js/jquery.metadata.js"></script>
-<script src="http://tableclothjs.com/assets/js/jquery.tablecloth.js"></script>
-
+<script type="text/javascript" language="javascript" src="<?php echo base_url(); ?>assets/tablecloth/assets/js/jquery.tablesorter.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo base_url(); ?>assets/tablecloth/assets/js/jquery.metadata.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo base_url(); ?>assets/tablecloth/assets/js/jquery.tablecloth.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/tablecloth/assets/css/tablecloth.css">
+    <script type="text/javascript" language="javascript" src="<?php echo base_url();?>assets/datatable/jquery.dataTables.js"></script>
 <!--Datatables==========================  --> 
 <script src="http://cdn.datatables.net/1.10.0/js/jquery.dataTables.js" type="text/javascript"></script>
-<script src="../assets/datatable/jquery.dataTables.min.js" type="text/javascript"></script>  
-<script src="../assets/datatable/dataTables.bootstrap.js" type="text/javascript"></script>
-<script src="../assets/datatable/TableTools.js" type="text/javascript"></script>
-<script src="../assets/datatable/ZeroClipboard.js" type="text/javascript"></script>
-<script src="../assets/datatable/dataTables.bootstrapPagination.js" type="text/javascript"></script>
+<script src="<?php echo base_url(); ?>assets/datatable/jquery.dataTables.min.js" type="text/javascript"></script>  
+<script src="<?php echo base_url(); ?>assets/datatable/dataTables.bootstrap.js" type="text/javascript"></script>
+<script src="<?php echo base_url(); ?>assets/datatable/TableTools.js" type="text/javascript"></script>
+<script src="<?php echo base_url(); ?>assets/datatable/ZeroClipboard.js" type="text/javascript"></script>
+<script src="<?php echo base_url(); ?>assets/datatable/dataTables.bootstrapPagination.js" type="text/javascript"></script>
 <!-- validation ===================== -->
 
-<link href="../assets/datatable/TableTools.css" type="text/css" rel="stylesheet"/>
-<link href="../assets/datatable/dataTables.bootstrap.css" type="text/css" rel="stylesheet"/>
+<link href="<?php echo base_url(); ?>assets/datatable/TableTools.css" type="text/css" rel="stylesheet"/>
+<link href="<?php echo base_url(); ?>assets/datatable/dataTables.bootstrap.css" type="text/css" rel="stylesheet"/>
