@@ -55,7 +55,7 @@ foreach ($all_subcounties as $value) {
                     ?>
                 </p>
                 <p>
-                <a href="<?php echo base_url().'rtk_management/reset_user_pass/' . $user_id; ?>" class="btn btn-primary" role="button">Reset Password</a>
+                <a href="" id="<?php echo $user_id; ?>" class="btn btn-primary user_pass_reset" role="button">Reset Password</a>
                 <a href="#" class="btn btn-primary" role="button">Deactivate</a>
                     <?php if ($user_details[0]['user_indicator'] == 'rtk_county_admin') { ?> 
                             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add_county">
@@ -167,11 +167,23 @@ foreach ($user_logs as $logs) {
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-
         $("#save").click(function() {
             $("#add_location_to_user").submit();
         });
 
-
+        $('.user_pass_reset').click(function(e){
+           $('.user_pass_reset').each(function () {
+            var user_id = this.id;            
+            alert(user_id);
+            $.post("<?php echo base_url() . 'rtk_management/reset_user_pass'; ?>", {
+              user_id: user_id,                        
+            }).done(function(data) {
+               alert("Data Loaded: " + data);                               
+            }).error(function(xhr, status, error) {
+                  var err = eval("(" + xhr.responseText + ")");
+                  alert(err.Message);               
+            });
+        });
+     });
     });
 </script>

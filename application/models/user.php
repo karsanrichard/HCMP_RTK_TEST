@@ -106,7 +106,7 @@ public static function check_user_email($email){
 		return count($level);
 }
 ///// reset password/
-public static function reset_password($id){
+public static function reset_password($id){		
 	    $myobj = Doctrine::getTable('user')->findOneById($id);
         $myobj->password='123456' ;
 		$myobj->save();
@@ -264,12 +264,22 @@ public function edit_user_password($id) {
 }
 
 
-public function reset_user_pass($id) {            
+public function reset_user_pass() {            
     $salt = '#*seCrEt!@-*%';    
     $password = '123456';
     $user_id = mysql_real_escape_string($_POST['user_id']);        
     $value=(md5($salt . $password));    
     $sql = "update `user`set `password`='$value' where `id`='$user_id'";        
+    $q_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->execute($sql);
+    //$this->db->query($sql);    
+}
+
+
+public function new_reset_user_pass($id) { 
+echo "$id";                
+    $password = '123456';
+    $new_pass = $this->_encrypt_password($password);        
+    $sql = "update `user`set `password`='$value' where `id`='$id'";        
     $q_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->execute($sql);
     //$this->db->query($sql);    
 }
