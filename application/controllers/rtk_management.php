@@ -1514,6 +1514,8 @@ public function rtk_manager_stocks($month=null) {
         }
 
         public function rtk_send_message() {
+            //ini_set('post_max_size', '-1');    
+
             $receipient_id = mysql_real_escape_string($_POST['id']);
             $subject = mysql_real_escape_string($_POST['subject']);
             $raw_message = mysql_real_escape_string($_POST['message']);             
@@ -1521,7 +1523,7 @@ public function rtk_manager_stocks($month=null) {
             $bcc_email = null;
             $bcc_email = 'ttunduny@gmail.com,tngugi@clintonhealthaccess.org,annchemu@gmail.com';
             $message = str_replace(array('\\n', "\r", "\n"), "<br />", $raw_message); 
-
+           // echo "$raw_message";die();
             include 'rtk_mailer.php';
             $newmail = new rtk_mailer();
 

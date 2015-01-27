@@ -271,8 +271,12 @@ $('#save_message_btn').click(function(e) {
 //var receipient = $("#receipient").val();
   var subject = $("#subject").val();
   tinyMCE.triggerSave();
+
+
+  //var myform = $('#compose').serialize();
      
-  var message = $("#new_message").val();  
+  var message = $("#new_message").val();
+  //alert(message);
   var id = $("#receipient_id").val();             
 //alert('Receipients='+receipients+' Subject'+subject+' Message'+message);
 
@@ -284,7 +288,7 @@ $('#save_message_btn').click(function(e) {
     alert("Data Loaded: " + data);                      
    // window.location = "<?php echo base_url() . 'rtk_management/rtk_manager_messages'; ?>";
   });
-}); 
+ }); 
 $('#clear_btn').click(function(e) {         
   e.preventDefault();                      
   $("#subject").val('');
