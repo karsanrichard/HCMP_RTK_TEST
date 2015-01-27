@@ -3117,7 +3117,9 @@ WHERE
     }
     public function partner_facilities() {
         $lastday = date('Y-m-d', strtotime("last day of previous month"));        
-        $partner_id = $this->session->userdata('partner_id');                        
+        $partner_id = $this->session->userdata('partner_id');       
+        $partner_details = Partners::get_one_partner($partner_id);        
+        $partner_name = $partner_details['name'];                         
         $sql = "select distinct counties.id, counties.county from  counties, facilities, districts where
             facilities.district = districts.id and facilities.partner = '$partner_id'  and districts.county = counties.id
              and facilities.rtk_enabled = '1'";
@@ -3150,11 +3152,91 @@ WHERE
         $data['counties_list'] = $res_counties;
         $data['facilities_count'] = $table_data_facilities; 
         $data['districts_count'] = $table_data_district;        
-        $data['title'] = 'RTK County Admin';
-        $data['banner_text'] = "RTK County Admin: Counties in Aphia Rift Region";
+        $data['title'] = 'RTK Partner Admin';
+        $data['banner_text'] = "RTK Partner Admin: Counties in $partner_name";
         $data['content_view'] = "rtk/rtk/partner/districts_v";
         $this->load->view("rtk/template", $data);        
     }
+
+
+     public function partner_pending_facilities() {
+        $partner = $this->session->userdata('partner_id');         
+        $partner_details = Partners::get_one_partner($partner);        
+        $partner_name = $partner_details['name'];  
+
+        $month = $this->session->userdata('Month');
+        if ($month == '') {
+            $month = date('mY', strtotime('-1 month'));
+        }
+        $year = substr($month, -4);
+        $month = substr_replace($month, "", -4);
+        $date = date('F-Y', mktime(0, 0, 0, $month, 1, $year));       
+        $pending_facilities = $this->rtk_facilities_not_reported(NULL, $countyid,NULL,NULL, $year,$month,$partner);
+        $new_pending_facilities = array();                        
+        $data['pending_facility'] = $pending_facilities;
+        $data['title'] = 'RTK Partner Admin Non-Reports Facilities';
+        $data['banner_text'] = "RTK Partner Admin: Facilties that did not Report under $partner_name Region";
+        $data['content_view'] = "rtk/rtk/partner/partner_non_reporting";
+        $this->load->view("rtk/template", $data);
+    }
+
+
+
+    public function partner_facilities_reports() {
+
+            $partner = $this->session->userdata('partner_id');          
+            $partner_details = Partners::get_one_partner($partner);        
+            $partner_name = $partner_details['name'];                   
+            date_default_timezone_set('EUROPE/moscow');
+            $lastday = date('Y-m-d', strtotime("last day of previous month"));            
+            $sql = "SELECT 
+                    lab_commodity_orders.id,
+                    lab_commodity_orders.facility_code,
+                    lab_commodity_orders.compiled_by,
+                    lab_commodity_orders.order_date,
+                    lab_commodity_orders.district_id,
+                    districts.district,
+                    facilities.facility_name,
+                    facilities.facility_code
+                FROM
+                    lab_commodity_orders,
+                    facilities,
+                    districts   
+                WHERE
+                        facilities.partner = '$partner'    
+                        AND facilities.district = districts.id
+                        AND lab_commodity_orders.facility_code = facilities.facility_code        
+                ORDER BY `lab_commodity_orders`.`order_date` DESC , `lab_commodity_orders`.`district_id` ASC";            
+            $res = $this->db->query($sql)->result_array();
+            $data['reports'] = $res;            
+            $data['title'] = 'RTK Partner Admin Reports';
+            $data['banner_text'] = "RTK Partner Admin: Available Reports for $partner_name Region";
+            $data['content_view'] = "rtk/rtk/partner/partner_reports";
+            $this->load->view("rtk/template", $data);
+        }
+
+    public function partner_users($sk = null) {
+        $partner = $this->session->userdata('partner_id');          
+        $partner_details = Partners::get_one_partner($partner);        
+        $partner_name = $partner_details['name'];     
+
+        $q = "SELECT user.fname,user.lname,user.email,user.id AS id,user.telephone,districts.id AS district_id,districts.district
+            FROM
+                user,
+                districts
+            WHERE
+                user.district = districts.id
+                    AND user.partner = '$partner'"; 
+        
+        
+        $res = $this->db->query($q)->result_array();        
+        $data['users'] = $res;        
+        $data['title'] = 'RTK Partner Admin Users';
+        $data['banner_text'] = "RTK Partner Admin: Users Under $partner_name Region";
+        $data['content_view'] = "rtk/rtk/partner/partner_users";
+        $this->load->view("rtk/template", $data);
+    }
+
     public function partner_commodity_usage() {
 		$partner = $this->session->userdata('partner_id');          
         $commodity = $this->session->userdata('commodity_id');          
@@ -3279,13 +3361,13 @@ function partner_commodity_percentages($partner, $commodity, $month) {
         select 
     extract(YEAR_MONTH from lab_commodity_details.created_at) as current_month,
     lab_commodity_details.commodity_id,
-    lab_commodity_details.q_requested,
-    lab_commodity_details.beginning_bal,
-    lab_commodity_details.q_received,
-    lab_commodity_details.no_of_tests_done,
-    lab_commodity_details.losses,
-    lab_commodity_details.closing_stock,
-    lab_commodity_details.q_received,
+    sum(lab_commodity_details.q_requested) as q_requested ,
+    sum(lab_commodity_details.beginning_bal) as beginning_bal,
+    sum(lab_commodity_details.q_received) as q_received,
+    sum(lab_commodity_details.no_of_tests_done) as no_of_tests_done ,
+    sum(lab_commodity_details.losses) as losses,
+    sum(lab_commodity_details.closing_stock) as closing_stock,
+    sum(lab_commodity_details.q_received) as q_received,
     facilities.partner
 from
     facilities,
@@ -3296,9 +3378,10 @@ where
         and lab_commodity_details.facility_code = facilities.facility_code
         and lab_commodity_details.commodity_id = lab_commodities.id
         AND lab_commodities.id ='$commodity'
+        and lab_commodity_details.created_at between '2014-02-01' and '2015-01-31'
 group by extract(YEAR_MONTH from lab_commodity_details.created_at)";
         $query = $this->db->query($q)->result_array();
-        // echo "<pre>";print_r($query);die;
+        //echo "$q";die;
 
         // $sql = $this->db->select('count(id) as county_facility')->get_where('facilities', array('partner' =>7))->result_array();
         // foreach ($sql as $key => $value) {
@@ -5220,7 +5303,7 @@ $res = $this->db->query($common_q)->result_array();
 return $res;
 }
 
-public function rtk_facilities_not_reported($zone = NULL, $county = NULL, $district = NULL, $facility = NULL, $year = NULL, $month = NULL) {
+public function rtk_facilities_not_reported($zone = NULL, $county = NULL, $district = NULL, $facility = NULL, $year = NULL, $month = NULL,$partner= NULL) {
 
     if (!isset($month)) {
         $month_text = date('mY', strtotime('-1 month'));
@@ -5238,6 +5321,7 @@ public function rtk_facilities_not_reported($zone = NULL, $county = NULL, $distr
     $conditions = '';
     $conditions = (isset($zone)) ? "AND facilities.Zone = 'Zone $zone'" : '';
     $conditions = (isset($county)) ? $conditions . " AND counties.id = $county" : $conditions . ' ';
+    $conditions = (isset($partner)) ? $conditions . " AND facilities.partner = $partner" : $conditions . ' ';
     $conditions = (isset($district)) ? $conditions . " AND districts.id = $district" : $conditions . ' ';
     $conditions = (isset($facility)) ? $conditions . " AND facilities.facility_code = $facility" : $conditions . ' ';
 

@@ -28,9 +28,9 @@
         <li><a href="<?php echo base_url().'rtk_management/partner_facilities' ?>">Facilities</a></li>       
         <li><a href="<?php echo base_url().'rtk_management/partner_stock_status'?>">Stock Status</a></li>
         <li><a href="<?php echo base_url().'rtk_management/partner_commodity_usage'?>">Commodity Usage</a></li>
-        <li><a href="<?php echo base_url().'rtk_management/partner_commodity_usage'?>">Reports</a></li>
-        <li><a href="<?php echo base_url().'rtk_management/partner_commodity_usage'?>">Non-Reported Facilities</a></li>
-        <li><a href="<?php echo base_url().'rtk_management/partner_commodity_usage'?>">Users</a></li>
+        <li><a href="<?php echo base_url().'rtk_management/partner_facilities_reports'?>">Reports</a></li>
+        <li><a href="<?php echo base_url().'rtk_management/partner_pending_facilities'?>">Non-Reported Facilities</a></li>
+        <li><a href="<?php echo base_url().'rtk_management/partner_users'?>">Users</a></li>
     </ul>
 </div>
 
