@@ -1520,8 +1520,7 @@ public function rtk_manager_stocks($month=null) {
             $attach_file = null;
             $bcc_email = null;
             $bcc_email = 'ttunduny@gmail.com,tngugi@clintonhealthaccess.org,annchemu@gmail.com';
-            $message = str_replace(array('\\n', "\r", "\n"), "<br />", $raw_message); 
-
+            $message = str_replace(array('\\n', "\r", "\n"), "<br />", $raw_message);             
             include 'rtk_mailer.php';
             $newmail = new rtk_mailer();
 
