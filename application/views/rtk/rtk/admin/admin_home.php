@@ -1,7 +1,7 @@
 <?php 
     include('admin_links.php');
     include_once 'ago_time.php';
-    $reporting_percentage = ($cumulative_result/$total_facilities)*100;
+    $reporting_percentage = ($reported/$total_facilities)*100;
     $reporting_percentage = number_format($reporting_percentage, $decimals = 0);
     $current_month = date('mY', time());     
 ?>

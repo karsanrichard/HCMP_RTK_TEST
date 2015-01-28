@@ -1242,7 +1242,7 @@ public function rtk_manager($month=null) {
         $year = substr($month, -4);
         $month = substr($month, 0,2);            
         $monthyear = $year . '-' . $month . '-1';         
-
+        $db_month = $month.$year;
     }else{
         $month = $this->session->userdata('Month');
         if ($month == '') {
@@ -1251,10 +1251,12 @@ public function rtk_manager($month=null) {
         $year = substr($month, -4);
         $month = substr_replace($month, "", -4);
         $monthyear = $year . '-' . $month . '-1';
+        $db_month = $month.$year;
     }
-    $res = $this->db->query('select count(id) as total_facilities from facilities where rtk_enabled=1');
-    $result = $res->result_array();
-    $data['total_facilities'] = $result[0]['total_facilities'];
+
+    $res = $this->db->query("SELECT sum(facilities) as facilities, sum(reported) as reported FROM `rtk_county_percentage` WHERE month='$db_month'");
+    $result = $res->result_array();    
+    $data['total_facilities'] = $result[0]['facilities'];
     $englishdate = date('F, Y', strtotime($monthyear));
     $reporting_rates = $this->reporting_rates(null,$year,$month);       
     $xArr = array();
@@ -1270,8 +1272,9 @@ public function rtk_manager($month=null) {
         array_push($yArr, $order_date);
         array_push($xArr, $count);
     }  
-
+   // echo "$cumulative_result";die();
     $data['cumulative_result'] = $cumulative_result;
+    $data['reported'] = $result[0]['reported'];
     $data['jsony'] = json_encode($yArr);
     $data['jsonx'] = str_replace('"', "", json_encode($xArr));
     $data['jsonx1'] = str_replace('"', "", json_encode($xArr1));
@@ -1952,6 +1955,7 @@ public function rtk_manager_stocks($month=null) {
             array_push($months_texts,$month_text);
             $sql = "select sum(reported) as reported, sum(facilities) as total, month from rtk_county_percentage 
                 where month ='$month'";
+
             $res_trend = $this->db->query($sql)->result_array();            
             foreach ($res_trend as $key => $value) {
                 $reported = $value['reported'];
@@ -6762,7 +6766,44 @@ public function clean_data($month=null){
 
 }   
 
+
+public function new_get_duplicates($month=null){
+    if(isset($month)){           
+        $year = substr($month, -4);
+        $month = substr($month, 0,2);            
+        $first_date = $year . '-' . $month . '-01';         
+        $last_date = $year . '-' . $month . '-31';         
+
+    } 
+
+    $commodities = array(1,2,3,4,5,6);
+    for ($i=0; $i <count($commodities) ; $i++) { 
+        $comm_id = $commodities[$i];
+        $sql = "select id,facility_code,order_id,count(order_id) as total from lab_commodity_details 
+        where commodity_id='$comm_id' and created_at between '$first_date' and '$last_date' group by order_id having total>1";
+        $res_order = $this->db->query($sql)->result_array();
+        $count = count($res_order);
+        //echo "$sql| $count<br/>";
+        if($count!=0){
+            $orders = array();
+            foreach ($res_order as $key => $value) {
+                $mfl = $value['facility_code'];
+                $order = $value['order_id'];
+                //array_push($facils, $mfl);
+                array_push($orders, $order);
+            }
+            for ($a=1; $a <count($orders); $a++) { 
+                $id = $orders[$a];
+                $sql2 ="DELETE FROM `lab_commodity_details` WHERE order_id='$id' and commodity_id='$comm_id' and created_at between '$first_date' and '$last_date'";  
+                echo "$sql2<br/>";              
+                $this->db->query($sql2);
+            }      
+        }
+    }
    
+
+}     
+
 public function get_duplicates($month=null){
         if(isset($month)){           
             $year = substr($month, -4);
