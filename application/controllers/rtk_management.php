@@ -6778,7 +6778,7 @@ public function get_duplicates($month=null){
         AND '$last_date'
         GROUP BY lab_commodity_details.facility_code having total>6
         ORDER BY facility_code,order_id,COUNT( lab_commodity_details.facility_code ) DESC";              
-        //echo "$sql";die();
+        //echo "$sql";die();sour
         $result = $this->db->query($sql)->result_array();
         
         $facils = array();

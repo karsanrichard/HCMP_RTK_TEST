@@ -138,7 +138,11 @@ foreach ($res->result_array() as $key => $value) {
                 	  
                 			foreach ($reports as $value) {
                                 $date = $value['order_date'];
-                				$order_date = date('F-Y', strtotime($date);
+                                $d = new DateTime("$date");    
+                                $d->modify( '-1 month' );
+                                $order_date =  $d->format( 'F-Y'); 
+                                //$order_date = date('F-Y',strtotime('last month',$date));
+                				//$order_date = date('F-Y', strtotime($date);
                 				$mfl = $value['facility_code'];
 	                			$facility = $value['facility_name'];	                			
 	                			$district = $value['district'];
