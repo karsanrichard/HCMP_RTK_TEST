@@ -3078,27 +3078,7 @@ WHERE
         $County = $county_name[0]['county'];
 
         $reports = array();
-        $tdata = ' ';
-        foreach ($districts as $value) {
-            $q = $this->db->query('SELECT lab_commodity_orders.id, lab_commodity_orders.facility_code, lab_commodity_orders.compiled_by, lab_commodity_orders.order_date, lab_commodity_orders.district_id, districts.id as distid, districts.district, facilities.facility_name, facilities.facility_code FROM districts, lab_commodity_orders, facilities WHERE lab_commodity_orders.district_id = districts.id AND facilities.facility_code = lab_commodity_orders.facility_code AND districts.id = ' . $value['id'] . '');
-            $res = $q->result_array();
-            foreach ($res as $values) {
-                date_default_timezone_set('EUROPE/Moscow');
-                $order_date = date('F', strtotime($values['order_date']));
-                $tdata .= '<tr>
-                <td>' . $order_date . '</td>
-                <td>' . $values['facility_code'] . '</td>
-                <td>' . $values['facility_name'] . '</td>
-                <td>' . $values['district'] . '</td>
-                <td>' . $values['order_date'] . '</td>
-                <td>' . $values['compiled_by'] . '</td>
-                <td><a href="' . base_url() . 'rtk_management/lab_order_details/' . $values['id'] . '">View</a></td>
-                <tr>';
-            }
-            if (count($res) > 0) {
-                array_push($reports, $res);
-            }
-        }
+        
         $month = $this->session->userdata('Month');
         if ($month == '') {
             $month = date('mY', strtotime('-1 month'));
@@ -3112,7 +3092,7 @@ WHERE
         $englishdate = date('F, Y', strtotime($monthyear));
         $data['graphdata'] = $this->partner_reporting_percentages($partner_id, $year, $month);
         //$data['county_summary'] = $this->_requested_vs_allocated($year, $month, $countyid);
-        $data['tdata'] = $tdata;
+        
         $data['county'] = $County;
         $data['title'] = 'RTK Partner';
         $data['banner_text'] = "RTK Partner : $partner_name";
@@ -3295,8 +3275,14 @@ WHERE
 
     }
     function partner_reporting_percentages($partner, $year, $month) {    
+
+
+        $twelve_months_ago =  date("Y-m-d", strtotime( date( 'Y-m-01' )." -12 months"));
+        $now = $year.'-'.$month.'-31';       
+
+
         $q = "SELECT 
-                count(lab_commodity_orders.id) as total,
+                count(distinct lab_commodity_orders.facility_code) as total,
                 extract(YEAR_MONTH FROM lab_commodity_orders.order_date) as current_month,
                 facilities.partner,
                 facilities.facility_code
@@ -3306,15 +3292,17 @@ WHERE
             WHERE
                 facilities.facility_code = lab_commodity_orders.facility_code
                     AND facilities.partner = '$partner'
+                    and lab_commodity_orders.order_date between '$twelve_months_ago' and '$now'
             group by extract(YEAR_MONTH FROM lab_commodity_orders.order_date)";
-            
+        
+        //echo "$q";die();
         $query = $this->db->query($q);
 
         $sql = $this->db->select('count(id) as county_facility')->get_where('facilities', array('partner' =>$partner))->result_array();
         foreach ($sql as $key => $value) {
            $facilities = intval($value['county_facility']);
         }
-       
+               
 
         $month = array();
         $reported = array();
@@ -3592,10 +3580,13 @@ group by extract(YEAR_MONTH from lab_commodity_details.created_at)";
     }
 function partner_stock_percentages($partner, $month) {    
         //$q = 'select extract(YEAR_MONTH from lab_commodity_details.created_at)as current_month, lab_commodity_details.commodity_id, lab_commodity_details.q_requested, lab_commodity_details.beginning_bal,lab_commodity_details.q_received,lab_commodity_details.no_of_tests_done,lab_commodity_details.losses,lab_commodity_details.closing_stock,lab_commodity_details.q_received, facilities.partner from facilities, lab_commodity_details where facilities.partner = 7 group by extract(YEAR_MONTH from lab_commodity_details.created_at) ';
+        $twelve_months_ago =  date("Y-m-d", strtotime( date( 'Y-m-01' )." -12 months"));
+        $now = $year.'-'.$month.'-31';
+
         $q = "select extract(YEAR_MONTH from lab_commodity_details.created_at) as current_month,
                 lab_commodities.commodity_name,
                 lab_commodity_details.commodity_id,
-                lab_commodity_details.losses,
+                sum(lab_commodity_details.losses) as losses,
                 facilities.partner
             from
                 facilities,
@@ -3604,7 +3595,9 @@ function partner_stock_percentages($partner, $month) {
             where
                 facilities.partner = '$partner'
                     and lab_commodity_details.facility_code = facilities.facility_code
-                    and lab_commodity_details.commodity_id = lab_commodities.id";
+                    and lab_commodity_details.commodity_id = lab_commodities.id
+                    and lab_commodity_details.created_at between '$twelve_months_ago' and NOW()";
+
          $q_screen_det   = $q." and commodity_id = 1 
             group by extract(YEAR_MONTH from lab_commodity_details.created_at)";
         $query = $this->db->query($q_screen_det)->result_array();
@@ -3721,10 +3714,12 @@ function partner_stock_percentages($partner, $month) {
     } 
 function partner_stock_level_percentages($partner, $month) {    
         //$q = 'select extract(YEAR_MONTH from lab_commodity_details.created_at)as current_month, lab_commodity_details.commodity_id, lab_commodity_details.q_requested, lab_commodity_details.beginning_bal,lab_commodity_details.q_received,lab_commodity_details.no_of_tests_done,lab_commodity_details.losses,lab_commodity_details.closing_stock,lab_commodity_details.q_received, facilities.partner from facilities, lab_commodity_details where facilities.partner = 7 group by extract(YEAR_MONTH from lab_commodity_details.created_at) ';
+        $twelve_months_ago =  date("Y-m-d", strtotime( date( 'Y-m-01' )." -12 months"));        
+
         $q = "select extract(YEAR_MONTH from lab_commodity_details.created_at) as current_month,
                 lab_commodities.commodity_name,
                 lab_commodity_details.commodity_id,
-                lab_commodity_details.closing_stock,
+                sum(lab_commodity_details.closing_stock) as closing_stock,
                 facilities.partner
             from
                 facilities,
@@ -3733,7 +3728,8 @@ function partner_stock_level_percentages($partner, $month) {
             where
                 facilities.partner = '$partner'
                     and lab_commodity_details.facility_code = facilities.facility_code
-                    and lab_commodity_details.commodity_id = lab_commodities.id";
+                    and lab_commodity_details.commodity_id = lab_commodities.id
+                    and lab_commodity_details.created_at between '$twelve_months_ago' and NOW()";
          $q_screen_det   = $q." and commodity_id = 1 
             group by extract(YEAR_MONTH from lab_commodity_details.created_at)";
         $query = $this->db->query($q_screen_det)->result_array();
@@ -3841,10 +3837,12 @@ function partner_stock_level_percentages($partner, $month) {
     }    
     function partner_stock_expiring_percentages($partner) {    
         //$q = 'select extract(YEAR_MONTH from lab_commodity_details.created_at)as current_month, lab_commodity_details.commodity_id, lab_commodity_details.q_requested, lab_commodity_details.beginning_bal,lab_commodity_details.q_received,lab_commodity_details.no_of_tests_done,lab_commodity_details.losses,lab_commodity_details.closing_stock,lab_commodity_details.q_received, facilities.partner from facilities, lab_commodity_details where facilities.partner = 7 group by extract(YEAR_MONTH from lab_commodity_details.created_at) ';
+        $twelve_months_ago =  date("Y-m-d", strtotime( date( 'Y-m-01' )." -12 months"));        
+
         $q = "select extract(YEAR_MONTH from lab_commodity_details.created_at) as current_month,
                 lab_commodities.commodity_name,
                 lab_commodity_details.commodity_id,
-                lab_commodity_details.q_expiring,
+                sum(lab_commodity_details.q_expiring) as q_expiring,
                 facilities.partner
             from
                 facilities,
@@ -3853,7 +3851,8 @@ function partner_stock_level_percentages($partner, $month) {
             where
                 facilities.partner = '$partner'
                     and lab_commodity_details.facility_code = facilities.facility_code
-                    and lab_commodity_details.commodity_id = lab_commodities.id";
+                    and lab_commodity_details.commodity_id = lab_commodities.id
+                    and lab_commodity_details.created_at between '$twelve_months_ago' and NOW()";
          $q_screen_det   = $q." and commodity_id = 1 
             group by extract(YEAR_MONTH from lab_commodity_details.created_at)";
         $query = $this->db->query($q_screen_det)->result_array();
@@ -4123,14 +4122,13 @@ public function partner_county_profile($district) {
         and districts.county = counties.id";          
        $mycounties = $this->db->query($sql_counties)->result_array();       
 
-       $data['district_balances_current'] = $this->partner_county_totals($year_current, $previous_month, $district);
-       $data['district_balances_previous'] = $this->partner_county_totals($year_previous, $previous_month, $district);
-       $data['district_balances_previous_1'] = $this->partner_county_totals($year_previous_1, $previous_month_1, $district);
-       $data['district_balances_previous_2'] = $this->partner_county_totals($year_previous_2, $previous_month_2, $district);
+       $data['district_balances_current'] = $this->partner_county_totals($year_current, $previous_month, $partner_id);
+       $data['district_balances_previous'] = $this->partner_county_totals($year_previous, $previous_month, $partner_id);
+       $data['district_balances_previous_1'] = $this->partner_county_totals($year_previous_1, $previous_month_1, $partner_id);
+       $data['district_balances_previous_2'] = $this->partner_county_totals($year_previous_2, $previous_month_2, $partner_id);
 
 
-       $data['district_summary'] = $district_summary;
-
+       $data['district_summary'] = $district_summary;       
        $data['counties_list'] = $mycounties;
        $data['facilities']= $facilities;        
 
@@ -4723,13 +4721,19 @@ function facility_amc_compute($zone) {
         $month = date('mY',time());  
         $q = "select * from  rtk_county_percentage where month='$month' and county_id = '$county'";
         $q1 = "select * from rtk_district_percentage where month='$month' and district_id = '$district'";
+        $q2 = "select * from rtk_partner_percentage where month='$month' and partner_id = '$partner'";
         $res_county = $this->db->query($q)->result_array();        
         $res_district = $this->db->query($q1)->result_array();
+        $res_partner = $this->db->query($q2)->result_array();
         if(count($res_county)==0){
             $this->get_district_percentages_month($month);
         }
         if(count($res_district)==0) {
             $this->get_county_percentages_month($month);
+        }
+
+        if(count($res_partner)==0) {
+            $this->get_partner_percentages_month($month);
         }
 
 
@@ -5296,9 +5300,6 @@ function partner_county_totals($year, $month, $partner = NULL) {
     AND lab_commodities.id in (select lab_commodities.id from lab_commodities,lab_commodity_categories 
         where lab_commodities.category = lab_commodity_categories.id and lab_commodity_categories.active = '1')";
 
-if (isset($county)) {
-    $common_q.= ' AND districts.county = counties.id and counties.id=' . $county;
-}
 
 $common_q.= ' group by lab_commodities.id';
 
@@ -5500,6 +5501,7 @@ public function allocation($zone = NULL, $county = NULL, $district = NULL, $faci
         }        
         $this->update_county_percentages_month($month);
         $this->update_district_percentages_month($month);
+        $this->update_partner_percentages_month($month);
     }
 function update_county_percentages_month($month=null){
     if(isset($month)){           
@@ -5568,8 +5570,6 @@ function update_partner_percentages_month($month=null){
             $facility_count = $value['facilities'];
         }
 
-
-
         $reports = $this->rtk_summary_partner($id,$year,$month);                
         $reported = $reports['reported']; 
         $total_facilities = $reports['total_facilities']; 
@@ -5625,10 +5625,9 @@ public function rtk_summary_partner($partner, $year, $month) {
             WHERE
                 lab_commodity_orders.facility_code = facilities.facility_code
                     AND facilities.partner = '$partner'       
-                    AND lab_commodity_orders.order_date    BETWEEN '$first_day_current_month'  AND '$last_day_current_month'
+                    AND lab_commodity_orders.order_date  BETWEEN '$first_day_current_month'  AND '$last_day_current_month'
             and facilities.rtk_enabled= '1'
-            group by lab_commodity_orders.facility_code";
-        
+            group by lab_commodity_orders.facility_code";        
         $q_res1 = $this->db->query($q1);
         $new_q_res1 = $q_res1 ->result_array();
         $total_reported_facilities = $q_res1->num_rows();        
@@ -5677,6 +5676,7 @@ public function rtk_summary_partner($partner, $year, $month) {
             $late_percentage = $reported_percentage;
         }
         $returnable = array('reporting_month'=>$reporting_month,'Month' => $text_month, 'Year' => $year, 'district' => $districtname, 'district_id' => $district_id, 'total_facilities' => $total_reporting_facilities, 'reported' => $total_reported_facilities, 'reported_percentage' => $reported_percentage, 'nonreported' => $nonreported, 'nonreported_percentage' => $non_reported_percentage, 'late_reports' => $late_reporting, 'late_reports_percentage' => $late_percentage);
+        
        return $returnable;
        
     }
@@ -5713,6 +5713,33 @@ public function rtk_summary_partner($partner, $year, $month) {
         $this->db->query($q);
     }
 }
+
+function get_partner_percentages_month($month=null){
+    if(isset($month)){           
+        $year = substr($month, -4);
+        $month = substr($month, 0,2);            
+        $monthyear = $month.$year;                    
+
+    }
+    
+    $sql = "select id from partners";
+    $result = $this->db->query($sql)->result_array();
+     foreach ($result as $key => $value) {
+        $id = $value['id'];               
+        $sql = "select count(facilities.facility_code) as facilities from  facilities where
+                facilities.partner = '$id' and facilities.rtk_enabled = 1";        
+        $facilities = $this->db->query($sql)->result_array();            
+        foreach ($facilities as $key => $value) {
+            $facility_count = $value['facilities'];
+        }
+        //$percentage = $this->rtk_summary_county($id,$year,$month);        
+        //$reported = $percentage['reported']; 
+        $reported = 0;
+        $q = "insert into rtk_partner_percentage (partner_id, facilities,reported,month) values ($id,$facility_count,$reported,'$monthyear')";
+        $this->db->query($q);
+    }
+}
+
 function get_district_percentages_month($month=null){
     if(isset($month)){           
         $year = substr($month, -4);

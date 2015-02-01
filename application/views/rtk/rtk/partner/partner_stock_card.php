@@ -175,25 +175,44 @@ table tr{
         			<td align="center" style="padding:8px;font-size:13px" ><b>Days out of stock</b></td>
         		</thead>
         		<tbody>
-        		<?php foreach ($result as $key => $val) {
-        			if ($i ==0) {
-					 echo "<tr>";
-        		 }?>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['commodity_name']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['beg_bal']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_received']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_used']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['test_done']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['losses']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['closing_stock']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_requested']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_expiring']; ?></td>
-        			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['days_out_of_stock']; ?></td> 
-				<?php $i++; ?>
+        		<?php 
+                    $count = count($result);
+                    if($count==0){?>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    <?php }else{
 
-			</tr>
+                    
 
-			<?php }; ?>
+                    foreach ($result as $key => $val) {
+            			if ($i ==0) {
+    					 echo "<tr>";
+            		 }?>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['commodity_name']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['beg_bal']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_received']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_used']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['test_done']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['losses']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['closing_stock']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_requested']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['qty_expiring']; ?></td>
+            			<td align="center" style="padding:8px;font-size:13px;"><?php echo $val['days_out_of_stock']; ?></td> 
+    				<?php $i++; ?>
+
+			         </tr>
+
+			<?php } } ?>
      			
         		</tbody>
         	</table>
