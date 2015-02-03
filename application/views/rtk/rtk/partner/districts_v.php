@@ -142,7 +142,7 @@ table tr{
                     for ($i=0; $i <$count_counties ; $i++) {
                         $county_id = $counties_list[$i]['id'];
                         $county = $counties_list[$i]['county'];
-                        $action = base_url() . 'rtk_management/partner_county_profile/' . $county_id;
+                        $action = base_url() . 'rtk_management/partner_county_profile/' . $county_id.'/'.$current_partner;
                      ?> 
                         <tr>
                             <td><?php echo $county;?></td>

@@ -103,21 +103,34 @@
                                 <tbody>
                                 
                                 <?php 
-
-                                foreach ($district_balances_current as $key => $value) {?>
-                                       <tr><td><?php echo $value['commodity_name'];?></td>
-                                        <td><?php echo $value['sum_opening']; ?></td>
-                                        <td><?php echo $value['sum_received']; ?></td>
-                                        <td><?php echo $value['sum_used']; ?></td>
-                                        <td><?php echo $value['sum_tests']; ?></td>
-                                        <td><?php echo $value['sum_losses']; ?></td>
-                                        <td><?php echo $value['sum_closing_bal']; ?></td>
-                                        <td><?php echo $value['sum_requested']; ?></td>
-                                        <td><?php echo $value['sum_expiring']; ?></td>
-                                        <td><?php echo $value['sum_days']; ?></td>
-                                        </tr>
-                                <?php }
-
+                                $count = count($district_balances_current);
+                                if($count==0){?>
+                                  <tr>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>                                        
+                                  </tr>
+                                <?php }else{
+                                  foreach ($district_balances_current as $key => $value) {?>
+                                         <tr><td><?php echo $value['commodity_name'];?></td>
+                                          <td><?php echo $value['sum_opening']; ?></td>
+                                          <td><?php echo $value['sum_received']; ?></td>
+                                          <td><?php echo $value['sum_used']; ?></td>
+                                          <td><?php echo $value['sum_tests']; ?></td>
+                                          <td><?php echo $value['sum_losses']; ?></td>
+                                          <td><?php echo $value['sum_closing_bal']; ?></td>
+                                          <td><?php echo $value['sum_requested']; ?></td>
+                                          <td><?php echo $value['sum_expiring']; ?></td>
+                                          <td><?php echo $value['sum_days']; ?></td>
+                                          </tr>
+                                  <?php }
+                                  }
                                 ?>
                                     
                                     
@@ -144,11 +157,11 @@
     $closing_c =   str_replace("\"", " ",json_encode($district_balances_current[0]['sum_closing_bal']));
     $allocated_c =  str_replace("\"", " ",json_encode($district_balances_current[0]['sum_received']));
 
-    $opening_c1 =  str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_opening']));
-    $used_c1 =   str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_used']));
-    $tests_c1 =   str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_tests']));
-    $closing_c1 =   str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_closing_bal']));
-    $allocated_c1 =  str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_received']));
+    $opening_c1 =  str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_opening']));
+    $used_c1 =   str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_used']));
+    $tests_c1 =   str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_tests']));
+    $closing_c1 =   str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_closing_bal']));
+    $allocated_c1 =  str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_received']));
 
     $opening_c2 =  str_replace("\"", " ",json_encode($district_balances_previous_2[0]['sum_opening']));
     $used_c2 =   str_replace("\"", " ",json_encode($district_balances_previous_2[0]['sum_used']));

@@ -115,7 +115,7 @@ table{
                 },
                 credits: false,
                 series: [{
-                    name: 'Culmulative Trend',
+                    name: 'Cumulative Trend',
                     data: <?php echo $jsonx1; ?>
                 },
                 {
