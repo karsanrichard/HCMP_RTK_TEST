@@ -157,11 +157,11 @@
     $closing_c =   str_replace("\"", " ",json_encode($district_balances_current[0]['sum_closing_bal']));
     $allocated_c =  str_replace("\"", " ",json_encode($district_balances_current[0]['sum_received']));
 
-    $opening_c1 =  str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_opening']));
-    $used_c1 =   str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_used']));
-    $tests_c1 =   str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_tests']));
-    $closing_c1 =   str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_closing_bal']));
-    $allocated_c1 =  str_replace("\"", " ",json_encode($district_balances_previous[0]['sum_received']));
+    $opening_c1 =  str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_opening']));
+    $used_c1 =   str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_used']));
+    $tests_c1 =   str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_tests']));
+    $closing_c1 =   str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_closing_bal']));
+    $allocated_c1 =  str_replace("\"", " ",json_encode($district_balances_previous_1[0]['sum_received']));
 
     $opening_c2 =  str_replace("\"", " ",json_encode($district_balances_previous_2[0]['sum_opening']));
     $used_c2 =   str_replace("\"", " ",json_encode($district_balances_previous_2[0]['sum_used']));

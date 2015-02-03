@@ -1945,6 +1945,8 @@ public function rtk_manager_stocks($month=null) {
     }
     public function allocation_trend() {        
         
+
+        
         $months_texts = array();
         $percentages = array();
 
@@ -3134,6 +3136,7 @@ WHERE
         }
 
         $data['counties_list'] = $res_counties;
+        $data['current_partner'] = $partner_id;
         $data['facilities_count'] = $table_data_facilities; 
         $data['districts_count'] = $table_data_district;        
         $data['title'] = 'RTK Partner Admin';
@@ -4059,12 +4062,13 @@ function partner_stock_level_percentages($partner, $month) {
         return $data;
     }   
 
-public function partner_county_profile($district) {
+public function partner_county_profile($county,$partner) {
         $data = array();
-        $partner_id = $this->session->userdata('partner_id');      
+        //$partner_id = $this->session->userdata('partner_id');      
+        $partner_id = $partner;
         $sql_facilities = "select * from facilities, districts,counties 
         where facilities.district = districts.id and facilities.partner = '$partner_id' 
-        and districts.county = counties.id and counties.id = '$district' ";        
+        and districts.county = counties.id and counties.id = '$county' ";        
         $facilities = $this->db->query($sql_facilities)->result_array();        
       
         $lastday = date('Y-m-d', strtotime("last day of previous month"));
@@ -4080,7 +4084,7 @@ public function partner_county_profile($district) {
 
 
         $year_current = substr($current_month, -4);
-        $year_previous = date('Y', strtotime("last day of previous month"));
+        $year_previous = date('Y', strtotime("first day of previous month"));
         $year_previous_1 = substr($previous_month_1, -4);
         $year_previous_2 = substr($previous_month_2, -4);
 
@@ -4101,16 +4105,15 @@ public function partner_county_profile($district) {
         $m1 = date("F", strtotime($monthyear_previous_1));
         $m2 = date("F", strtotime($monthyear_previous_2));
 
-        $month_text = array($m2, $m1, $m0);
+        $month_text = array($m2, $m1, $m0);        
+        $district_summary = $this->partner_summary($county, $year_current, $current_month,$partner_id);
+        $district_summary_prev = $this->partner_summary($county, $year_previous, $previous_month,$partner_id);
+        $district_summary1 = $this->partner_summary($county, $year_previous_1, $previous_month_1,$partner_id);
+        $district_summary2 = $this->partner_summary($county, $year_previous_2, $previous_month_2,$partner_id);
 
-        $district_summary = $this->partner_summary($district, $year_current, $current_month,$partner_id);
-        $district_summary_prev = $this->partner_summary($district, $year_previous, $previous_month,$partner_id);
-        $district_summary1 = $this->partner_summary($district, $year_previous_1, $previous_month_1,$partner_id);
-        $district_summary2 = $this->partner_summary($district, $year_previous_2, $previous_month_2,$partner_id);
 
-
-        $county_id = districts::get_county_id($district);
-        $county_name = counties::get_county_name($district);
+        $county_id = districts::get_county_id($county);
+        $county_name = counties::get_county_name($county);
 
        // $cid = $this->db->select('districts.county')->get_where('districts', array('id' =>$district))->result_array();
 
