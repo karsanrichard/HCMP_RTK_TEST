@@ -5626,7 +5626,7 @@ public function rtk_summary_partner($partner, $year, $month) {
                 lab_commodity_orders.facility_code = facilities.facility_code
                     AND facilities.partner = '$partner'       
                     AND lab_commodity_orders.order_date    BETWEEN '$first_day_current_month'  AND '$last_day_current_month'
-            and facilities.rtk_enabled= '1'
+                    and facilities.rtk_enabled= '1'
             group by lab_commodity_orders.facility_code";
         
         $q_res1 = $this->db->query($q1);
