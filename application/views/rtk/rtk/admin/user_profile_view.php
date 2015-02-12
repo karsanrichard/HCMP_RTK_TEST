@@ -56,7 +56,15 @@ foreach ($all_subcounties as $value) {
                 </p>
                 <p>
                 <a href="" id="<?php echo $user_id; ?>" class="btn btn-primary user_pass_reset" role="button">Reset Password</a>
-                <a href="#" class="btn btn-primary" role="button">Deactivate</a>
+                <?php 
+                    if($status==1){?>
+                    <a id="<?php echo $user_id; ?>" href="" class="btn btn-primary user_deactivate" role="button">Deactivate</a>
+                <?php }elseif($status==2){?>
+                    <a href=""  id="<?php echo $user_id; ?>"class="btn btn-primary user_reactivate" role="button">Activate</a>
+                <?php }
+
+                ?>
+                
                     <?php if ($user_details[0]['user_indicator'] == 'rtk_county_admin') { ?> 
                             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add_county">
                                 <span class="glyphicon glyphicon-plus"></span> Add County to <?php echo $full_name; ?>
@@ -173,17 +181,46 @@ foreach ($user_logs as $logs) {
 
         $('.user_pass_reset').click(function(e){
            $('.user_pass_reset').each(function () {
-            var user_id = this.id;            
-            alert(user_id);
-            $.post("<?php echo base_url() . 'rtk_management/reset_user_pass'; ?>", {
+            var user_id = this.id;                        
+            $.post("<?php echo base_url() . 'rtk_management/reset_password/'; ?>"+user_id, {
               user_id: user_id,                        
             }).done(function(data) {
-               alert("Data Loaded: " + data);                               
+               alert(data);                               
             }).error(function(xhr, status, error) {
                   var err = eval("(" + xhr.responseText + ")");
                   alert(err.Message);               
             });
         });
      });
+
+    $('.user_deactivate').click(function(e){
+           $('.user_deactivate').each(function () {
+            var user_id = this.id;                        
+            $.post("<?php echo base_url() . 'rtk_management/manage_user/0/'; ?>"+user_id, {
+              user_id: user_id,                        
+            }).done(function(data) {
+               alert(data);                               
+            }).error(function(xhr, status, error) {
+                  var err = eval("(" + xhr.responseText + ")");
+                  alert(err.Message);               
+            });
+        });
+        location.reload(true);
+     });
+    $('.user_reactivate').click(function(e){
+           $('.user_reactivate').each(function () {
+            var user_id = this.id;                        
+            $.post("<?php echo base_url() . 'rtk_management/manage_user/1/'; ?>"+user_id, {
+              user_id: user_id,                        
+            }).done(function(data) {
+               alert(data);                               
+            }).error(function(xhr, status, error) {
+                  var err = eval("(" + xhr.responseText + ")");
+                  alert(err.Message);               
+            });
+        });
+        location.reload(true);
+     });
+
     });
 </script>

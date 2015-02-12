@@ -264,26 +264,51 @@ public function edit_user_password($id) {
 }
 
 
-public function reset_user_pass() {            
+public function reset_user_password($user_id) {            
     $salt = '#*seCrEt!@-*%';    
-    $password = '123456';
-    $user_id = mysql_real_escape_string($_POST['user_id']);        
+    $password = '123456';    
     $value=(md5($salt . $password));    
     $sql = "update `user`set `password`='$value' where `id`='$user_id'";        
     $q_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->execute($sql);
-    //$this->db->query($sql);    
+   // $this->db->query($sql);    
+    echo "Password Reset Successful";
+}
+public function manage_user_state($a,$user_id) {            
+    if($a==0){
+    	$sql = "update `user`set `status`='2' where `id`='$user_id'";   
+    	$message = 'User Deactivated';
+    }elseif ($a==1) {
+    	$sql = "update `user`set `status`='1' where `id`='$user_id'";        
+    	$message = 'User Activated';
+    }    
+   
+    $q_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->execute($sql);
+   // $this->db->query($sql);    
+    echo $message;
 }
 
 
-public function new_reset_user_pass($id) { 
-echo "$id";                
+// public function new_reset_user_pass() { 
+//     $password = '123456';
+//     $new_pass = $this->_encrypt_password($password);        
+//     $sql = "update `user`set `password`='$new_pass' where `id`='$id'";        
+//     echo "$sql";
+//     //$q_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->execute($sql);
+//     $this->db->query($sql);    
+// }
+
+public function new_reset_user_pass() { 
+echo "Works";           die();
+    $salt = '#*seCrEt!@-*%';    
     $password = '123456';
-    $new_pass = $this->_encrypt_password($password);        
-    $sql = "update `user`set `password`='$value' where `id`='$id'";        
+    $user_id = $this->input->post('user_id');        
+    $value=(md5($salt . $password));    
+    $sql = "update `user` set `password`='$value' where `id`='$user_id'";        
+    echo "$sql";die();
     $q_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->execute($sql);
     //$this->db->query($sql);    
+    echo "Workds";
 }
-
 
 
 

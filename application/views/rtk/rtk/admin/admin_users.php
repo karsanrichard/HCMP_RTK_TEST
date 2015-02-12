@@ -183,6 +183,7 @@ foreach ($res_arr2 as $value) {
             <th>User Level</th>
             <th>Sub-County</th>
             <th>County</th>
+            <th>Status</th>
             <th>Action</th>
             <th>Delete</th>
             </thead>
@@ -191,6 +192,11 @@ foreach ($res_arr2 as $value) {
                 foreach ($users as $value) {
                     if ($value['user_indicator'] == 'scmlt') {
                         $value['level'] = 'Sub-County Admin';
+                    }
+                    if ($value['status'] == '1') {
+                        $status = 'Active';
+                    }else if ($value['status'] == '2') {
+                        $status = 'Inactive';
                     }
                     ?>  
 
@@ -207,6 +213,7 @@ foreach ($res_arr2 as $value) {
                             }
                             ?></td>
                         <td><?php echo $value['county']; ?> </td>
+                        <td><?php echo $status; ?> </td>                        
                         <td><?php echo '<a href="user_profile/'.$value['user_id'].'">Manage</a>'; ?></td>
                         <td><a style="color:red;" title="Delete user" href="<?php echo base_url() . 'rtk_management/delete_user_gen/' . $value['user_id'] . '/rtk_manager'; ?>">[x]</a></td>
                     </tr>

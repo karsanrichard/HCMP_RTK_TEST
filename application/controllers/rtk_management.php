@@ -194,9 +194,9 @@ function _get_begining_balance($facility_code) {
     and lab_commodity_orders.order_date between '$start_date_bal' and '$end_date_bal' 
     and lab_commodity_orders.facility_code='$facility_code'";
 
-    $res_bal = $this->db->query($sql_bal);
+    $res_bal = $this->db->query($sql_bal)->result_array();
 
-    foreach ($res_bal->result_array() as $row_bal) {
+    foreach ($res_bal as $row_bal) {
         array_push($result_bal, $row_bal['closing_stock']);
     }
     return $result_bal;
@@ -1855,6 +1855,7 @@ public function rtk_manager_stocks($month=null) {
         $user_details = $this->user_details($user_id);
 //        echo "<pre>";print_r($user_details);die;
         $full_name = $arr[0]['fname'].' '.$user_details[0]['lname'];
+        $status = $user_details[0]['status'];
         $data['all_counties'] = $this->all_counties();
         $data['all_subcounties'] = $this->all_districts();
 
@@ -1862,6 +1863,7 @@ public function rtk_manager_stocks($month=null) {
         $data['user_logs'] = $this->rtk_logs($user_id);
         $data['user_id'] = $user_id;
         $data['full_name'] = $full_name;
+        $data['status'] = $status;
         $data['user_details'] = $user_details;
         $data['title'] = 'User Profile : '.$full_name;
         $data['banner_text'] = 'User Profile : '.$full_name;
@@ -5417,16 +5419,16 @@ function flip_array_diff_key($b, $a) {
 
 
 function _get_rtk_users() {      
-    $q = 'SELECT access_level.level,access_level.user_indicator,
+    $q = 'SELECT access_level.level,access_level.user_indicator,user.status as status,
     user.email, user.id AS user_id,user.fname,user.lname,user.email,user.county_id,
-    user.district,counties.county,user.usertype_id FROM access_level,
+    user.district,counties.county,user.usertype_id,user.usertype_id FROM access_level,
     user,counties 
     WHERE user.county_id = counties.id AND user.usertype_id = access_level.id
     AND user.usertype_id = 13 ORDER BY `user`.`district` ASC';
 
     $res = $this->db->query($q);
     $arr = $res->result_array();
-    $q2 = 'SELECT access_level.level,access_level.user_indicator,user.email,user.id AS user_id,user.fname,user.lname,user.email,user.county_id,districts.district as district,counties.county,user.usertype_id
+    $q2 = 'SELECT access_level.level,access_level.user_indicator,user.status as status,user.email,user.id AS user_id,user.fname,user.lname,user.email,user.county_id,districts.district as district,counties.county,user.usertype_id
     FROM access_level,user,counties,districts 
     WHERE user.district = districts.id
     AND districts.county = counties.id
@@ -6723,16 +6725,25 @@ public function add_user() {
     redirect('rtk_management/rtk_manager_users');
 }
 
-public function reset_user_pass() {        
-    $this->load->model('user');
-    $id = $this->input->post('user_id');        
-    $this->user->new_reset_user_pass($id);
-    echo "Password Reset Succesfully";
-}
+
 public function change_password() {        
     $this->load->model('user');
     $this->user->edit_user_password();
     echo "Password Succesfully Changed";
+}
+
+public function reset_password($id) {        
+    $this->load->model('user');
+    //$user_id = $this->input->post('user_id');        
+    $this->user->reset_user_password($id);
+    echo "Password Succesfully Changed";
+}
+
+public function manage_user($a,$id) {      
+
+    $this->load->model('user');
+    //$user_id = $this->input->post('user_id');        
+    $this->user->manage_user_state($a,$id);    
 }
 public function clean_data($month=null){
     if(isset($month)){           
