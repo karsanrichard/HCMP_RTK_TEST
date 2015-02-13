@@ -5881,10 +5881,13 @@ public function national_reporting_rates() {
             $table_body .= '<td>' . $previous . '</td>';            
             $table_body .= '<td>' . $current . '</td></tr>';
         }
+       $message = 'Dear National Team,<br/></br/>Please find attached the County Percentages for the Period between 
+                    '.$two_months_ago_text.' and '.$current_month_text.' <br/></br>Sent From the RTK System'; 
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
        
-       $email_address = 'ttunduny@gmail.com';
+       //$email_address = 'onjathi@clintonhealth.org,ttunduny@gmail.com';
+       $email_address = 'onjathi@clintonhealth.org,ttunduny@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);              
