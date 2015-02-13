@@ -5850,6 +5850,7 @@ public function national_reporting_rates() {
     }
 
     $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
+    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>
     <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National County Percentages  for  Period between $two_months_ago_text and $current_month_text</div>
     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>
      Ministry of Health</div>
