@@ -5815,6 +5815,84 @@ public function kemsa_district_reports($district) {
     //  $email_address = "ttunduny@gmail.com";
     // $this->sendmail($test,$test,$reportname, $email_address);
 }
+
+public function national_reporting_rates() {
+    $pdf_htm = '';
+    $current_month = date('mY', strtotime('-0 month',time()));    
+    $previous_month = date('mY', strtotime('-1 month',time()));    
+    $two_months_ago = date('mY', strtotime('-2 month',time()));                        
+
+    $current_month_text = date('F-Y', strtotime('-0 month',time()));    
+    $previous_month_text = date('F-Y',strtotime('-1 month',time()));    
+    $two_months_ago_text = date('F-Y',strtotime('-2 month',time()));                        
+    
+    $q = "SELECT * FROM  `counties`";
+    $counties = $this->db->query($q)->result_array();
+    $current_percentage = array();
+    $previous_percentage = array();
+    $previous1_percentage = array();
+    foreach ($counties as $key => $value) {
+        $id = $value['id'];
+        $county = $value['county'];
+        $sql_c = "SELECT percentage  FROM `rtk_county_percentage` WHERE county_id='$id'  and`month` = '$current_month' limit 0,1";
+        $sql_p = "SELECT percentage  FROM `rtk_county_percentage` WHERE county_id='$id' and `month` = '$previous_month' limit 0,1";
+        $sql_p1 = "SELECT percentage  FROM `rtk_county_percentage` WHERE county_id='$id' and `month` = '$two_months_ago' limit 0,1";
+        $perc_c =  $this->db->query($sql_c)->result_array();
+        $perc_p =  $this->db->query($sql_p)->result_array();
+        $perc_p1 =  $this->db->query($sql_p1)->result_array();
+        $current_p = $perc_c[0]['percentage'];
+        $previous_p = $perc_p[0]['percentage'];
+        $previous_p1 = $perc_p1[0]['percentage'];        
+        array_push($current_percentage, $current_p);
+        array_push($previous_percentage, $previous_p);
+        array_push($previous1_percentage, $previous_p1);
+
+    }
+
+    $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
+    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National County Percentages  for  Period between $two_months_ago_text and $current_month_text</div>
+    <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>
+     Ministry of Health</div>
+     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div><hr />
+     <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
+        table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
+        table.data-table td, table th {padding: 4px;}
+        table.data-table td {border: none;border-right: 1px solid #DDD;height: 30px;margin: 0px;border-bottom: 1px solid #DDD;}
+        .col5{background:#D8D8D8;}</style>";
+    $table_head = '
+    <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+        <thead border="0" style="margin: 10px auto;font-weight:bold;">
+        <tr>
+            <td>County</td>                                       
+            <td>'.$two_months_ago_text.'</td>                                       
+            <td>'.$previous_month_text.'</td>                           
+            <td>'.$current_month_text.'</td>               
+        </tr>
+        </thead>
+        <tbody>';      
+        $table_body = '';
+        for ($i=0; $i <count($counties) ; $i++) {
+            $county = $counties[$i]['county'];        
+            $current = $current_percentage[$i];        
+            $previous = $previous_percentage[$i];        
+            $previous1 = $previous1_percentage[$i];        
+            $table_body .= '<tr><td>' . $county . '</td>';
+            $table_body .= '<td>' . $previous1 . '</td>';
+            $table_body .= '<td>' . $previous . '</td>';            
+            $table_body .= '<td>' . $current . '</td></tr>';
+        }
+       $table_foot = '</tbody></table>';
+       $html_data = $html_title . $table_head . $table_body . $table_foot;
+       $email_address = 'ttunduny@gmail.com';
+       $reportname = 'Percentages for '.$current_month_text;
+       //$this->sendmail($html_data,$message, , $email_address);
+       $this->sendmail($html_data,$message, $reportname, $email_address);              
+    
+    
+    
+    
+}
+
 public function district_reports($year, $month, $district) {
     $pdf_htm = '';   
     $first_day_current_month = $year . '-' . $month . '-1';

@@ -14,7 +14,7 @@ $count=0;
 			{
 				//echo $data[0] .'<br/>' ; 
 			
-$import = mysql_query("update facilities set partner='$data[2]'  where facility_code='$data[0]'") or die(mysql_error());
+$import = mysql_query("update facilities set pepfar_supported='1'  where facility_code='$data[0]'") or die(mysql_error());
 						   //rename facility, mfl code to actual attribute names on the hcmp database a
 					if ($import)
 					{
