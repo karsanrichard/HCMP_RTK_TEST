@@ -5883,6 +5883,7 @@ public function national_reporting_rates() {
         }
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
+       
        $email_address = 'ttunduny@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
