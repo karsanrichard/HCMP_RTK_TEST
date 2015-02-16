@@ -5888,8 +5888,8 @@ public function national_reporting_rates() {
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
       // echo "$html_data";die();
-       $email_address = 'ttunduny@gmail.com';
-       //$email_address = 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com';
+       //$email_address = 'ttunduny@gmail.com';
+       $email_address = 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);              
