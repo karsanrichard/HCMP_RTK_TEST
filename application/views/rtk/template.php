@@ -173,11 +173,11 @@
                     <table id="change_password_table">
                       <tr>    
                         <td>Old Password</td>
-                        <td colspan="3"><input class="form-control" id="old_pass" type="text" name="old_pass" style="width:196%"/></td>
+                        <td colspan="3"><input class="form-control" id="old_pass" type="text" name="old_pass" style="width:96%"/></td>
                       </tr>   
                       <tr>
                         <td>New Password</td>
-                        <td colspan="3"><input class="form-control" id="new_pass" type="text" name="new_pass" style="width:196%"/></td>
+                        <td colspan="3"><input class="form-control" id="new_pass" type="text" name="new_pass" style="width:96%"/></td>
                       </tr>             
                       <tr>
                         <td>Confirm Password</td>
