@@ -5822,11 +5822,11 @@ public function national_reporting_rates() {
     $previous_month = date('mY', strtotime('-1 month',time()));    
     $two_months_ago = date('mY', strtotime('-2 month',time()));                        
 
-    $current_month_text = date('F-Y', strtotime('-0 month',time()));    
-    $previous_month_text = date('F-Y',strtotime('-1 month',time()));    
-    $two_months_ago_text = date('F-Y',strtotime('-2 month',time()));                        
+    $current_month_text = date('F-Y', strtotime('-1 month',time()));    
+    $previous_month_text = date('F-Y',strtotime('-2 month',time()));    
+    $two_months_ago_text = date('F-Y',strtotime('-3 month',time()));                        
     
-    $q = "SELECT * FROM  `counties`";
+    $q = "SELECT * FROM  `counties` order by county asc";
     $counties = $this->db->query($q)->result_array();
     $current_percentage = array();
     $previous_percentage = array();
@@ -5850,11 +5850,12 @@ public function national_reporting_rates() {
     }
 
     $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National County Percentages  for  Period between $two_months_ago_text and $current_month_text</div>
-    <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>
-     Ministry of Health</div>
-     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div><hr />
+
+     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>
+     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div>
+    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>   
+    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National County Percentages  for  Period between $two_months_ago_text and $current_month_text</div><hr />    
+     
      <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
         table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
         table.data-table td, table th {padding: 4px;}
@@ -5862,12 +5863,12 @@ public function national_reporting_rates() {
         .col5{background:#D8D8D8;}</style>";
     $table_head = '
     <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
-        <thead border="0" style="margin: 10px auto;font-weight:bold;">
+        <thead border="0" style="margin: 10px auto;font-weight:900">
         <tr>
-            <td>County</td>                                       
-            <td>'.$two_months_ago_text.'</td>                                       
-            <td>'.$previous_month_text.'</td>                           
-            <td>'.$current_month_text.'</td>               
+            <th>County</th>                                       
+            <th>'.$two_months_ago_text.'</th>                                       
+            <th>'.$previous_month_text.'</th>                           
+            <th>'.$current_month_text.'</th>               
         </tr>
         </thead>
         <tbody>';      
@@ -5886,9 +5887,9 @@ public function national_reporting_rates() {
                     '.$two_months_ago_text.' and '.$current_month_text.' <br/></br>Sent From the RTK System'; 
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
-       
-       //$email_address = 'onjathi@clintonhealth.org,ttunduny@gmail.com';
-       $email_address = 'onjathi@clintonhealth.org,ttunduny@gmail.com';
+      // echo "$html_data";die();
+       $email_address = 'ttunduny@gmail.com';
+       //$email_address = 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);              
