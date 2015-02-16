@@ -5887,14 +5887,15 @@ public function national_reporting_rates() {
             $table_body .= '<td>' . $previous . '</td>';            
             $table_body .= '<td>' . $current . '</td></tr>';
         }
-       //$national_total = 100;
+       $email_address = 'jodek@usaid.gov,jbatuka@usaid.gov,omarabdi2@yahoo.com,njebungeibowen@gmail.com,colwande@yahoo.com,hoy4@cdc.gov,
+                    uys0@cdc.gov,japhgituku@yahoo.co.uk,onjathi@clintonhealthaccess.org,bedan.wamuti@kemsa.co.ke,bnmuture@gmail.com,ttunduny@gmail.com,annchemu@gmail.com';
        $message = 'Dear National Team,<br/></br/>Please find attached the County Percentages for the Period between 
                     '.$two_months_ago_text.' and '.$current_month_text.' <br/></br>Sent From the RTK System'; 
        $table_foot = '<tr><td colspan="3"><b>Total National Reporting Percentage: '.$national_total.'%</td></tr></tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
        //echo "$html_data";die();
        //$email_address = 'ttunduny@gmail.com';
-       $email_address = 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+       //$email_address = 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);              
@@ -5939,6 +5940,15 @@ public function county_reporting_rates($county_id) {
         array_push($previous1_percentage, $previous_p1);
 
     }
+
+    $sql_u = "SELECT email FROM hcmp_rtk.user where usertype_id = 13 and county_id='$county_id'";
+    $emails_county = $this->db->query($sql_u)->result_array();
+    $email_address ="";
+    foreach ($emails_county as $key => $value) {
+        $one = $value['email'];
+        $email_address.= $one.',';                        
+    } 
+
     
     $nat_c = "select sum(reported) as reported, sum(facilities) as facilities from rtk_district_percentage where month='$current_month' and district_id in (select id from districts where county='$county_id')";    
     $nat_dets = $this->db->query($nat_c)->result_array();
@@ -5978,13 +5988,13 @@ public function county_reporting_rates($county_id) {
             $table_body .= '<td>' . $previous . '</td>';            
             $table_body .= '<td>' . $current . '</td></tr>';
         }
-       $message = "Dear '$county_name' Team,<br/></br/>Please find attached the Sub-County Percentages for the Period between 
+       $message = "Dear $county_name Team,<br/></br/>Please find attached the Sub-County Percentages for the Period between 
                     '$two_months_ago_text' and '$current_month_text' <br/></br>Sent From the RTK System"; 
         $table_foot = '<tr><td colspan="3"><b>Total County Reporting Percentage: '.$national_county.'%</td></tr></tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
       // echo "$html_data";die();
        //$email_address = 'ttunduny@gmail.com';
-       $email_address = 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+       $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);              
