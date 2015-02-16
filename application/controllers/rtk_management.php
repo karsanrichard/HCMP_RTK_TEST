@@ -2262,7 +2262,7 @@ public function test_php(){
 }
 
 public function allocation_details($zone, $a,$b ){
-        ini_set(-1);
+        ini_set('max_execution_time',-1);
         $sql = "SELECT 
                     facilities.facility_code,
                     facilities.facility_name,
@@ -2276,6 +2276,7 @@ public function allocation_details($zone, $a,$b ){
                     facilities.district = districts.id
                         AND districts.county = counties.id
                         AND facilities.rtk_enabled = 1
+                        AND facilities.pepfar_supported = 1
                         and facilities.zone='Zone $zone'
                 ORDER BY facilities.facility_code ASC limit $a, $b";
 
