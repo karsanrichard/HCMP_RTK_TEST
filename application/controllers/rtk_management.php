@@ -5949,7 +5949,7 @@ public function county_reporting_rates($county_id) {
      <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>
      <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div>
     <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>   
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>District Percentages  for $county_name County for Period between $two_months_ago_text and $current_month_text</div><hr />    
+    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Sub-County Percentages  for $county_name County for Period between $two_months_ago_text and $current_month_text</div><hr />    
      
      <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
         table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
