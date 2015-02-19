@@ -5817,94 +5817,7 @@ public function kemsa_district_reports($district) {
     // $this->sendmail($test,$test,$reportname, $email_address);
 }
 
-public function national_reporting_rates1() {
-    $pdf_htm = '';
-    $current_month = date('mY', strtotime('-0 month',time()));    
-    $previous_month = date('mY', strtotime('-1 month',time()));    
-    $two_months_ago = date('mY', strtotime('-2 month',time()));                        
 
-    $current_month_text = date('F-Y', strtotime('-1 month',time()));    
-    $previous_month_text = date('F-Y',strtotime('-2 month',time()));    
-    $two_months_ago_text = date('F-Y',strtotime('-3 month',time()));                        
-    
-    $q = "SELECT * FROM  `counties` order by county asc";
-    $counties = $this->db->query($q)->result_array();
-    $current_percentage = array();
-    $previous_percentage = array();
-    $previous1_percentage = array();
-    foreach ($counties as $key => $value) {
-        $id = $value['id'];
-        $county = $value['county'];
-        $sql_c = "SELECT percentage  FROM `rtk_county_percentage` WHERE county_id='$id'  and`month` = '$current_month' limit 0,1";
-        $sql_p = "SELECT percentage  FROM `rtk_county_percentage` WHERE county_id='$id' and `month` = '$previous_month' limit 0,1";
-        $sql_p1 = "SELECT percentage  FROM `rtk_county_percentage` WHERE county_id='$id' and `month` = '$two_months_ago' limit 0,1";
-        $perc_c =  $this->db->query($sql_c)->result_array();
-        $perc_p =  $this->db->query($sql_p)->result_array();
-        $perc_p1 =  $this->db->query($sql_p1)->result_array();
-        $current_p = $perc_c[0]['percentage'];
-        $previous_p = $perc_p[0]['percentage'];
-        $previous_p1 = $perc_p1[0]['percentage'];        
-        array_push($current_percentage, $current_p);
-        array_push($previous_percentage, $previous_p);
-        array_push($previous1_percentage, $previous_p1);
-
-    }
-
-    $nat_c = "select sum(reported) as reported, sum(facilities) as facilities from rtk_county_percentage where month='$current_month'";
-    $nat_dets = $this->db->query($nat_c)->result_array();
-    $national_total = ceil(((($nat_dets[0]['reported'])/($nat_dets[0]['facilities']))*100));    
-
-    $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
-
-     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>
-     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div>
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>   
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National County Percentages  for  Period between $two_months_ago_text and $current_month_text</div><hr />    
-     
-     <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
-        table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
-        table.data-table td, table th {padding: 4px;}
-        table.data-table td {border: none;border-right: 1px solid #DDD;height: 30px;margin: 0px;border-bottom: 1px solid #DDD;}
-        .col5{background:#D8D8D8;}</style>";
-    $table_head = '
-    <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
-        <thead border="0" style="margin: 10px auto;font-weight:900">
-        <tr>
-            <th>County</th>                                       
-            <th>'.$two_months_ago_text.'</th>                                       
-            <th>'.$previous_month_text.'</th>                           
-            <th>'.$current_month_text.'</th>               
-        </tr>
-        </thead>
-        <tbody>';      
-        $table_body = '';
-        for ($i=0; $i <count($counties) ; $i++) {
-            $county = $counties[$i]['county'];        
-            $current = $current_percentage[$i];        
-            $previous = $previous_percentage[$i];        
-            $previous1 = $previous1_percentage[$i];        
-            $table_body .= '<tr><td>' . $county . '</td>';
-            $table_body .= '<td>' . $previous1 . '</td>';
-            $table_body .= '<td>' . $previous . '</td>';            
-            $table_body .= '<td>' . $current . '</td></tr>';
-        }
-       $email_address = 'jodek@usaid.gov,jbatuka@usaid.gov,omarabdi2@yahoo.com,njebungeibowen@gmail.com,colwande@yahoo.com,hoy4@cdc.gov,
-                    uys0@cdc.gov,japhgituku@yahoo.co.uk,onjathi@clintonhealthaccess.org,bedan.wamuti@kemsa.co.ke,bnmuture@gmail.com,ttunduny@gmail.com,annchemu@gmail.com';
-       $message = 'Dear National Team,<br/></br/>Please find attached the County Percentages for the Period between 
-                    '.$two_months_ago_text.' and '.$current_month_text.' <br/></br>Sent From the RTK System'; 
-       $table_foot = '<tr><td colspan="3"><b>Total National Reporting Percentage: '.$national_total.'%</td></tr></tbody></table>';
-       $html_data = $html_title . $table_head . $table_body . $table_foot;
-        //echo "$html_data";die();
-       //$email_address = 'ttunduny@gmail.com';
-       $email_address .= 'ttunduny@gmail.com,annchemu@gmail.com';
-       $reportname = "Percentages for $current_month_text";
-       //$this->sendmail($html_data,$message, , $email_address);
-       $this->sendmail($html_data,$message, $reportname, $email_address);              
-    
-    
-    
-    
-}
 public function national_reporting_rates() {
     $pdf_htm = '';
     $current_month = date('mY', strtotime('-0 month',time()));    
@@ -5939,16 +5852,22 @@ public function national_reporting_rates() {
     }
 
 
-   $nat_c = "select sum(reported) as reported, sum(facilities) as facilities from rtk_county_percentage where month='$current_month'";
+    $nat_c = "select sum(reported) as reported, sum(facilities) as facilities from rtk_county_percentage where month='$current_month'";
     $nat_dets = $this->db->query($nat_c)->result_array();
-    $national_total = ceil(((($nat_dets[0]['reported'])/($nat_dets[0]['facilities']))*100));    
+    $national_total = ceil(((($nat_dets[0]['reported'])/($nat_dets[0]['facilities']))*100));  
+
+    $nat_p = "select sum(reported) as reported, sum(facilities) as facilities from rtk_county_percentage where month='$previous_month'";
+    $nat_dets_p = $this->db->query($nat_p)->result_array();
+    $national_total_p = ceil(((($nat_dets_p[0]['reported'])/($nat_dets_p[0]['facilities']))*100));  
+
+    $nat_p1 = "select sum(reported) as reported, sum(facilities) as facilities from rtk_county_percentage where month='$two_months_ago'";
+    $nat_dets_p1 = $this->db->query($nat_p1)->result_array();
+    $national_total_p1 = ceil(((($nat_dets_p1[0]['reported'])/($nat_dets_p1[0]['facilities']))*100));  
 
     $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
 
-     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>
-     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div>
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>   
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National County Percentages  for  Period between $two_months_ago_text and $current_month_text</div><hr />    
+     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>        
+    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National HIV Rapid Test Kit (RTK) Reporting Rates for $two_months_ago_text to $current_month_text</div><hr />    
      
      <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
         table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
@@ -5982,9 +5901,12 @@ public function national_reporting_rates() {
 
        $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for the Period between 
                     $two_months_ago_text and $current_month_text <br/></br>Sent From the RTK System";  
-        $table_foot = '<tr><td colspan="3"><b>Total County Reporting Percentage: '.$national_total.'%</td></tr></tbody></table>';
-       $html_data = $html_title . $table_head . $table_body . $table_foot;
-      //echo "$html_data";die();
+        $table_foot = '<tr><td><b>Total National Reporting Percentage</b></td>
+                        <td><b>'.$national_total_p1.'%</b></td>
+                        <td><b>'.$national_total_p.'%</b></td>
+                        <td><b>'.$national_total.'%</b></td></tr></tbody></table>';
+      $html_data = $html_title . $table_head . $table_body . $table_foot;
+      echo "$html_data";die();
        //$email_address = 'ttunduny@gmail.com';
        $email_address.= 'ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
@@ -6146,9 +6068,7 @@ public function county_reporting_rates($county_id) {
     $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
 
      <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>
-     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div>
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>   
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Sub-County Percentages  for $county_name County for Period between $two_months_ago_text and $current_month_text</div><hr />    
+     <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Sub-County HIV Rapid Test Kit (RTK) Reporting Rates for $county_name County for $two_months_ago_text to $current_month_text</div><hr />        
      
      <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
         table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
@@ -6192,7 +6112,7 @@ public function county_reporting_rates($county_id) {
     
     
 }
-public function county_reporting_rates1($county_id) {
+public function county_detailed_summary($county_id) {
     $pdf_htm = '';
     $current_month = date('mY', strtotime('-0 month',time()));    
     $previous_month = date('mY', strtotime('-1 month',time()));    
@@ -6201,7 +6121,15 @@ public function county_reporting_rates1($county_id) {
     $current_month_text = date('F-Y', strtotime('-1 month',time()));    
     $previous_month_text = date('F-Y',strtotime('-2 month',time()));    
     $two_months_ago_text = date('F-Y',strtotime('-3 month',time()));                        
+    $month = date('mY', strtotime('-0 month'));    
+    $year = substr($month, -4);    
+    $month = substr_replace($month, "", -4);              
     
+    $first_date = $year . '-' . $month . '-01';    
+    $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+    $last_date = $year . '-' . $month .'-'. $num_days;      
+
     $c = "select * from counties where id='$county_id'";
     $county_dets = $this->db->query($c)->result_array();
     $county_name = $county_dets[0]['county'];
@@ -6236,18 +6164,25 @@ public function county_reporting_rates1($county_id) {
         $email_address.= $one.',';                        
     } 
 
+    $message = "Dear $county_name Team,<br/></br/>Please find attached the Sub-County Percentages for the Period between 
+                    '$two_months_ago_text' and '$current_month_text' <br/></br>Sent From the RTK System"; 
     
     $nat_c = "select sum(reported) as reported, sum(facilities) as facilities from rtk_district_percentage where month='$current_month' and district_id in (select id from districts where county='$county_id')";    
     $nat_dets = $this->db->query($nat_c)->result_array();
     $national_county = ceil(((($nat_dets[0]['reported'])/($nat_dets[0]['facilities']))*100));   
 
+    $nat_p = "select sum(reported) as reported, sum(facilities) as facilities from rtk_district_percentage where month='$previous_month' and district_id in (select id from districts where county='$county_id')";    
+    $nat_dets_p = $this->db->query($nat_p)->result_array();
+    $national_county_p = ceil(((($nat_dets_p[0]['reported'])/($nat_dets_p[0]['facilities']))*100));   
+
+    $nat_p1 = "select sum(reported) as reported, sum(facilities) as facilities from rtk_district_percentage where month='$two_months_ago' and district_id in (select id from districts where county='$county_id')";    
+    $nat_dets_p1 = $this->db->query($nat_p1)->result_array();
+    $national_county_p1 = ceil(((($nat_dets_p1[0]['reported'])/($nat_dets_p1[0]['facilities']))*100));  
+
     $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
 
      <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>
-     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold;display: block; font-size: 13px;'>Health Commodities Management Platform</div>
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Rapid Test Kits (RTK) System</div>   
-    <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Sub-County Percentages  for $county_name County for Period between $two_months_ago_text and $current_month_text</div><hr />    
-     
+     <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Sub-County HIV Rapid Test Kit (RTK) Comprehensive Summary for $county_name County for $two_months_ago_text to $current_month_text</div><hr />             
      <h4>Section 1: Reporting Rates</h4>
      <div>
      <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
@@ -6277,15 +6212,77 @@ public function county_reporting_rates1($county_id) {
             $table_body .= '<td>' . $previous . '</td>';            
             $table_body .= '<td>' . $current . '</td></tr><div>';
         }
+        $expiries_s = $this->_get_county_expiries($first_date,$last_date,$county_id,4);
+       $expiries_c = $this->_get_county_expiries($first_date,$last_date,$county_id,5);
+       $expiries_t = $this->_get_county_expiries($first_date,$last_date,$county_id,6);               
+        $table_foot = '<tr><td><b>Total County Reporting Percentage</b></td>
+                        <td><b>'.$national_county_p1.'%</b></td>
+                        <td><b>'.$national_county_p.'%</b></td>
+                        <td><b>'.$national_county.'%</b></td></tr></tbody></table>';
+       $section_1 = $html_title . $table_head . $table_body . $table_foot;       
+       $table_head1_s = '<h4>Section 2: Facilities with Highest Expiries</h4><br/><h5>a) Screening KHB </h5><br/>
+                    <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+                <thead border="0" style="margin: 10px auto;font-weight:900">
+                <tr><th>Facility Code</th>
+                <th>Facility Name</th>
+                <th>Sub-County</th>            
+        </tr>
+        </thead>
+        <tbody>';      
+        $table_body1_s = '';
+        for ($i=0; $i <count($expiries_s) ; $i++) {
+            $district = $expiries_s[$i]['district'];        
+            $fcode = $expiries_s[$i]['facility_code'];                    
+            $fname = $expiries_s[$i]['facility_name'];                    
+            $table_body1_s .= '<tr><td>' . $fcode . '</td>';
+            $table_body1_s .= '<td>' . $fname . '</td>';            
+            $table_body1_s .= '<td>' . $district. '</td></tr></table><div>';
+        }
+         $table_head1_c = '<h5>b) Confirmatory - First Response </h5>
+                    <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+                <thead border="0" style="margin: 10px auto;font-weight:900">
+                <tr><th>Facility Code</th>
+                <th>Facility Name</th>
+                <th>Sub-County</th>            
+        </tr>
+        </thead>
+        <tbody>';      
+        $table_body1_c = '';
+        for ($i=0; $i <count($expiries_c) ; $i++) {
+            $district = $expiries_c[$i]['district'];        
+            $fcode = $expiries_c[$i]['facility_code'];                    
+            $fname = $expiries_c[$i]['facility_name'];                    
+            $table_body1_c .= '<tr><td>' . $fcode . '</td>';
+            $table_body1_c .= '<td>' . $fname . '</td>';            
+            $table_body1_c .= '<td>' . $district. '</td></tr></table><div>';
+        }
 
-        $other_divs = '<br/><h4>Section 2: Facilities with Highest Expiries</h4>';
-       $message = "Dear $county_name Team,<br/></br/>Please find attached the Sub-County Percentages for the Period between 
-                    '$two_months_ago_text' and '$current_month_text' <br/></br>Sent From the RTK System"; 
-        $table_foot = '<tr><td colspan="3"><b>Total County Reporting Percentage: '.$national_county.'%</td></tr></tbody></table>';
-       $html_data = $html_title . $table_head . $table_body . $table_foot.$other_divs;
+      $table_head1_t = '<br/><h5>c) Tiebreaker - Unigold</h5><br/>
+                <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+            <thead border="0" style="margin: 10px auto;font-weight:900">
+            <tr><th>Facility Code</th>
+            <th>Facility Name</th>
+            <th>Sub-County</th>            
+        </tr>
+        </thead>
+        <tbody>';      
+        $table_body1_t = '';
+        for ($i=0; $i <count($expiries_t) ; $i++) {
+            $district = $expiries_t[$i]['district'];        
+            $fcode = $expiries_t[$i]['facility_code'];                    
+            $fname = $expiries_t[$i]['facility_name'];                    
+            $table_body1_t .= '<tr><td>' . $fcode . '</td>';
+            $table_body1_t .= '<td>' . $fname . '</td>';            
+            $table_body1_t .= '<td>' . $district. '</td></tr></table><div>';
+        }
+
+        $section_2 = $table_head1_s.$table_body1_s.$table_head1_c.$table_body1_c.$table_head1_t.$table_body1_t;
+       $html_data = $section_1.$section_2;
+       // echo "<pre>";
+       // print_r($expiries_s);die();
        echo "$html_data";die();
        //$email_address = 'ttunduny@gmail.com';
-       $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+       //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);              
@@ -6293,6 +6290,18 @@ public function county_reporting_rates1($county_id) {
     
     
     
+}
+
+function _get_county_expiries($first_date,$last_date,$county,$commodity_id){
+    $sql = "SELECT distinct facilities.facility_code,facilities.facility_name,districts.district
+            FROM lab_commodity_details,facilities,districts
+            WHERE facilities.facility_code = lab_commodity_details.facility_code
+            and districts.id = lab_commodity_details.district_id
+            and lab_commodity_details.created_at BETWEEN '$first_date' AND '$last_date'
+            and lab_commodity_details.commodity_id = '$commodity_id'
+            and districts.county = '$county' order by lab_commodity_details.q_expiring desc,facilities.facility_code asc limit 0,1";    
+    $expiries = $this->db->query($sql)->result_array();
+    return $expiries;
 }
 
 public function district_reports($year, $month, $district) {
