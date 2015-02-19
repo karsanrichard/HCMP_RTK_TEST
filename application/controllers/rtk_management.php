@@ -2434,6 +2434,7 @@ public function allocation_details($zone, $a,$b ){
             $html_data = $html_title . $table_head . $table_body . $table_foot;
             //echo "$html_data";die();
            //$email_address = 'ttunduny@gmail.com';
+            $reportname = 'RTK Expiries for '.$previous_month;
            $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';          
            //$this->sendmail($html_data,$message, , $email_address);
            $this->sendmail($html_data,$message, $reportname, $email_address);  
