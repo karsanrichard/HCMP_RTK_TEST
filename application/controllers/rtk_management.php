@@ -2359,7 +2359,7 @@ public function allocation_details($zone, $a,$b ){
                         AND created_at BETWEEN '2015-02-01' AND '2015-02-30'
                         AND facilities.facility_code = lab_commodity_details.facility_code
                         AND lab_commodity_details.q_expiring > 0                       
-                ORDER BY counties.county ASC , districts.district ASC , facilities.facility_name ASC limit 0,5";           
+                ORDER BY counties.county ASC , districts.district ASC , facilities.facility_name ASC";           
             $facilities = $this->db->query($sql)->result_array();          
             $new_commodities = array();
             foreach ($facilities as $key => $value) {
@@ -2429,7 +2429,7 @@ public function allocation_details($zone, $a,$b ){
             // $email_address = 'jodek@usaid.gov,jbatuka@usaid.gov,omarabdi2@yahoo.com,njebungeibowen@gmail.com,colwande@yahoo.com,hoy4@cdc.gov,
             //             uys0@cdc.gov,japhgituku@yahoo.co.uk,onjathi@clintonhealthaccess.org,bedan.wamuti@kemsa.co.ke,bnmuture@gmail.com,ttunduny@gmail.com,annchemu@gmail.com';
 
-           $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for $previous_month and $current_month_text <br/></br>Sent From the RTK System";  
+           $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for $previous_month.<br/></br>Sent From the RTK System";  
             $table_foot = '</tbody></table>';          
             $html_data = $html_title . $table_head . $table_body . $table_foot;
             //echo "$html_data";die();
