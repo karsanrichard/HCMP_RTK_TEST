@@ -2278,7 +2278,7 @@ public function allocation_details($zone, $a,$b ){
                         AND facilities.rtk_enabled = 1
                         AND facilities.pepfar_supported = 1
                         and facilities.zone='Zone $zone'
-                ORDER BY facilities.facility_code ASC limit $a, $b";
+                ORDER BY counties.county asc,facilities.facility_code ASC limit $a, $b";
 
         $result = $this->db->query($sql)->result_array();
 
@@ -2341,6 +2341,102 @@ public function allocation_details($zone, $a,$b ){
         $data['content_view'] = 'rtk/allocation_committee/zone_a';        
         $data['final_dets'] = $final_dets;
         $this->load->view('rtk/template', $data); 
+    }  
+
+    public function allocation_details_new(){
+        ini_set('max_execution_time',-1);
+        $previous_month = date('F-Y', strtotime('-1 month',time()));    
+        $sql = "SELECT distinct counties.county,districts.district,lab_commodity_details.facility_code,facilities.facility_name
+                FROM
+                    lab_commodity_details,
+                    facilities,
+                    districts,
+                    counties
+                WHERE
+                    facilities.facility_code = lab_commodity_details.facility_code
+                        AND facilities.district = districts.id
+                        AND districts.county = counties.id
+                        AND created_at BETWEEN '2015-02-01' AND '2015-02-30'
+                        AND facilities.facility_code = lab_commodity_details.facility_code
+                        AND lab_commodity_details.q_expiring > 0                       
+                ORDER BY counties.county ASC , districts.district ASC , facilities.facility_name ASC limit 0,5";           
+            $facilities = $this->db->query($sql)->result_array();          
+            $new_commodities = array();
+            foreach ($facilities as $key => $value) {
+                $fcode = $value['facility_code'];
+                $sql2 = "SELECT lab_commodities.commodity_name,lab_commodity_details.commodity_id,lab_commodity_details.q_expiring
+                        FROM
+                            lab_commodity_details, lab_commodities
+                        WHERE
+                                lab_commodity_details.facility_code = '$fcode'                               
+                                AND created_at BETWEEN '2015-02-01' AND '2015-02-30'
+                                AND lab_commodity_details.q_expiring > 0
+                                and lab_commodity_details.commodity_id = lab_commodities.id
+                                HAVING lab_commodity_details.commodity_id BETWEEN 4 AND 6
+                                ORDER BY lab_commodity_details.commodity_id ASC";
+                $commodities = $this->db->query($sql2)->result_array();
+                $new_commodities[$fcode] = $commodities;
+                
+
+        }                  
+        $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
+
+         <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>        
+        <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>National HIV Rapid Test Kit (RTK) Expiries for $previous_month</div><hr />    
+         
+         <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
+            table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
+            table.data-table td, table th {padding: 4px;}
+            table.data-table td {border: none;border-right: 1px solid #DDD;height: 30px;margin: 0px;border-bottom: 1px solid #DDD;}
+            .col5{background:#D8D8D8;}</style>";
+        $table_head = '
+        <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+            <thead border="0" style="margin: 10px auto;font-weight:900">
+            <tr>
+              <th align="">County</th>
+              <th align="">Sub-County</th>
+              <th align="">MFL</th>
+              <th align="">Facility Name</th>     
+              <th align="">Commodity Name</th>           
+              <th align="">Quantity Expiring (Tests)</th>               
+            </tr>
+            </thead>
+            <tbody>';      
+            $table_body = '';
+            if(count($facilities)>0){
+               foreach ($facilities as $key =>$value) {
+                  $count = 0;        
+                  $facility_code = $value['facility_code'];
+                  $facility_name = $value['facility_name'];
+                  $district = $value['district'];
+                  $county = $value['county'];
+
+                  $count = count($new_commodities[$facility_code])+1; 
+                  $table_body .= '<tr>';
+                  $table_body .= '<td rowspan="'.$count.'">' . $county . '</td>';                
+                  $table_body .= '<td rowspan="'.$count.'">' . $district . '</td>';                
+                  $table_body .= '<td rowspan="'.$count.'">' . $facility_code . '</td>';                
+                  $table_body .= '<td rowspan="'.$count.'">' . $facility_name . '</td></tr>';
+
+                  for ($i=0; $i<=$count-2 ; $i++) { 
+                    $commodity_name = $new_commodities[$facility_code][$i]['commodity_name'];
+                    $q_expiring = $new_commodities[$facility_code][$i]['q_expiring'];
+                    $table_body .= '<tr>';
+                    $table_body .= '<td>'. $commodity_name . '</td>';                
+                    $table_body .= '<td>'. $q_expiring . '</td></tr>';                
+                  }                
+            }}
+            // $email_address = 'jodek@usaid.gov,jbatuka@usaid.gov,omarabdi2@yahoo.com,njebungeibowen@gmail.com,colwande@yahoo.com,hoy4@cdc.gov,
+            //             uys0@cdc.gov,japhgituku@yahoo.co.uk,onjathi@clintonhealthaccess.org,bedan.wamuti@kemsa.co.ke,bnmuture@gmail.com,ttunduny@gmail.com,annchemu@gmail.com';
+
+           $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for $previous_month and $current_month_text <br/></br>Sent From the RTK System";  
+            $table_foot = '</tbody></table>';          
+            $html_data = $html_title . $table_head . $table_body . $table_foot;
+            //echo "$html_data";die();
+           //$email_address = 'ttunduny@gmail.com';
+           $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';          
+           //$this->sendmail($html_data,$message, , $email_address);
+           $this->sendmail($html_data,$message, $reportname, $email_address);  
     }  
     function zone_allocation_stats($zone) {
 
