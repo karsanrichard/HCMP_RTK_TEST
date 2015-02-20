@@ -2343,10 +2343,11 @@ public function allocation_details($zone, $a,$b ){
         $this->load->view('rtk/template', $data); 
     }  
 
-    public function allocation_details_new(){
+    public function allocation_details_new($a,$b){
         ini_set('max_execution_time',-1);
         $previous_month = date('F-Y', strtotime('-1 month',time()));    
-        $sql = "SELECT distinct counties.county,districts.district,lab_commodity_details.facility_code,facilities.facility_name
+        $sql = "SELECT distinct counties.county,districts.district,lab_commodity_details.facility_code,lab_commodity_details.commodity_id,
+                facilities.facility_name
                 FROM
                     lab_commodity_details,
                     facilities,
@@ -2358,8 +2359,9 @@ public function allocation_details($zone, $a,$b ){
                         AND districts.county = counties.id
                         AND created_at BETWEEN '2015-02-01' AND '2015-02-30'
                         AND facilities.facility_code = lab_commodity_details.facility_code
-                        AND lab_commodity_details.q_expiring > 0                       
-                ORDER BY counties.county ASC , districts.district ASC , facilities.facility_name ASC";           
+                        AND lab_commodity_details.q_expiring > 0       
+                        HAVING lab_commodity_details.commodity_id BETWEEN 4 AND 6                
+                ORDER BY counties.county ASC , districts.district ASC , facilities.facility_name ASC limit $a,$b";                  
             $facilities = $this->db->query($sql)->result_array();          
             $new_commodities = array();
             foreach ($facilities as $key => $value) {
@@ -2418,7 +2420,7 @@ public function allocation_details($zone, $a,$b ){
                   $table_body .= '<td rowspan="'.$count.'">' . $facility_code . '</td>';                
                   $table_body .= '<td rowspan="'.$count.'">' . $facility_name . '</td></tr>';
 
-                  for ($i=0; $i<=$count-2 ; $i++) { 
+                  for ($i=0; $i<$count-1 ; $i++) { 
                     $commodity_name = $new_commodities[$facility_code][$i]['commodity_name'];
                     $q_expiring = $new_commodities[$facility_code][$i]['q_expiring'];
                     $table_body .= '<tr>';
@@ -2433,9 +2435,9 @@ public function allocation_details($zone, $a,$b ){
             $table_foot = '</tbody></table>';          
             $html_data = $html_title . $table_head . $table_body . $table_foot;
             //echo "$html_data";die();
-           //$email_address = 'ttunduny@gmail.com';
+           $email_address = 'ttunduny@gmail.com';
             $reportname = 'RTK Expiries for '.$previous_month;
-           $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';          
+           //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';          
            //$this->sendmail($html_data,$message, , $email_address);
            $this->sendmail($html_data,$message, $reportname, $email_address);  
     }  
