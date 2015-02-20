@@ -6201,7 +6201,7 @@ public function county_reporting_rates($county_id) {
                     '$two_months_ago_text' and '$current_month_text' <br/></br>Sent From the RTK System"; 
         $table_foot = '<tr><td colspan="3"><b>Total County Reporting Percentage: '.$national_county.'%</td></tr></tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
-      // echo "$html_data";die();
+      echo "$html_data";die();
        $email_address = 'ttunduny@gmail.com';
        //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
