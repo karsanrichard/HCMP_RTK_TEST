@@ -2411,14 +2411,16 @@ public function allocation_details($zone, $a,$b ){
                   $district = $value['district'];
                   $county = $value['county'];
 
-                  $count = count($new_commodities[$facility_code])+3; 
+                  $count = count($new_commodities[$facility_code])+1; 
                   $table_body .= '<tr>';
-                  $table_body .= '<td rowspan="$count">' . $county . '</td>';                
-                  $table_body .= '<td rowspan="$count">' . $district . '</td>';                
-                  $table_body .= '<td rowspan="$count">' . $facility_code . '</td>';                
-                  $table_body .= '<td rowspan="$count">' . $facility_name . '</td></tr>';
+                  $table_body .= '<td rowspan="'.$count.'">' . $county . '</td>';                
+                  $table_body .= '<td rowspan="'.$count.'">' . $district . '</td>';                
+                  $table_body .= '<td rowspan="'.$count.'">' . $facility_code . '</td>';                
+                  $table_body .= '<td rowspan="'.$count.'">' . $facility_name . '</td></tr>';
 
-                  for ($i=0; $i<=$count ; $i++) { 
+
+                  for ($i=0; $i<$count-1 ; $i++) { 
+
                     $commodity_name = $new_commodities[$facility_code][$i]['commodity_name'];
                     $q_expiring = $new_commodities[$facility_code][$i]['q_expiring'];
                     $table_body .= '<tr>';
@@ -2432,8 +2434,9 @@ public function allocation_details($zone, $a,$b ){
            $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for $previous_month.<br/></br>Sent From the RTK System";  
             $table_foot = '</tbody></table>';          
             $html_data = $html_title . $table_head . $table_body . $table_foot;
-            echo "$html_data";die();
-           //$email_address = 'ttunduny@gmail.com';
+
+            //echo "$html_data";die();
+           $email_address = 'ttunduny@gmail.com';
             $reportname = 'RTK Expiries for '.$previous_month;
            $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';          
            //$this->sendmail($html_data,$message, , $email_address);
