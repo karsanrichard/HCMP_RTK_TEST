@@ -6104,7 +6104,7 @@ public function national_stockcard() {
        $message = 'Dear National Team,<br/></br/>Please find attached the National Stock Status as at end of '.$englishdate.' <br/></br>Sent From the RTK System'; 
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
-       //echo "$html_data";die();
+       echo "$html_data";die();
        $email_address = 'ttunduny@gmail.com';
        //$email_address = 'ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'National Stocks for '.$englishdate;
