@@ -6093,10 +6093,8 @@ public function national_stockcard() {
                 $table_body .= '<td>' . $sum_used . '</td>';            
                 $table_body .= '<td>' . $sum_tests . '</td>';            
                 $table_body .= '<td>' . $sum_closing_bal . '</td>';            
-                $table_body .= '<td>' . $sum_requested . '</td>';            
-                $table_body .= '<td>' . $sum_days . '</td>';            
-                $table_body .= '<td>' . $sum_expiring . '</td>';            
-                $table_body .= '<td>' . $sum_allocated . '</td></tr>';
+                $table_body .= '<td>' . $sum_requested . '</td>';       
+                $table_body .= '<td>' . $sum_expiring . '</td>'; 
             }
         }
        // $email_address = 'jodek@usaid.gov,jbatuka@usaid.gov,omarabdi2@yahoo.com,njebungeibowen@gmail.com,colwande@yahoo.com,hoy4@cdc.gov,
@@ -6334,6 +6332,7 @@ public function county_detailed_summary($county_id) {
             $district = $expiries_s[$i]['district'];        
             $fcode = $expiries_s[$i]['facility_code'];                    
             $fname = $expiries_s[$i]['facility_name'];                    
+            $quantity = $expiries_s[$i]['q_expiring'];                    
             $table_body1_s .= '<tr><td>' . $fcode . '</td>';
             $table_body1_s .= '<td>' . $fname . '</td>';            
             $table_body1_s .= '<td>' . $district. '</td></tr></table><div>';
@@ -6351,7 +6350,8 @@ public function county_detailed_summary($county_id) {
         for ($i=0; $i <count($expiries_c) ; $i++) {
             $district = $expiries_c[$i]['district'];        
             $fcode = $expiries_c[$i]['facility_code'];                    
-            $fname = $expiries_c[$i]['facility_name'];                    
+            $fname = $expiries_c[$i]['facility_name'];  
+            $quantity = $expiries_s[$i]['q_expiring'];                                                  
             $table_body1_c .= '<tr><td>' . $fcode . '</td>';
             $table_body1_c .= '<td>' . $fname . '</td>';            
             $table_body1_c .= '<td>' . $district. '</td></tr></table><div>';
@@ -6370,9 +6370,11 @@ public function county_detailed_summary($county_id) {
         for ($i=0; $i <count($expiries_t) ; $i++) {
             $district = $expiries_t[$i]['district'];        
             $fcode = $expiries_t[$i]['facility_code'];                    
-            $fname = $expiries_t[$i]['facility_name'];                    
+            $fname = $expiries_t[$i]['facility_name'];     
+            $quantity = $expiries_s[$i]['q_expiring'];                                               
             $table_body1_t .= '<tr><td>' . $fcode . '</td>';
-            $table_body1_t .= '<td>' . $fname . '</td>';            
+            $table_body1_t .= '<td>' . $fname . '</td>'; 
+            $table_body1_t .= '<td>' . $district. '</td>           
             $table_body1_t .= '<td>' . $district. '</td></tr></table><div>';
         }
 
@@ -6393,7 +6395,7 @@ public function county_detailed_summary($county_id) {
 }
 
 function _get_county_expiries($first_date,$last_date,$county,$commodity_id){
-    $sql = "SELECT distinct facilities.facility_code,facilities.facility_name,districts.district
+    $sql = "SELECT distinct facilities.facility_code,facilities.facility_name,districts.district,lab_commodity_details.q_expiring
             FROM lab_commodity_details,facilities,districts
             WHERE facilities.facility_code = lab_commodity_details.facility_code
             and districts.id = lab_commodity_details.district_id
