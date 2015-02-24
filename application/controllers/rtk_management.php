@@ -4953,6 +4953,116 @@ $res = $this->db->query($common_q);
 return $result;
 }
 
+
+ function _requested_vs_allocated_partner($year, $month, $partner_id) {
+
+
+        $firstdate = $year . '-' . $month . '-01';
+        $firstday = date("Y-m-d", strtotime("$firstdate +1 Month "));
+
+        $month = date("m", strtotime("$firstdate +1 Month "));
+        $year = date("Y", strtotime("$firstdate +1 Month "));
+        $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $lastdate = $year . '-' . $month . '-' . $num_days;
+
+        $returnable = array();
+        $common_q = "select    
+                lab_commodities.commodity_name,
+      sum(lab_commodity_details.beginning_bal) as sum_opening, 
+        sum(lab_commodity_details.q_received) as sum_received, 
+        sum(lab_commodity_details.q_used) as sum_used, 
+        sum(lab_commodity_details.no_of_tests_done) as sum_tests, 
+        sum(lab_commodity_details.positive_adj) as sum_positive, 
+        sum(lab_commodity_details.negative_adj) as sum_negative,
+        sum(lab_commodity_details.losses) as sum_losses,
+        sum(lab_commodity_details.closing_stock) as sum_closing_bal,
+        sum(lab_commodity_details.q_requested) as sum_requested, 
+        sum(lab_commodity_details.allocated) as sum_allocated,
+        sum(lab_commodity_details.allocated) as sum_days,
+        sum(lab_commodity_details.q_expiring) as sum_expiring,
+    facilities.partner,
+    lab_commodities.commodity_name
+            from
+                facilities,
+                lab_commodity_details,
+                lab_commodities
+            where
+                facilities.partner = '$partner_id'
+                    and lab_commodity_details.facility_code = facilities.facility_code
+                    and lab_commodity_details.commodity_id = lab_commodities.id
+                    and lab_commodities.category = '1'
+                    and lab_commodity_details.created_at between '$firstday' AND  '$lastdate'
+            group by lab_commodities.id";
+
+    //echo "$common_q";die();
+ //        $common_q = "SELECT
+ //        lab_commodities.commodity_name,
+ //        sum(lab_commodity_details.beginning_bal) as sum_opening, 
+ //        sum(lab_commodity_details.q_received) as sum_received, 
+ //        sum(lab_commodity_details.q_used) as sum_used, 
+ //        sum(lab_commodity_details.no_of_tests_done) as sum_tests, 
+ //        sum(lab_commodity_details.positive_adj) as sum_positive, 
+ //        sum(lab_commodity_details.negative_adj) as sum_negative,
+ //        sum(lab_commodity_details.losses) as sum_losses,
+ //        sum(lab_commodity_details.closing_stock) as sum_closing_bal,
+ //        sum(lab_commodity_details.q_requested) as sum_requested, 
+ //        sum(lab_commodity_details.allocated) as sum_allocated,
+ //        sum(lab_commodity_details.allocated) as sum_days,
+ //        sum(lab_commodity_details.q_expiring) as sum_expiring
+ //        FROM 
+ //            lab_commodities,
+ //            lab_commodity_details,
+ //            districts, 
+ //            counties,facilities 
+ //        WHERE lab_commodity_details.commodity_id = lab_commodities.id                 
+ //        AND lab_commodity_details.facility_code = facilities.facility_code
+ //        AND facilities.partner = '$partner_id'        
+ //        AND lab_commodity_details.created_at BETWEEN  '$firstday' AND  '$lastdate'";
+ //        //AND lab_commodities.id in (select lab_commodities.id from lab_commodities,lab_commodity_categories 
+ //          //  where lab_commodities.category = lab_commodity_categories.id and lab_commodity_categories.active = '1')";
+
+ // $common_q.= ' group by lab_commodities.id';
+
+ // echo "$common_q";die();
+
+$res = $this->db->query($common_q);        
+
+        $result = $res->result_array();
+        // echo "<pre>";
+        // print_r($result);
+        // die();
+        // array_push($returnable, $result);
+
+
+//         $q = $common_q . " AND lab_commodities.id = 1";
+//         $res = $this->db->query($q);
+//         $result = $res->result_array();
+//         array_push($returnable, $result[0]);
+
+//         $q2 = $common_q . " AND lab_commodities.id = 2";
+//         $res2 = $this->db->query($q2);
+//         $result2 = $res2->result_array();
+//         array_push($returnable, $result2[0]);        
+
+//         $q4 = $common_q . " AND lab_commodities.id = 4";
+//         $res4 = $this->db->query($q4);
+//         $result4 = $res4->result_array();
+//         array_push($returnable, $result4[0]);
+
+//         $q5 = $common_q . " AND lab_commodities.id = 5";
+//         $res5 = $this->db->query($q5);
+//         $result5 = $res5->result_array();
+//         array_push($returnable, $result5[0]);
+
+//         $q6 = $common_q . " AND lab_commodities.id = 6";
+//         $res6 = $this->db->query($q6);
+//         $result6 = $res6->result_array();
+//         array_push($returnable, $result6[0]);
+// $returnable = $res->result_array();
+// echo"<pre>";print_r($returnable);die;
+return $result;
+}
+
 function county_reporting_percentages($county, $year, $month) {
     $q = 'SELECT counties.id as county_id,counties.county as countyname,districts.district,districts.county,districts.id as district_id
     FROM  `districts`,`counties` 
@@ -6585,6 +6695,322 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
     
 }
 
+
+public function partner_detailed_summary($partner_id) {
+
+    $pdf_htm = '';
+    $current_month = date('mY', strtotime('-0 month',time()));    
+    $previous_month = date('mY', strtotime('-1 month',time()));    
+    $two_months_ago = date('mY', strtotime('-2 month',time()));                        
+
+    $current_month_text = date('F-Y', strtotime('-1 month',time()));    
+    $previous_month_text = date('F-Y',strtotime('-2 month',time()));    
+    $two_months_ago_text = date('F-Y',strtotime('-3 month',time()));                        
+    $month = date('mY', strtotime('-0 month'));    
+    $year = substr($month, -4);    
+    $month = substr_replace($month, "", -4);         
+
+    $month1 = date('mY', strtotime('-1 month'));    
+    $year1 = substr($month1, -4);    
+    $month1 = substr_replace($month1, "", -4);     
+    
+    $first_date = $year . '-' . $month . '-01';    
+    $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+    $last_date = $year . '-' . $month .'-'. $num_days;      
+
+    $p = "select * from partners where ID='$partner_id'";
+    $partner_dets = $this->db->query($p)->result_array();
+    $partner_name = $partner_dets[0]['name'];
+ 
+
+    $message = "Dear $county_name Team,<br/></br/>Please find attached the Sub-County Percentages for the Period between 
+                    '$two_months_ago_text' and '$current_month_text' <br/></br>Sent From the RTK System"; 
+    
+    // $nat_c = "select sum(reported) as reported, sum(facilities) as facilities from rtk_partner_percentage where month='$current_month' and partner_id ='$partner_id'";    
+    // $nat_dets = $this->db->query($nat_c)->result_array();
+    // $national_county = ceil(((($nat_dets[0]['reported'])/($nat_dets[0]['facilities']))*100));   
+
+    // $nat_p = "select sum(reported) as reported, sum(facilities) as facilities from rtk_partner_percentage where month='$previous_month' and partner_id ='$partner_id'";    
+    // $nat_dets_p = $this->db->query($nat_p)->result_array();
+    // $national_county_p = ceil(((($nat_dets_p[0]['reported'])/($nat_dets_p[0]['facilities']))*100));   
+
+    // $nat_p1 = "select sum(reported) as reported, sum(facilities) as facilities from rtk_partner_percentage where month='$two_months_ago' and partner_id ='$partner_id'";    
+    // $nat_dets_p1 = $this->db->query($nat_p1)->result_array();
+    // $national_county_p1 = ceil(((($nat_dets_p1[0]['reported'])/($nat_dets_p1[0]['facilities']))*100));  
+
+    $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
+
+     <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>     Ministry of Health</div>
+     <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Partner HIV Rapid Test Kit (RTK) Comprehensive Summary for $partner_name  for $two_months_ago_text to $current_month_text</div><hr />               
+     <div>
+     <style>table.data-table {border: 1px solid #DDD;font-size: 13px;border-spacing: 0px;}
+        table.data-table th {border: none;color: #036;text-align: center;background-color: #F5F5F5;border: 1px solid #DDD;border-top: none;max-width: 450px;}
+        table.data-table td, table th {padding: 4px;}
+        table.data-table td {border: none;border-right: 1px solid #DDD;height: 30px;margin: 0px;border-bottom: 1px solid #DDD;}
+        .col5{background:#D8D8D8;}</style>";
+
+       $partner_data_s = $this->_get_partner_expiries($first_date,$last_date,$partner_id,4);
+       $partner_data_t = $this->_get_partner_expiries($first_date,$last_date,$partner_id,5);
+       $partner_data_c = $this->_get_partner_expiries($first_date,$last_date,$partner_id,6);
+
+       //getting stock card table
+
+       $stock_card_data = $this->_requested_vs_allocated_partner($year1, $month1, $partner_id);
+
+       // echo "<pre>";
+       // echo $month;
+       // print_r($stock_card_data);
+       // die;
+            $table_head_stock_card = '';
+$table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
+        <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+                <thead border="0" style="margin: 10px auto;font-weight:900">
+            <thead>
+                <tr>
+                    <th>Kit</th>
+                    <th>Beginning Balance</th>
+                    <th>Received Quantity</th>
+                    <th>Used Total</th>
+                    <th>Total Tests</th>
+                    <th>Positive Adjustments</th>
+                    <th>Negative Adjustments</th>
+                    <th>Losses</th>
+                    <th>Closing Balance</th>
+                </tr>
+            </thead>
+            <tbody>';
+            $table_body_stock_card = '';
+            for ($i=0; $i <count($stock_card_data) ; $i++) { 
+                $table_body_stock_card .= '<tr><td>'. $stock_card_data[$i]['commodity_name']. '</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_opening'].'</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_received'].'</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_used'].'</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_tests'].'</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_positive'].'</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_negative'].'</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_losses'].'</td>';
+                $table_body_stock_card .= '<td>'. $stock_card_data[$i]['sum_closing_bal'].'</td></tr>';                
+            }
+            
+            $table_body_stock_card .= '</tbody></table></div>';
+
+       //getting closing balance  data
+       $closing_stock_s = $partner_data_s['endbal'];              
+       $closing_stock_c = $partner_data_t['endbal'];              
+       $closing_stock_t = $partner_data_c['endbal'];              
+        
+       //ending balalnce Screening table      
+
+        if(count($closing_stock_s) ==0){
+            $table_head1_cs = '<h4>Section 2: Facilities with Highest Stocks (in Tests)</h4><h5>a) Screening KHB </h5>';
+            $table_body1_cs = 'No facilities have high stocks';
+        }else{
+         $table_head1_cs = '<h4>Section 2: Facilities with Highest Stocks (in Tests) </h4><h5>a) Screening KHB </h5>
+            <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+                <thead border="0" style="margin: 10px auto;font-weight:900">
+                <tr><th>Facility Code</th>
+                <th>Facility Name</th>    
+                <th>Sub-County</th>            
+                <th>Amount</th>            
+            </tr>
+            </thead>
+            <tbody>';  
+        
+        $table_body1_cs = '';
+        for ($i=0; $i <count($closing_stock_s) ; $i++) {
+            $c_district = $closing_stock_s[$i]['district'];        
+            $c_fcode = $closing_stock_s[$i]['facility_code'];                    
+            $c_fname = $closing_stock_s[$i]['facility_name'];                    
+            $c_end_bal = $closing_stock_s[$i]['closing_stock'];                    
+            $table_body1_cs .= '<tr><td>' . $c_fcode . '</td>';
+            $table_body1_cs .= '<td>' . $c_fname . '</td>';            
+            $table_body1_cs .= '<td>' . $c_district. '</td>';
+            $table_body1_cs .= '<td>' . $c_end_bal. '</td></tr>';
+        }
+       $table_body1_cs .=  '</table><div>';
+    }
+
+        //ending stock Confirmatory table
+        
+        if(count($closing_stock_c) ==0){
+         $table_head1_cc = '<h5>b) Confirmatory - First Response </h5>';
+            $table_body1_cc = 'No facilities have high stocks';
+        }else{
+
+         $table_head1_cc = '<h5>b) Confirmatory - First Response </h5>
+          <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+                <thead border="0" style="margin: 10px auto;font-weight:900">
+                <tr><th>Facility Code</th>
+                <th>Facility Name</th>
+                <th>Sub-County</th>            
+                <th>Amount</th>            
+        </tr>
+        </thead>
+        <tbody>';      
+        $table_body1_cc = '';
+        for ($i=0; $i <count($closing_stock_c) ; $i++) {
+            $c_district = $closing_stock_c[$i]['district'];        
+            $c_fcode = $closing_stock_c[$i]['facility_code'];                    
+            $c_end_bal = $closing_stock_c[$i]['closing_stock'];                    
+            $c_fname = $closing_stock_c[$i]['facility_name'];                    
+            $table_body1_cc .= '<tr><td>' . $c_fcode . '</td>';
+            $table_body1_cc .= '<td>' . $c_fname . '</td>';            
+            $table_body1_cc .= '<td>' . $c_district. '</td>';
+            $table_body1_cc .= '<td>' . $c_end_bal. '</td></tr>';
+        }
+       $table_body1_cc .=  '</table><div>';
+    }
+
+        //ending balance tie breaker table
+        if(count($closing_stock_t) ==0){
+            $table_head1_ct = '<h5>c) Tiebreaker - Unigold</h5>';
+            $table_body1_ct = 'No facilities have high stocks';
+        }else{
+
+        $table_head1_ct = '<h5>c) Tiebreaker - Unigold</h5>
+            <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+            <thead border="0" style="margin: 10px auto;font-weight:900">
+            <tr><th>Facility Code</th>
+            <th>Facility Name</th>
+            <th>Sub-County</th>            
+            <th>Amount</th>            
+            </tr>
+            </thead>
+            <tbody>';      
+        $table_body1_ct = '';
+            for ($i=0; $i <count($closing_stock_t) ; $i++) {
+                $c_district = $closing_stock_t[$i]['district'];        
+                $c_fcode = $closing_stock_t[$i]['facility_code'];                    
+                $c_fname = $closing_stock_t[$i]['facility_name'];                    
+                $c_end_bal = $closing_stock_t[$i]['closing_stock'];                    
+                $table_body1_ct .= '<tr><td>' . $c_fcode . '</td>';
+                $table_body1_ct .= '<td>' . $c_fname . '</td>';            
+                $table_body1_ct .= '<td>' . $c_district. '</td>';
+                $table_body1_ct .= '<td>' . $c_end_bal. '</td></tr>';
+            }
+       $table_body1_ct .=  '</table><div>';
+    }
+
+       //getting expiries data
+       $expiries_s = $county_data_s['expiries'];              
+       $expiries_c = $county_data_t['expiries'];              
+       $expiries_t = $county_data_c['expiries'];              
+        $table_foot = '<tr><td><b>Total County Reporting Percentage</b></td>
+                        <td><b>'.$national_county_p1.'%</b></td>
+                        <td><b>'.$national_county_p.'%</b></td>
+                        <td><b>'.$national_county.'%</b></td></tr></tbody></table>';
+       $section_1 = $html_title;
+       //expiring Screening table      
+
+        if(count($expiries_s) ==0){
+            $table_head1_s = '<h4>Section 3: Facilities with Highest Expiries</h4><h5>a) Screening KHB </h5>';
+            $table_body1_s = 'No expiries reported';
+        }else{
+         $table_head1_s = '<h4>Section 3: Facilities with Highest Expiries</h4><h5>a) Screening KHB </h5><br/>
+            <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+                <thead border="0" style="margin: 10px auto;font-weight:900">
+                <tr><th>Facility Code</th>
+                <th>Facility Name</th>    
+                <th>Sub-County</th>            
+                <th>Amount</th>            
+            </tr>
+            </thead>
+            <tbody>';  
+        
+        $table_body1_s = '';
+        for ($i=0; $i <count($expiries_s) ; $i++) {
+            $district = $expiries_s[$i]['district'];        
+            $fcode = $expiries_s[$i]['facility_code'];                    
+            $fname = $expiries_s[$i]['facility_name'];                    
+            $q_expired = $expiries_s[$i]['q_expiring'];                    
+            $table_body1_s .= '<tr><td>' . $fcode . '</td>';
+            $table_body1_s .= '<td>' . $fname . '</td>';            
+            $table_body1_s .= '<td>' . $district. '</td>';
+            $table_body1_s .= '<td>' . $q_expired. '</td></tr>';
+        }
+       $table_body1_s .=  '</table><div>';
+    }
+
+        //expiring Confirmatory table
+        
+        if(count($expiries_c) ==0){
+         $table_head1_c = '<h5>b) Confirmatory - First Response </h5>';
+            $table_body1_c = 'No expiries reported';
+        }else{
+
+         $table_head1_c = '<h5>b) Confirmatory - First Response </h5>
+          <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+                <thead border="0" style="margin: 10px auto;font-weight:900">
+                <tr><th>Facility Code</th>
+                <th>Facility Name</th>
+                <th>Sub-County</th>            
+                <th>Amount</th>            
+        </tr>
+        </thead>
+        <tbody>';      
+        $table_body1_c = '';
+        for ($i=0; $i <count($expiries_c) ; $i++) {
+            $district = $expiries_c[$i]['district'];        
+            $fcode = $expiries_c[$i]['facility_code'];                    
+            $q_expired = $expiries_c[$i]['q_expiring'];                    
+            $fname = $expiries_c[$i]['facility_name'];                    
+            $table_body1_c .= '<tr><td>' . $fcode . '</td>';
+            $table_body1_c .= '<td>' . $fname . '</td>';            
+            $table_body1_c .= '<td>' . $district. '</td>';
+            $table_body1_c .= '<td>' . $q_expired. '</td></tr>';
+        }
+       $table_body1_c .=  '</table><div>';
+    }
+
+        //expiring tie breaker table
+        if(count($expiries_t) ==0){
+            $table_head1_t = '<h5>c) Tiebreaker - Unigold</h5>';
+            $table_body1_t = 'No expiries reported';
+        }else{
+
+        $table_head1_t = '<h5>c) Tiebreaker - Unigold</h5>
+            <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
+            <thead border="0" style="margin: 10px auto;font-weight:900">
+            <tr><th>Facility Code</th>
+            <th>Facility Name</th>
+            <th>Sub-County</th>            
+            <th>Amount</th>            
+            </tr>
+            </thead>
+            <tbody>';      
+        $table_body1_t = '';
+            for ($i=0; $i <count($expiries_t) ; $i++) {
+                $district = $expiries_t[$i]['district'];        
+                $fcode = $expiries_t[$i]['facility_code'];                    
+                $fname = $expiries_t[$i]['facility_name'];                    
+                $q_expired = $expiries_t[$i]['q_expiring'];                    
+                $table_body1_t .= '<tr><td>' . $fcode . '</td>';
+                $table_body1_t .= '<td>' . $fname . '</td>';            
+                $table_body1_t .= '<td>' . $district. '</td>';
+                $table_body1_t .= '<td>' . $q_expired. '</td></tr>';
+            }
+       $table_body1_t .=  '</table><div>';
+    }
+
+       $section_2 = $table_head_stock_card.$table_body_stock_card;
+       $section_3 = $table_head1_cs.$table_body1_cs.$table_head1_cc.$table_body1_cc.$table_head1_ct.$table_body1_ct;
+       $section_4 = $table_head1_s.$table_body1_s.$table_head1_c.$table_body1_c.$table_head1_t.$table_body1_t;
+       $html_data = $section_1.$section_2.$section_3.$section_4;
+       // echo "<pre>";
+       // print_r($expiries_t);die();
+       echo "$html_data";die();
+       //$email_address = 'ttunduny@gmail.com';
+       //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+       $reportname = 'Percentages for '.$current_month_text;
+       //$this->sendmail($html_data,$message, , $email_address);
+       $this->sendmail($html_data,$message, $reportname, $email_address);             
+    
+    
+    
+    
+}
+
 function _get_county_expiries($first_date,$last_date,$county,$commodity_id){
     $sql = "SELECT distinct facilities.facility_code,facilities.facility_name,districts.district,lab_commodity_details.q_expiring, lab_commodity_details.closing_stock
             FROM lab_commodity_details,facilities,districts
@@ -6608,6 +7034,31 @@ function _get_county_expiries($first_date,$last_date,$county,$commodity_id){
    
     return $query;
 }
+
+function _get_partner_expiries($first_date,$last_date,$partner_id,$commodity_id){
+    $sql = "SELECT distinct facilities.facility_code,facilities.facility_name,districts.district,lab_commodity_details.q_expiring, lab_commodity_details.closing_stock
+            FROM lab_commodity_details,facilities,districts
+            WHERE facilities.facility_code = lab_commodity_details.facility_code
+            and districts.id = lab_commodity_details.district_id
+            and lab_commodity_details.created_at BETWEEN '$first_date' AND '$last_date'
+            and lab_commodity_details.commodity_id = '$commodity_id'
+            and facilities.partner = '$partner_id'             
+        having q_expiring>0 order by lab_commodity_details.q_expiring desc,facilities.facility_code asc limit 0,10";    
+    $query['expiries'] = $this->db->query($sql)->result_array();
+
+    $sql2 = "SELECT distinct facilities.facility_code,facilities.facility_name,districts.district,lab_commodity_details.q_expiring, lab_commodity_details.closing_stock
+            FROM lab_commodity_details,facilities,districts
+            WHERE facilities.facility_code = lab_commodity_details.facility_code
+            and districts.id = lab_commodity_details.district_id
+            and lab_commodity_details.created_at BETWEEN '$first_date' AND '$last_date'
+            and lab_commodity_details.commodity_id = '$commodity_id'
+            and facilities.partner = '$partner_id'             
+        having closing_stock>0 order by lab_commodity_details.closing_stock desc,facilities.facility_code asc limit 0,10";    
+    $query['endbal'] = $this->db->query($sql2)->result_array();
+   
+    return $query;
+}
+
 
 public function district_reports($year, $month, $district) {
     $pdf_htm = '';   
