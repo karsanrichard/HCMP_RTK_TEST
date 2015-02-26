@@ -4771,6 +4771,7 @@ public function rtk_summary_county($county, $year, $month) {
         $amc = 0;
         for ($commodity_id = 1; $commodity_id <= 6; $commodity_id++) {
             $amc = $this->_facility_amc($mfl, $commodity_id);
+            echo "$amc<br/>";
             $q = "select * from facility_amc where facility_code='$mfl' and commodity_id='$commodity_id' ";
             $resq = $this->db->query($q)->result_array();
             $count = count($resq);
@@ -4788,9 +4789,9 @@ public function rtk_summary_county($county, $year, $month) {
 
     //Facility Amc
     public function _facility_amc($mfl_code, $commodity = null) {
-        $three_months_ago = date("Y-m-", strtotime("-4 Month "));
+        $three_months_ago = date("Y-m-", strtotime("-3 Month "));
         $three_months_ago .='1';
-        $end_date = date("Y-m-", strtotime("-1 Month "));
+        $end_date = date("Y-m-", strtotime("-0 Month "));
         $end_date .='31';
         //echo "Three months ago = $three_months_ago and End Date =$end_date ";die();
         $q = "SELECT avg(lab_commodity_details1.q_used) as avg_used
@@ -4804,7 +4805,7 @@ public function rtk_summary_county($county, $year, $month) {
         } else {
             $q.=" AND lab_commodity_details1.commodity_id = 1";
         }
-
+        echo "$q";
         $res = $this->db->query($q);
         $result = $res->result_array();
         $result = $result[0]['avg_used'];
@@ -6446,7 +6447,7 @@ public function county_detailed_summary($county_id) {
        // print_r($stock_card_data);
        // die;
             $table_head_stock_card = '';
-$table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
+$table_head_stock_card .='<h4>Section 2: County Summary - Stock Card (Amount in Tests)</h4>
         <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
                 <thead border="0" style="margin: 10px auto;font-weight:900">
             <thead>
@@ -6495,7 +6496,7 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>    
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';  
@@ -6527,7 +6528,7 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
         </tr>
         </thead>
         <tbody>';      
@@ -6557,7 +6558,7 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
             <tr><th>Facility Code</th>
             <th>Facility Name</th>
             <th>Sub-County</th>            
-            <th>Amount</th>            
+            <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';      
@@ -6597,7 +6598,7 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>    
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';  
@@ -6629,7 +6630,7 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
         </tr>
         </thead>
         <tbody>';      
@@ -6659,7 +6660,7 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
             <tr><th>Facility Code</th>
             <th>Facility Name</th>
             <th>Sub-County</th>            
-            <th>Amount</th>            
+            <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';      
@@ -6683,9 +6684,9 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card </h4>
        $html_data = $section_1.$section_2.$section_3.$section_4;
        // echo "<pre>";
        // print_r($expiries_t);die();
-       echo "$html_data";die();
-       //$email_address = 'ttunduny@gmail.com';
-       //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+        // echo "$html_data";
+       // $email_address = 'ttunduny@gmail.com';
+       $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);             
@@ -6763,7 +6764,7 @@ public function partner_detailed_summary($partner_id) {
        // print_r($stock_card_data);
        // die;
             $table_head_stock_card = '';
-$table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
+$table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card  (Amount in Tests)</h4>
         <table border="0" class="data-table" style="width: 100%; margin: 10px auto;">
                 <thead border="0" style="margin: 10px auto;font-weight:900">
             <thead>
@@ -6812,7 +6813,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>    
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';  
@@ -6844,7 +6845,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
         </tr>
         </thead>
         <tbody>';      
@@ -6874,7 +6875,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
             <tr><th>Facility Code</th>
             <th>Facility Name</th>
             <th>Sub-County</th>            
-            <th>Amount</th>            
+            <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';      
@@ -6893,9 +6894,9 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
     }
 
        //getting expiries data
-       $expiries_s = $county_data_s['expiries'];              
-       $expiries_c = $county_data_t['expiries'];              
-       $expiries_t = $county_data_c['expiries'];              
+       $expiries_s = $partner_data_s['expiries'];              
+       $expiries_c = $partner_data_t['expiries'];              
+       $expiries_t = $partner_data_c['expiries'];              
         $table_foot = '<tr><td><b>Total County Reporting Percentage</b></td>
                         <td><b>'.$national_county_p1.'%</b></td>
                         <td><b>'.$national_county_p.'%</b></td>
@@ -6913,7 +6914,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>    
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';  
@@ -6945,7 +6946,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
                 <tr><th>Facility Code</th>
                 <th>Facility Name</th>
                 <th>Sub-County</th>            
-                <th>Amount</th>            
+                <th>Amount (Tests)</th>            
         </tr>
         </thead>
         <tbody>';      
@@ -6975,7 +6976,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
             <tr><th>Facility Code</th>
             <th>Facility Name</th>
             <th>Sub-County</th>            
-            <th>Amount</th>            
+            <th>Amount (Tests)</th>            
             </tr>
             </thead>
             <tbody>';      
@@ -6999,9 +7000,9 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card </h4>
        $html_data = $section_1.$section_2.$section_3.$section_4;
        // echo "<pre>";
        // print_r($expiries_t);die();
-       echo "$html_data";die();
-       //$email_address = 'ttunduny@gmail.com';
-       //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+       // echo "$html_data";die();
+       // $email_address = 'ttunduny@gmail.com';
+       $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);             
@@ -7043,7 +7044,8 @@ function _get_partner_expiries($first_date,$last_date,$partner_id,$commodity_id)
             and lab_commodity_details.created_at BETWEEN '$first_date' AND '$last_date'
             and lab_commodity_details.commodity_id = '$commodity_id'
             and facilities.partner = '$partner_id'             
-        having q_expiring>0 order by lab_commodity_details.q_expiring desc,facilities.facility_code asc limit 0,10";    
+        having q_expiring>0 order by lab_commodity_details.q_expiring desc,facilities.facility_code asc limit 0,10"; 
+
     $query['expiries'] = $this->db->query($sql)->result_array();
 
     $sql2 = "SELECT distinct facilities.facility_code,facilities.facility_name,districts.district,lab_commodity_details.q_expiring, lab_commodity_details.closing_stock
