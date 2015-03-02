@@ -140,7 +140,21 @@
                                 </tbody>
                             </table>
     </div>    
-    <div id="chart" style="margin-left:25%;margin-top:400px;height:380px;width:70%;border:1px ridge #ccc;">
+     <?php 
+          $option = '';
+          foreach ($commodities as $key => $value) {
+            $id = $value['id'];
+            $name = $value['commodity_name'];            
+            $option .='<option value="'.$value['id'].'">'.$value['commodity_name'].'</option>';            
+          }          
+        ?>
+    <div id="commodity_menu" style="margin-left:25%;margin-top:420px;height:60px;width:70%;border:1px ridge #ccc;padding:10px;font-size:16px;color:#fff;background-color:green">
+      Switch Commodities : <select id="comm_select" style="color:#000">
+        <option value="0">Select a Commodity</option>
+        <?php echo $option;?>
+      </select>
+    </div>
+    <div id="chart" style="margin-left:25%;margin-top:20px;height:380px;width:70%;border:1px ridge #ccc;">
       
         
     </div>
@@ -184,14 +198,14 @@ $(function () {
   
    $('#chart').highcharts({
         title: {
-            text: 'Sub-County Monthly Summaries'
+            text: "Sub-County Monthly Summaries: <?php echo 'Total '.$commodity_name.' Consumption' ?>"
         },
         xAxis: {
             categories: ['Begining Balance',  'Used Total', 'Total Tests', 'Closing Balance' ,'Received']           
         },
         labels: {
             items: [{
-                html: 'Total Determine Consumption',
+                html: ' Total Consumption ',
                 style: {
                     left: '50px',
                     top: '18px',
@@ -216,4 +230,15 @@ $(function () {
         }, ]
     });
 });
+</script>
+<script type="text/javascript">
+  $(document).ready(function(){
+     $("#comm_select").change(function(){
+      var comm_id = $('#comm_select').val();
+      var district = "<?php echo $district_id; ?>";
+      var path_full = 'rtk_management/district_profile/'+district+'/'+comm_id;
+      var path = "<?php echo base_url(); ?>" + path_full;
+      window.location.href = path;
+    });
+  });
 </script>

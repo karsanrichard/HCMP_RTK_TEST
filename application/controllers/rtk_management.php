@@ -924,83 +924,96 @@ public function county_profile($county) {
                     $data['title'] = "RTK County Admin Trends";
                     $this->load->view('rtk/template', $data);
                 }
-                public function district_profile($district) {
-                    $data = array();
-                    $lastday = date('Y-m-d', strtotime("last day of previous month"));
+public function district_profile($district,$com_id=null) {
+    if(isset($com_id)){
+        $commodity_id = $com_id;
+    }else{
+        $commodity_id = 4;
+    }
+    $data = array();
+    $lastday = date('Y-m-d', strtotime("last day of previous month"));
 
-                    $current_month = $this->session->userdata('Month');
+    $current_month = $this->session->userdata('Month');
 
-                    if ($current_month == '') {
-                        $current_month = date('mY', time());
-                    }
-                    $previous_month = date('m', strtotime("last day of previous month"));
-                    $previous_month_1 = date('mY', strtotime('-2 month'));
-                    $previous_month_2 = date('mY', strtotime('-3 month'));
+    if ($current_month == '') {
+        $current_month = date('mY', time());
+    }
+    $previous_month = date('m', strtotime("last day of previous month"));
+    $previous_month_1 = date('mY', strtotime('-2 month'));
+    $previous_month_2 = date('mY', strtotime('-3 month'));
 
 
-                    $year_current = substr($current_month, -4);
-                    
-                    $year_previous = date('Y', strtotime("last day of previous month"));
-                    $year_previous_1 = substr($previous_month_1, -4);
-                    $year_previous_2 = substr($previous_month_2, -4);
+    $year_current = substr($current_month, -4);
+    
+    $year_previous = date('Y', strtotime("last day of previous month"));
+    $year_previous_1 = substr($previous_month_1, -4);
+    $year_previous_2 = substr($previous_month_2, -4);
 
-                    $current_month = substr_replace($current_month, "", -4);        
-                    $previous_month_1 = substr_replace($previous_month_1, "", -4);
-                    $previous_month_2 = substr_replace($previous_month_2, "", -4);
+    $current_month = substr_replace($current_month, "", -4);        
+    $previous_month_1 = substr_replace($previous_month_1, "", -4);
+    $previous_month_2 = substr_replace($previous_month_2, "", -4);
 
-                    $monthyear_current = $year_current . '-' . $current_month . '-1';
-                    $monthyear_previous = $year_previous . '-' . $previous_month . '-1';
-                    $monthyear_previous_1 = $year_previous_1 . '-' . $previous_month_1 . '-1';
-                    $monthyear_previous_2 = $year_previous_2 . '-' . $previous_month_2 . '-1';
+    $monthyear_current = $year_current . '-' . $current_month . '-1';
+    $monthyear_previous = $year_previous . '-' . $previous_month . '-1';
+    $monthyear_previous_1 = $year_previous_1 . '-' . $previous_month_1 . '-1';
+    $monthyear_previous_2 = $year_previous_2 . '-' . $previous_month_2 . '-1';
 
-                    $englishdate = date('F, Y', strtotime($monthyear_current));
+    $englishdate = date('F, Y', strtotime($monthyear_current));
 
-                    $m_c = date("F", strtotime($monthyear_current));
-        //first month               
-                    $m0 = date("F", strtotime($monthyear_previous));
-                    $m1 = date("F", strtotime($monthyear_previous_1));
-                    $m2 = date("F", strtotime($monthyear_previous_2));
+    $m_c = date("F", strtotime($monthyear_current));
+//first month               
+    $m0 = date("F", strtotime($monthyear_previous));
+    $m1 = date("F", strtotime($monthyear_previous_1));
+    $m2 = date("F", strtotime($monthyear_previous_2));
 
-                    $month_text = array($m2, $m1, $m0);
+    $month_text = array($m2, $m1, $m0);
 
-                    $district_summary = $this->rtk_summary_district($district, $year_current, $current_month);
-                    $district_summary_prev = $this->rtk_summary_district($district, $year_previous, $previous_month);
-                    $district_summary1 = $this->rtk_summary_district($district, $year_previous_1, $previous_month_1);
-                    $district_summary2 = $this->rtk_summary_district($district, $year_previous_2, $previous_month_2);
+    $district_summary = $this->rtk_summary_district($district, $year_current, $current_month);
+    $district_summary_prev = $this->rtk_summary_district($district, $year_previous, $previous_month);
+    $district_summary1 = $this->rtk_summary_district($district, $year_previous_1, $previous_month_1);
+    $district_summary2 = $this->rtk_summary_district($district, $year_previous_2, $previous_month_2);
 
-                   
-                    $county_id = districts::get_county_id($district);
-                    $county_name = counties::get_county_name($county_id['county']);
 
-                    $cid = $this->db->select('districts.county')->get_where('districts', array('id' =>$district))->result_array();
+    $sql_c = "SELECT commodity_name FROM hcmp_rtk.lab_commodities where category='1' and id='$commodity_id'";
+    $result_c = $this->db->query($sql_c)->result_array();   
+    $sql_all_c = "SELECT * FROM hcmp_rtk.lab_commodities where category='1'";
+    $result_all_c = $this->db->query($sql_all_c)->result_array();   
+    $county_id = districts::get_county_id($district);
+    $county_name = counties::get_county_name($county_id['county']);
 
-                    foreach ($cid as $key => $value) {
-                       $myres = $cid[0]['county'];
-                   }
-                   $mycounties = $this->db->select('districts.district,districts.id')->get_where('districts', array('county' =>$myres))->result_array(); 
+    $cid = $this->db->select('districts.county')->get_where('districts', array('id' =>$district))->result_array();
 
-                   $data['district_balances_current'] = $this->district_totals($year_current, $current_month, $district);
-                   $data['district_balances_previous'] = $this->district_totals($year_previous, $previous_month, $district);
-                   $data['district_balances_previous_1'] = $this->district_totals($year_previous_1, $previous_month_1, $district);
-                   $data['district_balances_previous_2'] = $this->district_totals($year_previous_2, $previous_month_2, $district);
+    foreach ($cid as $key => $value) {
+       $myres = $cid[0]['county'];
+   }
+   $mycounties = $this->db->select('districts.district,districts.id')->get_where('districts', array('county' =>$myres))->result_array(); 
 
-                  
-                   $data['district_summary'] = $district_summary;
+   $data['district_balances_current'] = $this->district_totals($year_current, $current_month, $district,$commodity_id);
+   $data['district_balances_previous'] = $this->district_totals($year_previous, $previous_month, $district,$commodity_id);
+   $data['district_balances_previous_1'] = $this->district_totals($year_previous_1, $previous_month_1, $district,$commodity_id);
+   $data['district_balances_previous_2'] = $this->district_totals($year_previous_2, $previous_month_2, $district,$commodity_id);
 
-                   $data['districts'] = $mycounties;
-                   $data['facilities'] = $this->_facilities_in_district($district);
+  
+   $data['district_summary'] = $district_summary;
+   // echo "<pre>";
+   // print_r($data['district_balances_previous_1'] );die();
+   $data['districts'] = $mycounties;
+   $data['facilities'] = $this->_facilities_in_district($district);
 
-                   $data['district_name'] = $district_summary['district'];
-                   $data['county_id'] = $county_name['id'];
-                   $data['county_name'] = $county_name['county'];     
+   $data['district_name'] = $district_summary['district'];
+   $data['district_id'] = $district;
+   $data['commodity_name'] = $result_c[0]['commodity_name'];
+   $data['commodities'] = $result_all_c;
+   $data['county_id'] = $county_name['id'];
+   $data['county_name'] = $county_name['county'];     
 
-                   $data['title'] = 'RTK County Admin - Sub-County Profile: ' . $district_summary['district'];
-                   $data['banner_text'] = 'Sub-County Profile: ' . $district_summary['district'];
-                   $data['content_view'] = "rtk/rtk/shared/district_profile_view";
-                   $data['months'] = $month_text;
+   $data['title'] = 'RTK County Admin - Sub-County Profile: ' . $district_summary['district'];
+   $data['banner_text'] = 'Sub-County Profile: ' . $district_summary['district'];
+   $data['content_view'] = "rtk/rtk/shared/district_profile_view";
+   $data['months'] = $month_text;
 
-                   $this->load->view("rtk/template", $data);
-               }
+   $this->load->view("rtk/template", $data);
+}
                public function rca_pending_facilities() {
                 $countyid = $this->session->userdata('county_id');        
                 $districts = districts::getDistrict($countyid);
@@ -2343,7 +2356,7 @@ public function allocation_details($zone, $a,$b ){
         $this->load->view('rtk/template', $data); 
     }  
 
-    public function allocation_details_new(){
+    public function national_expiries(){
         ini_set('max_execution_time',-1);
         $previous_month = date('F-Y', strtotime('-1 month',time()));    
         $sql = "SELECT distinct counties.county,districts.district,lab_commodity_details.facility_code,facilities.facility_name
@@ -2434,13 +2447,12 @@ public function allocation_details($zone, $a,$b ){
            $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for $previous_month.<br/></br>Sent From the RTK System";  
             $table_foot = '</tbody></table>';          
             $html_data = $html_title . $table_head . $table_body . $table_foot;
-
-            //echo "$html_data";die();
-           $email_address = 'ttunduny@gmail.com';
+          
+          
             $reportname = 'RTK Expiries for '.$previous_month;
-           $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';          
-           //$this->sendmail($html_data,$message, , $email_address);
-           $this->sendmail($html_data,$message, $reportname, $email_address);  
+              $reportname = 'National Expiries for '.$previous_month;
+       //$this->sendmail($html_data,$message, , $email_address);
+                $this->create_pdf($html_data,$reportname);
     }  
     function zone_allocation_stats($zone) {
 
@@ -5432,7 +5444,11 @@ private function _facilities_in_district($district) {
     return $res->result_array();
 }
 
-function district_totals($year, $month, $district = NULL) {
+function district_totals($year, $month, $district = NULL,$commodity_id = null) {
+    $conditions = '';
+    if(isset($commodity_id)){
+        $conditions = "and lab_commodities.id = '$commodity_id'";
+    }
 
     $firstdate = $year . '-' . $month . '-01';
     //$firstday = date("Y-m-d", strtotime("$firstdate +1 Month "));
@@ -5464,7 +5480,7 @@ function district_totals($year, $month, $district = NULL) {
     AND districts.county = counties.id 
     AND lab_commodity_orders.order_date BETWEEN  '$firstdate' AND  '$lastdate'
     AND lab_commodities.id in (select lab_commodities.id from lab_commodities,lab_commodity_categories 
-        where lab_commodities.category = lab_commodity_categories.id and lab_commodity_categories.active = '1')";
+        where lab_commodities.category = lab_commodity_categories.id and lab_commodity_categories.active = '1') $conditions";
 
 if (isset($district)) {
     $common_q.= ' AND districts.id =' . $district;
@@ -6118,12 +6134,13 @@ public function national_reporting_rates() {
                         <td><b>'.$national_total_p.'%</b></td>
                         <td><b>'.$national_total.'%</b></td></tr></tbody></table>';
       $html_data = $html_title . $table_head . $table_body . $table_foot;
-      echo "$html_data";die();
+     // echo "$html_data";die();
        //$email_address = 'ttunduny@gmail.com';
        $email_address.= 'ttunduny@gmail.com,annchemu@gmail.com';
-       $reportname = 'Percentages for '.$current_month_text;
+       $reportname = 'Reporting Rates '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
-       $this->sendmail($html_data,$message, $reportname, $email_address);              
+       $this->create_pdf($html_data,$reportname);
+       //$this->sendmail($html_data,$message, $reportname, $email_address);              
     
     
     
@@ -6146,12 +6163,10 @@ public function national_stockcard() {
         $month = substr_replace($month, "", -4);
         $monthyear = $year . '-' . $month . '-01';
     }
-    $englishdate = date('F, Y', strtotime($monthyear));    
-    $stock_status = $this->_national_reports_sum($year, $month);  
-    // echo "<pre>"; 
+    $englishdate = date('F-Y', strtotime('-1 Month',time()));    
+    $stock_status = $this->_national_reports_sum($year, $month);        // echo "<pre>"; 
     // print_r($stock_status);die();
-    $data['englishdate'] = $englishdate;
-    $englishdate = "January, 2015";
+    
 
     $html_title = "<div ALIGN=CENTER><img src='" . base_url() . "assets/img/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
 
@@ -6214,16 +6229,47 @@ public function national_stockcard() {
        $message = 'Dear National Team,<br/></br/>Please find attached the National Stock Status as at end of '.$englishdate.' <br/></br>Sent From the RTK System'; 
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
-       echo "$html_data";die();
+       //echo "$html_data";die();
        $email_address = 'ttunduny@gmail.com';
        //$email_address = 'ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'National Stocks for '.$englishdate;
        //$this->sendmail($html_data,$message, , $email_address);
-       $this->sendmail($html_data,$message, $reportname, $email_address);              
+       $this->create_pdf($html_data,$reportname);
+       //$this->sendmail($html_data,$message, $reportname, $email_address);              
     
     
     
     
+}
+
+public function send_national_reports(){
+    if(isset($month)){           
+        $year = substr($month, -4);
+        $month = substr($month, 0,2);            
+        $monthyear = $year . '-' . $month . '-01';         
+
+    }else{
+        $month = $this->session->userdata('Month');
+        if ($month == '') {
+            $month = date('mY', time());
+        }
+        $year = substr($month, -4);
+        $month = substr_replace($month, "", -4);
+        $monthyear = $year . '-' . $month . '-01';
+    }
+
+    $current_month_text = date('F-Y', strtotime('-1 month',time()));        
+
+    $englishdate = date('F-Y', strtotime('-1 month',time()));        
+    $message = 'Dear National Team,<br/></br/>Please find attached the National Stock Status as at end of '.$englishdate.' <br/></br>Sent From the RTK System';     
+    $reporting_rates = 'Reporting Rates '.$current_month_text;
+    $reporting_stocks = 'National Stocks for '.$englishdate;
+    $reporting_expiries = 'National Expiries for '.$englishdate;
+    $reporting_stocks = 'National Stocks for January, 2015';
+    $reports = array($reporting_rates,$reporting_stocks,$reporting_expiries);    
+    $email_address = 'ttunduny@gmail.com';      
+    $this->sendmail_multiple($message,$email_address,$englishdate);    
+
 }
 
 public function county_reporting_rates($county_id) {
@@ -7269,6 +7315,36 @@ function generate_lastpdf($id) {
                     $filename = "RTK FCDRR Report for " . $lab_order[0]['facility_name'] . "  $lastmonth  2014";
                     return $html_data;
                 }
+
+public function create_pdf($output,$reportname) {
+    $this->load->helper('file');        
+    $this->load->library('mpdf');
+    $mpdf = new mPDF('', 'A4-L', 0, '', 15, 15, 16, 16, 9, 5, 'L');
+    $mpdf->WriteHTML($output);
+    $emailAttachment = $mpdf->Output('./pdf/'.$reportname . '.pdf', 'S');
+    $attach_file = './pdf/' . $reportname . '.pdf';
+    if (!write_file('./pdf/' . $reportname . '.pdf', $mpdf->Output('report_name.pdf', 'S'))) {        
+        $this->session->set_flashdata('system_error_message', 'An error occured');
+    } 
+}
+
+public function sendmail_multiple($message,$email_address,$month) {
+    $this->load->helper('file');
+    include 'rtk_mailer.php';
+    $newmail = new rtk_mailer();    
+  
+    $subject = 'RTK Reports for '.$month;
+    //$attach_file = './pdf/' . $reportname . '.pdf';
+    // $bcc_email = 'tngugi@clintonhealthaccess.org';
+    $bcc_email = 'annchemu@gmail.com';
+    //$message = $output;
+    $response = $newmail->send_email_multiple($email_address, $message, $subject,$bcc_email);
+        // $response= $newmail->send_email(substr($email_address,0,-1),$message,$subject,$attach_file,$bcc_email);
+    // if ($response) {            
+    //     delete_files('./pdf/' . $reportname . '.pdf');
+    // }
+
+}
 
 public function sendmail($output, $message,$reportname, $email_address) {
     $this->load->helper('file');

@@ -15,4 +15,6 @@ public static function get_all() {
 		$commodities = $query -> execute();
 		return $commodities;
 }
+
+
 }
