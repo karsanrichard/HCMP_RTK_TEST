@@ -112,7 +112,7 @@ foreach ($commodities->result_array() as $key => $value) {
                 ?>
        
 
-        <div id="container" style="min-width: 310px; height: auto; margin: 0 auto"></div>
+        <div id="container" style="min-width: 310px; height: auto; margin: 0 auto"></div>        
 
     </div>
 
@@ -135,59 +135,66 @@ foreach ($commodities->result_array() as $key => $value) {
 </script>
   <script type="text/javascript">
 
-            $(function() {
-                $('#container').highcharts({
-                    chart: {
-                        type: 'line'
-                    },
-                    title: {
-                        text: '<?php echo ' Yearly Commodity Usage:  ' . $commodity_name.' from '. $from_date.' to '. $to_date; ?>'
-                    }, subtitle: {
-                        text: 'Live data reports on RTK'
-                    },
-                    xAxis: {
-                        categories: <?php echo $graphdata['month']; ?>
-                    },
-                    yAxis: {
-                        min: 0,
-                        title: {
-                            text: 'Commodity Percentage (%)'
-                        }
-                    },
-                    legend: {
-                        backgroundColor: '#FFFFFF',
-                        reversed: true
-                    },
-                    plotOptions: {
-                        series: {
-                            stacking: 'normal'
-                        }
-                    },
-                    series: [{
-                            name: 'Beginning Balance',
-                            data: <?php echo $graphdata['beginning_bal']; ?>
-                        },
-                        {
-                            name: 'Quantity Received',
-                            data: <?php echo $graphdata['qty_received']; ?>
-                        },
-                        {
-                            name: 'Total Tests',
-                            data: <?php echo $graphdata['total_tests']; ?>
-                        },
-                        {
-                            name: 'Losses',
-                            data: <?php echo $graphdata['losses']; ?>
-                        },
-                        {
-                            name: 'Ending Balance',
-                            data: <?php echo $graphdata['ending_bal']; ?>
-                        },
-                        {
-                            name: 'Quantity Requested',
-                            data: <?php echo $graphdata['qty_requested']; ?>
-                        }]
+$(function() {
 
-                });
-            });
-        </script>
+
+$('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '<?php echo ' Yearly Commodity Usage:  ' . $commodity_name.' from '. $from_date.' to '. $to_date; ?>'
+        },
+        subtitle: {
+            text: 'Live data reports on RTK'
+        },
+        xAxis: {
+            categories: <?php echo $graphdata['month']; ?>
+        },
+        yAxis: {
+            min: 0,            
+            title: {
+                text: 'Quantity (Tests)'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:12px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0;font-size:10px">{series.name}: </td>' +
+                '<td style="padding:0;font-size:10px"><b>{point.y:.1f}</b;></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Beginning Balance',
+            data: <?php echo $graphdata['beginning_bal']; ?>
+        },
+        {
+            name: 'Quantity Received',
+            data: <?php echo $graphdata['qty_received']; ?>
+        },
+        {
+            name: 'Total Tests',
+            data: <?php echo $graphdata['total_tests']; ?>
+        },
+        {
+            name: 'Losses',
+            data: <?php echo $graphdata['losses']; ?>
+        },
+        {
+            name: 'Ending Balance',
+            data: <?php echo $graphdata['ending_bal']; ?>
+        },
+        {
+            name: 'Quantity Requested',
+            data: <?php echo $graphdata['qty_requested']; ?>
+        }]
+    });
+});
+</script>

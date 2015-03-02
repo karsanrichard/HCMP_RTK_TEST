@@ -144,7 +144,7 @@ $to_date = $my_month[$count-1];
                         }
                     },
                     series: [{
-                            name: '% Reported',
+                            name: 'Percentage Reported',
                             data: <?php echo $graphdata['reported']; ?>
                         }]
                 });
@@ -188,5 +188,6 @@ $to_date = $my_month[$count-1];
                             data: <?php echo $graphdata['reported_value']; ?>
                         }]
                 });
+
             });
         </script>
