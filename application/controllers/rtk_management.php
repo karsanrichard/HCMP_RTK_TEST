@@ -6144,9 +6144,9 @@ public function national_reporting_rates() {
        //$email_address = 'ttunduny@gmail.com';
        $email_address.= 'ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Reporting Rates '.$current_month_text;
-       //$this->sendmail($html_data,$message, , $email_address);
-       $this->create_pdf($html_data,$reportname);
-       //$this->sendmail($html_data,$message, $reportname, $email_address);              
+      // $this->sendmail($html_data,$message, , $email_address);
+       // $this->create_pdf($html_data,$reportname);
+        $this->sendmail($html_data,$message, $reportname, $email_address);              
     
     
     
@@ -6236,12 +6236,12 @@ public function national_stockcard() {
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
        //echo "$html_data";die();
-       $email_address = 'ttunduny@gmail.com';
-       //$email_address = 'ttunduny@gmail.com,annchemu@gmail.com';
+       //$email_address = 'ttunduny@gmail.com';
+       $email_address = 'ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'National Stocks for '.$englishdate;
        //$this->sendmail($html_data,$message, , $email_address);
-       $this->create_pdf($html_data,$reportname);
-       //$this->sendmail($html_data,$message, $reportname, $email_address);              
+       //$this->create_pdf($html_data,$reportname);
+       $this->sendmail($html_data,$message, $reportname, $email_address);    
     
     
     
