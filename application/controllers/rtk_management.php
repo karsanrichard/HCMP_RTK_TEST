@@ -2447,12 +2447,12 @@ public function allocation_details($zone, $a,$b ){
            $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for $previous_month.<br/></br>Sent From the RTK System";  
             $table_foot = '</tbody></table>';          
             $html_data = $html_title . $table_head . $table_body . $table_foot;
-          echo "$html_data";die();
-          
+          //echo "$html_data";die();
+          $email_address = 'ttunduny@gmail.com';
             $reportname = 'RTK Expiries for '.$previous_month;
               $reportname = 'National Expiries for '.$previous_month;
-       //$this->sendmail($html_data,$message, , $email_address);
-                $this->create_pdf($html_data,$reportname);
+       $this->sendmail($html_data,$message, , $email_address);
+                // $this->create_pdf($html_data,$reportname);
     }  
     function zone_allocation_stats($zone) {
 
