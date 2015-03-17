@@ -2447,7 +2447,7 @@ public function allocation_details($zone, $a,$b ){
            $message = "Dear National Team,<br/></br/>Please find attached the County Percentages for $previous_month.<br/></br>Sent From the RTK System";  
             $table_foot = '</tbody></table>';          
             $html_data = $html_title . $table_head . $table_body . $table_foot;
-          
+          echo "$html_data";die();
           
             $reportname = 'RTK Expiries for '.$previous_month;
               $reportname = 'National Expiries for '.$previous_month;
@@ -6774,9 +6774,17 @@ public function partner_detailed_summary($partner_id) {
     $p = "select * from partners where ID='$partner_id'";
     $partner_dets = $this->db->query($p)->result_array();
     $partner_name = $partner_dets[0]['name'];
- 
 
-    $message = "Dear $county_name Team,<br/></br/>Please find attached the Sub-County Percentages for the Period between 
+    $sql_u = "SELECT email FROM hcmp_rtk.user where usertype_id = 14 and partner='$partner_id'";
+    $emails_partner = $this->db->query($sql_u)->result_array();
+    $email_address ="";
+    foreach ($emails_partner as $key => $value) {
+        $one = $value['email'];
+        $email_address.= $one.',';                        
+    } 
+
+
+    $message = "Dear $partner_name Team,<br/></br/>Please find attached the Partner Percentages for the Period between 
                     '$two_months_ago_text' and '$current_month_text' <br/></br>Sent From the RTK System"; 
     
     // $nat_c = "select sum(reported) as reported, sum(facilities) as facilities from rtk_partner_percentage where month='$current_month' and partner_id ='$partner_id'";    
@@ -7051,7 +7059,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card  (Amount i
        $html_data = $section_1.$section_2.$section_3.$section_4;
      //  echo "<pre>";
        //print_r($expiries_t);die();
-       echo "$html_data";die();
+       //echo "$html_data";die();
        // $email_address = 'ttunduny@gmail.com';
        //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
