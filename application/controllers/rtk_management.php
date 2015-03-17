@@ -6198,9 +6198,7 @@ public function national_stockcard() {
             <th>Tests Done</th>
             <th>Closing Balance</th>
             <th>Requested Qty</th>
-            <th>Out of Stock days</th>
-            <th>Expiring Qty</th>
-            <th>Allocated Qty</th>           
+            <th>Out of Stock days</th>               
         </tr>
         </thead>
         <tbody>';      
@@ -6235,7 +6233,7 @@ public function national_stockcard() {
        $message = 'Dear National Team,<br/></br/>Please find attached the National Stock Status as at end of '.$englishdate.' <br/></br>Sent From the RTK System'; 
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
-       echo "$html_data";die();
+       // echo "$html_data";die();
        //$email_address = 'ttunduny@gmail.com';
        $email_address = 'ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'National Stocks for '.$englishdate;
@@ -7051,7 +7049,7 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card  (Amount i
        $section_3 = $table_head1_cs.$table_body1_cs.$table_head1_cc.$table_body1_cc.$table_head1_ct.$table_body1_ct;
        $section_4 = $table_head1_s.$table_body1_s.$table_head1_c.$table_body1_c.$table_head1_t.$table_body1_t;
        $html_data = $section_1.$section_2.$section_3.$section_4;
-       echo "<pre>";
+     //  echo "<pre>";
        //print_r($expiries_t);die();
        echo "$html_data";die();
        // $email_address = 'ttunduny@gmail.com';
