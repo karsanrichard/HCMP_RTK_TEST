@@ -6235,7 +6235,7 @@ public function national_stockcard() {
        $message = 'Dear National Team,<br/></br/>Please find attached the National Stock Status as at end of '.$englishdate.' <br/></br>Sent From the RTK System'; 
        $table_foot = '</tbody></table>';
        $html_data = $html_title . $table_head . $table_body . $table_foot;
-       //echo "$html_data";die();
+       echo "$html_data";die();
        //$email_address = 'ttunduny@gmail.com';
        $email_address = 'ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'National Stocks for '.$englishdate;
@@ -6430,6 +6430,7 @@ public function county_detailed_summary($county_id) {
         $one = $value['email'];
         $email_address.= $one.',';                        
     } 
+
 
     $message = "Dear $county_name Team,<br/></br/>Please find attached the Sub-County Percentages for the Period between 
                     '$two_months_ago_text' and '$current_month_text' <br/></br>Sent From the RTK System"; 
@@ -6734,14 +6735,14 @@ $table_head_stock_card .='<h4>Section 2: County Summary - Stock Card (Amount in 
        $section_3 = $table_head1_cs.$table_body1_cs.$table_head1_cc.$table_body1_cc.$table_head1_ct.$table_body1_ct;
        $section_4 = $table_head1_s.$table_body1_s.$table_head1_c.$table_body1_c.$table_head1_t.$table_body1_t;
        $html_data = $section_1.$section_2.$section_3.$section_4;
-       // echo "<pre>";
-       // print_r($expiries_t);die();
-        // echo "$html_data";
-       // $email_address = 'ttunduny@gmail.com';
-       $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+       //echo "<pre>";
+       //print_r($expiries_t);die();
+       // echo "$html_data";die();
+        //$email_address = 'ttunduny@gmail.com';
+       //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
-       $this->sendmail($html_data,$message, $reportname, $email_address);             
+       $this->sendmail($html_data,$message, $reportname, $email_address);           
     
     
     
@@ -7050,11 +7051,11 @@ $table_head_stock_card .='<h4>Section 1: Partner Summary - Stock Card  (Amount i
        $section_3 = $table_head1_cs.$table_body1_cs.$table_head1_cc.$table_body1_cc.$table_head1_ct.$table_body1_ct;
        $section_4 = $table_head1_s.$table_body1_s.$table_head1_c.$table_body1_c.$table_head1_t.$table_body1_t;
        $html_data = $section_1.$section_2.$section_3.$section_4;
-       // echo "<pre>";
-       // print_r($expiries_t);die();
-       // echo "$html_data";die();
+       echo "<pre>";
+       //print_r($expiries_t);die();
+       echo "$html_data";die();
        // $email_address = 'ttunduny@gmail.com';
-       $email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
+       //$email_address.= 'onjathi@clintonhealthaccess.org,ttunduny@gmail.com,annchemu@gmail.com';
        $reportname = 'Percentages for '.$current_month_text;
        //$this->sendmail($html_data,$message, , $email_address);
        $this->sendmail($html_data,$message, $reportname, $email_address);             
