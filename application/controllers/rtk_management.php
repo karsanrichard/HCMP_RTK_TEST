@@ -2451,7 +2451,7 @@ public function allocation_details($zone, $a,$b ){
           $email_address = 'ttunduny@gmail.com';
             $reportname = 'RTK Expiries for '.$previous_month;
               $reportname = 'National Expiries for '.$previous_month;
-       $this->sendmail($html_data,$message, , $email_address);
+       $this->sendmail($html_data,$message,$email_address);
                 // $this->create_pdf($html_data,$reportname);
     }  
     function zone_allocation_stats($zone) {

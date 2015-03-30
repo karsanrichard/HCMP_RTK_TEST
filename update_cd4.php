@@ -9,16 +9,16 @@ if ($mysqli->connect_errno) {
 // 				$import = mysqli_query($mysqli,$sql) or die('Could Not Execute');die();
 	//include("config.php"); //here is where you specify your db connection path
 $rec=0;
-$handle = fopen ('pepfar_updated.csv', 'r'); //this is the csv file wth the mfl codes and partner ids ( ensure this csv is in same folder as the upload script )
+$handle = fopen ('cd4_list.csv', 'r'); //this is the csv file wth the mfl codes and partner ids ( ensure this csv is in same folder as the upload script )
 $count=0;
-while($count<=3169){
+while($count<=1000){
 		while (($data = fgetcsv($handle, 5000, ',', '"')) !== FALSE)
 		{
 			$rec++;
 			if($rec==1)
 			{
-				$sql = "update facilities set pepfar_supported='1'  where facility_code='$data[0]'";
-				echo "$sql<br/>";
+				$sql = "update facilities set cd4_enabled='1'  where facility_code='$data[0]'";
+				echo "Enabled $data[0]<br/>";
 
 			 	$import = mysqli_query($mysqli,$sql) or die('Could Not Execute');
 					
@@ -37,8 +37,8 @@ while($count<=3169){
 			else
 			{
 				//echo $data[0] .'<br/>' ; 
-				$sql = "update facilities set pepfar_supported='1'  where facility_code='$data[0]'";
-				echo "$sql<br/>";
+				$sql = "update facilities set cd4_enabled='0'  where facility_code='$data[0]'";
+				echo "Not Enabled $data[0]<br/>";
 			
  $import = mysqli_query($mysqli,$sql) or die('Could Not Execute');
 					
