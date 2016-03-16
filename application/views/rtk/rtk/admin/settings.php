@@ -232,7 +232,44 @@
             }?>
           </tbody>  
         </table>    
+</div>
+<hr/>
+      <h5><b>DRAWING RIGHTS</b></h5>
+      <!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#Add_Commodity">Add Commodity</button>       -->
+      <hr/>
+      <div id="drawing_rights">          
+        <table class="data-table" id="drawing-rights-table">
+          <thead>      
+            <th>County</th>
+            <th>HTC</th>
+            <th>PMTCT</th>
+            <th>Total Amount</th>
+            <th>Current Amount</th>
+            <th>Action</th>
+          </thead> 
+          <tbody>
+            <?php 
+            $i = 1;
+            foreach ($drawing_rights as $row) {
 
+              $id = $row['id'];
+
+              ?>  
+
+              <tr>      
+                <td><?php echo $row['county'] ?></td>
+                <td><?php echo $row['htc'] ?></td>
+                <td><?php echo $row['pmtct'] ?></td>
+                <td><?php echo $row['drawing_rights'] ?></td>
+                <td><?php echo $row['current_amount'] ?></td>
+                <td><button data-target="#Edit_Drawing_rights" class="edit_dr_btn" data-toggle="modal" id="<?php echo $row['id']?>" value="<?php echo $row['id']?>">Edit</button></td>
+              </tr> 
+              <?php 
+              $i++;
+            }?>
+          </tbody>  
+        </table>
+        </div>
 
         <!--Start of the Modals -->
         <!-- Add Commodity -->

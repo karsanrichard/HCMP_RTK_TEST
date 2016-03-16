@@ -156,6 +156,7 @@ class Eid_Management extends Home_controller {
 		$data["labs"] = $result;
 		$data['years'] = $years;
 		return $data;
+		// echo "<pre>";	print_r($data);
 	}
 	
 	function getApprovedLabs(){//Get approved labs for a certain period

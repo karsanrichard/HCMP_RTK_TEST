@@ -39,13 +39,14 @@
 <div class="row" style="width: 100%;float: right;margin-top:60px;text-align:center">
 	<?php	
 		foreach ($facilities as $key => $value) {
-			$new_zone = substr($value['Zone'], 5);
+			//$new_zone = substr($value['Zone'], 5);
+			$zone = $value['zone']
 
 			?>			
 			<div class="span3 extra" style="width:20%;float:left">
 				<span> 
-				<a href="<?php echo base_url().'rtk_management/allocation_county_detail_zoom/'.$new_zone;?>">
-					<?php echo $value['Zone'];?>
+				<a href="<?php echo base_url().'rtk_management/allocation_county_dashboard/'.$zone;?>"> Zone
+					<?php echo $value['zone'];?>
 				</a>
 				</span>	<br>
 				<div class="progress progress-info"><div class="bar" style=""></div></div>

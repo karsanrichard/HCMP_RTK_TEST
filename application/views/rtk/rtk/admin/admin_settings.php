@@ -59,9 +59,11 @@
       //$('#all_deads').hide();
       $('#all_alerts').hide();
       $('#all_comms').hide();
+      $('#all_drawing_rights').hide();
       $('.toggleSpan').addClass('glyphicon-chevron-up');
       $('.toggleSpan1').addClass('glyphicon-chevron-down');
       $('.toggleSpan2').addClass('glyphicon-chevron-down');
+      $('.toggleSpan3').addClass('glyphicon-chevron-down');
       
 
      $("#add_deadline_table").tablecloth({theme: "paper",         
@@ -131,6 +133,10 @@
      $('#cmms').click(function(){
       $('#all_comms').toggle('slow');
       $('.toggleSpan2').toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+     });
+     $('#dr').click(function(){
+      $('#all_drawing_rights').toggle('slow');
+      $('.toggleSpan3').toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
      });
       //$('#commodities-table').dataTable();  */     
 
@@ -265,7 +271,45 @@
         </table>  
         </div>
         </div>  
+<h5 id="dr"><b>DRAWING RIGHTS</b><span class="glyphicon toggleSpan3"></h5>
+      <div id="all_drawing_rights">          
 
+      <!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#Add_Commodity">Add Commodity</button>       -->
+      <hr/>
+      <div id="drawing_rights">          
+        <table class="data-table" id="drawing-rights-table">
+          <thead>      
+            <th>County</th>
+            <th>HTC</th>
+            <th>PMTCT</th>
+            <th>Total Amount</th>
+            <th>Current Amount</th>
+            <th>Action</th>
+          </thead> 
+          <tbody>
+            <?php 
+            $i = 1;
+            foreach ($drawing_rights as $row) {
+
+              $id = $row['id'];
+
+              ?>  
+
+              <tr>      
+                <td><?php echo $row['county'] ?></td>
+                <td><?php echo $row['htc'] ?></td>
+                <td><?php echo $row['pmtct'] ?></td>
+                <td><?php echo $row['drawing_rights'] ?></td>
+                <td><?php echo $row['current_amount'] ?></td>
+                <td><button data-target="#Edit_Drawing_rights" class="edit_dr_btn" data-toggle="modal" id="<?php echo $row['id']?>" value="<?php echo $row['id']?>">Edit</button></td>
+              </tr> 
+              <?php 
+              $i++;
+            }?>
+          </tbody>  
+        </table>
+        </div>
+        </div>
 
         <!--Start of the Modals -->
         <!-- Add Commodity -->

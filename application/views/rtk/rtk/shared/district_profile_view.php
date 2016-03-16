@@ -109,15 +109,16 @@
                                 $count = count($district_balances_current);
                                 if($count==0){?>
                                   <tr>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>                                        
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>                                        
+                                    <td>N/A</td>                                        
                                   </tr>
                                 <?php }else{
                                   foreach ($district_balances_current as $key => $value) {?>

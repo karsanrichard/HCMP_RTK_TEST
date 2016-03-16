@@ -484,6 +484,8 @@ $count = count($res);
                 <?php
                 $checker = 0;
                 foreach ($lab_categories as $lab_category) {
+                //     echo "<pre>";
+                // print_r($lab_commodities_categories);die;
                     ?>
                     <tr>
                         <td colspan = "14" style = "text-align:left"><b><?php echo $lab_category->category_name; ?></b></td>            
@@ -604,8 +606,7 @@ $count = count($res);
         striped: true,            
         clean: true,                
     });
-    $('#commodity_name_0').append(' <br/>(Old Algorithm)');
-    $('#commodity_name_1').append(' <br/>(Old Algorithm)');
+    
     $('#calc').css('color','blue');
     $('#calc').css('text-align','center');
     $('#calc').css('font-size','12px');

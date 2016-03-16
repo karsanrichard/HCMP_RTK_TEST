@@ -2,7 +2,7 @@
  #stock_card{
   min-height: 350px;
   height: auto;
-  border: 1px ridge;
+  border: 0px ridge;
   width: 96%;
   margin-top: 2%;
   float: left;
@@ -27,7 +27,7 @@
   margin-top: 2%;
   width: 96%;
   height: 30px;  
-   border: 1px ridge;
+   border: 0px ridge;
   padding: 2px; 
  }
  #top-menu a{
@@ -62,15 +62,16 @@
   <div id="stock_card">    
     <table id="stock_card_table" class="data-table">
       <thead>
+      <tr>
+          <th colspan="4" id="th-banner">HIV Rapid Test Kit Stock Status as at end of <?php echo "$month_text";?> for Zone C</th>
+        </tr>
         <tr>
           <th>Commodity Name</th>
           <th>AMC</th>
           <th>Stock on Hand at Facility</th>
           <th>MOS Central</th>
         </tr>
-        <tr>
-          <th colspan="4" id="th-banner">HIV Rapid Test Kit Stock Status as at end of <?php echo "$month_text";?></th>
-        </tr>
+        
       </thead>
       <tbody style="border-top: solid 1px #828274;">
         
@@ -88,9 +89,7 @@
       </tbody>
     </table>
   </div>
-  <div id="stock_status">
-    
-  </div>
+  
 </div>
 
 <script type="text/javascript">

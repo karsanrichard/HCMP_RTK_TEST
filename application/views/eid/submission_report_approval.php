@@ -54,7 +54,7 @@
 				   <div class="tab-pane active" id="eid_report"> 
 					   	<table class="table">
 							<thead>
-								<tr><td>Total Tests Done <small>( for <?php echo $monthname .' , '.$year ?> )</small> - VL : <b><?php echo $testsdone ;?>  <input type="hidden" name="eidtestsdone" size="5" value="<?php echo $testsdone;?>" style = "background:#FFFFCC; font-weight:bold"/></b></td></tr>
+								<tr><td>Total Tests Done <small>( for <?php echo $monthname .' , '.$year ?> )</small> - EID : <b><?php echo $testsdone ;?>  <input type="hidden" name="eidtestsdone" size="5" value="<?php echo $testsdone;?>" style = "background:#FFFFCC; font-weight:bold"/></b></td></tr>
 							</thead>
 							<tbody></tbody>
 						</table>

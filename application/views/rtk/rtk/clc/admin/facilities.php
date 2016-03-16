@@ -147,7 +147,7 @@ function update_rtk(val){
 <th>MFL Code</th>
     <th>Name</th>
     <th>Owner</th>
-    <th>County</th>
+    
     <th>Sub-County</th>
     <th>Reporting Status</th>
     <th>Action</th>
@@ -160,7 +160,6 @@ function update_rtk(val){
     <td><?php echo $code; ?></td>
     <td><?php echo $row['facility_name'];?></td>
     <td><?php echo $row['owner'];?></td>
-    <td><?php echo $county;?></td>    
     <td><?php echo $row['districtname'];?></td>
     <td><?php if($row['rtk_enabled']==0)
     {

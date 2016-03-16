@@ -58,9 +58,9 @@ table{
       <th align="">Sub-County</th>
       <th align="">MFL</th>
       <th align="">Facility Name</th>     
-      <th align="center" colspan="4">Screening KHB</th>      
-      <th align="center" colspan="4">Confirmatory First Response</th>      
-      <th align="center" colspan="4">TieBreaker - Unigold</th> 
+      <th align="center" colspan="5">Screening KHB</th>      
+      <th align="center" colspan="5">Confirmatory First Response</th>      
+      <th align="center" colspan="5">TieBreaker - Unigold</th> 
     </tr>    
     <tr>
           
@@ -70,16 +70,19 @@ table{
       <th align="center"></th>      
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
-      <th align="center">MMOS</th>
+      <th align="center">Days out of Stock</th>
+      <th align="center">Quantity Requested</th>
       <th align="center">Quantity to Allocate</th>
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
-      <th align="center">MMOS</th>      
+      <th align="center">Days out of Stock</th>
+      <th align="center">Quantity Requested</th>
       <th align="center">Quantity to Allocate</th>
       <th align="center">Ending Balance</th>      
-      <th align="center">AMC</th>
-      <th align="center">MMOS</th>
-      <th align="center">Quantity to Allocate</th>                
+      <th align="center">AMC</th> 
+      <th align="center">Days out of Stock</th>
+      <th align="center">Quantity Requested</th>
+      <th align="center">Quantity to Allocate</th>               
     </tr>
       
     </thead>
@@ -87,17 +90,31 @@ table{
     <tbody>
       <?php
       if(count($final_dets)>0){
+        $count = 0;
        foreach ($final_dets as $value) {
         //$zone = str_replace(' ', '-',$value['zone']);
         $facil = $value['code'];
 
-        $ending_bal_s =ceil(($value['end_bal'][0]['closing_stock'])/50); 
-        $ending_bal_c =ceil(($value['end_bal'][1]['closing_stock'])/30); 
-        $ending_bal_t =ceil(($value['end_bal'][2]['closing_stock'])/20);
+        $ending_bal_s =ceil($value['end_bal'][0]['closing_stock']); 
+        $ending_bal_c =ceil($value['end_bal'][1]['closing_stock']); 
+        $ending_bal_t =ceil($value['end_bal'][2]['closing_stock']);
+
+        $days_out_of_stock_s =ceil($value['end_bal'][0]['days_out_of_stock']); 
+        $days_out_of_stock_c =ceil($value['end_bal'][1]['days_out_of_stock']); 
+        $days_out_of_stock_t =ceil($value['end_bal'][2]['days_out_of_stock']);
+
+        $q_requested_s =ceil($value['end_bal'][0]['q_requested']); 
+        $q_requested_c =ceil($value['end_bal'][1]['q_requested']); 
+        $q_requested_t =ceil($value['end_bal'][2]['q_requested']);
+
+        $amc_s = str_replace(',', '',$my_amcs[$count][0]);
+        $amc_c = str_replace(',', '',$my_amcs[$count][1]);
+        $amc_t = str_replace(',', '',$my_amcs[$count][2]);
+
 
         $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
         $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
-        $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);
+        $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);        
 
         if($amc_s==''){
           $amc_s = 0;
@@ -111,28 +128,28 @@ table{
           $amc_t = 0;
         }
 
-        $mmos_s = ceil(($amc_s * 4)/50);
-        $mmos_c = ceil(($amc_c * 4)/30);
-        $mmos_t = ceil(($amc_t * 4)/20);
+        // $mmos_s = ceil(($amc_s * 4)/50);
+        // $mmos_c = ceil(($amc_c * 4)/30);
+        // $mmos_t = ceil(($amc_t * 4)/20);
 
-        if($mmos_s < $ending_bal_s){
-          $qty_to_alloc_s = 0;
-        }else{
-          $qty_to_alloc_s = $mmos_s - $ending_bal_s;
-        }
+        // if($mmos_s < $ending_bal_s){
+        //   $qty_to_alloc_s = 0;
+        // }else{
+        //   $qty_to_alloc_s = $mmos_s - $ending_bal_s;
+        // }
 
-        if($mmos_c < $ending_bal_c){
-          $qty_to_alloc_c = 0;
-        }else{
-          $qty_to_alloc_c = $mmos_c - $ending_bal_c;
-        }
+        // if($mmos_c < $ending_bal_c){
+        //   $qty_to_alloc_c = 0;
+        // }else{
+        //   $qty_to_alloc_c = $mmos_c - $ending_bal_c;
+        // }
 
-        if($mmos_t < $ending_bal_t){
-          $qty_to_alloc_t = 0;
-        }else{
-          $qty_to_alloc_t = $mmos_t - $ending_bal_t;
-        }
-
+        // if($mmos_t < $ending_bal_t){
+        //   $qty_to_alloc_t = 0;
+        // }else{
+        //   $qty_to_alloc_t = $mmos_t - $ending_bal_t;
+        // }
+        $count++;
         
         ?> 
         <tr>   
@@ -142,19 +159,22 @@ table{
           <td align=""><?php echo $value['name'];?></td>
 
           <td align="center"><?php echo $ending_bal_s;?></td>     
-          <td align="center"><?php echo $amc_s;?></td>     
-          <td align="center"><?php echo $mmos_s;?></td>
-          <td align="center"><?php echo $qty_to_alloc_s;?></td>
+          <td align="center"><?php echo $amc_s;?></td> 
+          <td align="center"><?php echo $days_out_of_stock_s;?></td> 
+          <td align="center"><?php echo $q_requested_s;?></td> 
+          <td align="center"><?php echo 0;?></td> 
 
           <td align="center"><?php echo $ending_bal_c;?></td>     
-          <td align="center"><?php echo $amc_c;?></td>     
-          <td align="center"><?php echo $mmos_c;?></td>
-          <td align="center"><?php echo $qty_to_alloc_c;?></td>
+          <td align="center"><?php echo $amc_c;?></td> 
+          <td align="center"><?php echo $days_out_of_stock_c;?></td> 
+          <td align="center"><?php echo $q_requested_c;?></td> 
+          <td align="center"><?php echo 0;?></td> 
 
           <td align="center"><?php echo $ending_bal_t;?></td>     
-          <td align="center"><?php echo $amc_t;?></td>     
-          <td align="center"><?php echo $mmos_t;?></td>
-          <td align="center"><?php echo $qty_to_alloc_t;?></td>
+          <td align="center"><?php echo $amc_t;?></td> 
+          <td align="center"><?php echo $days_out_of_stock_t;?></td> 
+          <td align="center"><?php echo $q_requested_t;?></td> 
+          <td align="center"><?php echo 0;?></td> 
           
          
           

@@ -197,22 +197,41 @@ code {
 .accordion h3.collapse-open {}
 .accordion h3.collapse-close {}
 .accordion h3.collapse-open span {}
-.accordion h3.collapse-close span {}   
+.accordion h3.collapse-close span {}  
+#fixed-topbar{
+  /*z-index:10;*/
+  position: fixed; 
+  top: 74px;
+  background:#009933; 
+  width: 98%;
+  padding: 7px 1px 0px 13px;
+  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  border-radius: 4px 0px 0px 4px;
+}   
 </style>
 
 <div>
 <?php { ?>
-<div id="fixed-topbar" style="z-index:10;position: fixed; top: 74px;background:#009933; width: 100%;padding: 7px 1px 0px 13px;border-bottom: 1px solid #ccc;border-bottom: 1px solid #ccc;border-radius: 4px 0px 0px 4px;">
+<div id="fixed-topbar">
 <span class="lead" style="color: #fff;float:left;">Switch Identities</span>
 &nbsp;
-<select id="user_switch" class="form-control" style="width:15%;float:left;margin-left:200px;"><option value="0"> -- Select UserType--</option><option value="scmlt">SCMLT</option><option value="rtk_county_admin">County Administrator</option><option value="rtk_partner_super">Partner</option>
+<select id="user_switch" class="form-control" style="width:15%;float:left;margin-left:200px;">
+  <option value="0"> -- Select UserType--</option>
+  <option value="scmlt">SCMLT</option>
+  <option value="rtk_county_admin">County Administrator</option>
+  <option value="rtk_partner_super">Partner</option>
 </select>
 &nbsp;
-<select id="county_switch" class="form-control" style="width:15%;float:left"><option value="0"> -- Select County --</option><?php echo $counties_option_html;?></select>
+<select id="county_switch" class="form-control" style="width:15%;float:left;margin-left:10px;">
+  <option value="0"> -- Select County --</option>
+  <?php echo $counties_option_html;?></select>
 &nbsp;
-<select id="district_switch" class="form-control" style="width:15%;float:left"><option value="0"> -- Select Sub-County --</option><?php echo $districts_option_html;?></select>
+<select id="district_switch" class="form-control" style="width:15%;float:left;margin-left:10px;">
+  <option value="0"> -- Select Sub-County --</option>
+  <?php echo $districts_option_html;?></select>
 &nbsp;
-<a href="#" class="btn btn-primary" id="switch_idenity" style="margin-top: 0px;float:left">Go</a>
+<a href="#" class="btn btn-primary" id="switch_idenity" style="margin-top: 0px;float:left;margin-left:10px;">Go</a>
 </div>
 <?php } ?>
 

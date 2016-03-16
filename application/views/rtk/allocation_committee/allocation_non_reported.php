@@ -64,9 +64,7 @@ table{
       <th>Zone</th>          
       <th><?php echo $month_texts[0];?></th>    
       <th><?php echo $month_texts[1];?></th>    
-      <th><?php echo $month_texts[2];?></th>    
-      <th><?php echo $month_texts[3];?></th>    
-      <th><?php echo $month_texts[4];?></th>    
+      <th><?php echo $month_texts[2];?></th>   
     </tr> 
       
     </thead>
@@ -79,8 +77,6 @@ table{
         $m1 =$months[0];
         $m2 =$months[1];
         $m3 =$months[2];
-        $m4 =$months[3];
-        $m5 =$months[4];
         ?> 
         <tr> 
           <td><?php echo $value['county'];?></td>
@@ -91,14 +87,10 @@ table{
           <td><?php echo $final_array[$m1][0][$facil][0];?></td>
           <td><?php echo $final_array[$m2][0][$facil][0];?></td>
           <td><?php echo $final_array[$m3][0][$facil][0];?></td>
-          <td><?php echo $final_array[$m4][0][$facil][0];?></td>
-          <td><?php echo $final_array[$m5][0][$facil][0];?></td>
         </tr>
         <?php }
       }else{ ?>
       <tr>There are No Facilities which did not Report</tr><tr> 
-          <td>N/A</td>
-          <td>N/A</td>
           <td>N/A</td>
           <td>N/A</td>
           <td>N/A</td>

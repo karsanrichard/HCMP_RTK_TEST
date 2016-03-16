@@ -44,7 +44,7 @@
     </head>
 <body screen_capture_injected="true" style="">
 
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-top: 2px">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -56,12 +56,12 @@
                 <img style="display:inline-block;" src="<?php echo base_url(); ?>assets/img/coat_of_arms-resized1.png" class="img-responsive " alt="Responsive image">
                 <div id="" style="display:inline-block;">
                     <span style="font-size: 0.95em;font-weight: bold; ">Ministry of Health</span><br />
-                    <span style="font-size: 0.85em;">Health Commodities Management Platform (HCMP)</span>	
+                    <span style="font-size: 0.85em;">Health Commodities Management Platform (HCMP) - HIV Related Commodities</span>	
                 </div>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right" >
-                    <li><a class="" href="<?php echo site_url() . 'Home'; ?>" >HOME</a> </li>   
+                <ul class="nav nav-pills navbar-right" >
+                    <li><a class="" href="<?php echo site_url() . 'Home'; ?>" ><span class="glyphicon glyphicon-home"></span> Home</a> </li>   
                     <?php
 //Retrieve all accessible menus/submenus from the session
                     $menus = $this->session->userdata('menus');
@@ -70,7 +70,7 @@
                     foreach ($menus as $menu) {
                         ?>
                         <li class="">
-                            <a href="<?php echo site_url($menu['menu_url']); ?>" id="sub" class=""><?php echo $menu['menu_text']; ?></a>           	
+                            <a href="<?php echo site_url($menu['menu_url']); ?>" id="sub" class=""> <span class="glyphicon glyphicon-th"></span> <?php echo $menu['menu_text']; ?></a>           	
                             <ul  class="dropdown-menu" style="min-width: 0">           		
                                 <?php
                                 foreach ($sub_menus as $sub_menu) {
@@ -90,7 +90,7 @@
                     }
                     ?>
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user" ></span><?php echo $this->session->userdata('full_name'); ?> <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user" ></span> <?php echo $this->session->userdata('full_name'); ?> <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <!--li><a style="background: whitesmoke;color: black !important" href="<?php echo site_url("user/change_password"); ?>"><span class="glyphicon glyphicon-pencil" style="margin-right: 2%;"></span>Change password</a></li-->                
                             <li><a style="background: whitesmoke;color: black !important" href="#" data-toggle="modal" data-target="#Change_Password"><span class="glyphicon glyphicon-pencil" style="margin-right: 2%;"></span>Change password</a></li>                
@@ -102,7 +102,7 @@
         </div>
 
     </div>   
-    <div class="container-fluid" style="margin-top: 2%;">
+    <div class="container-fluid" style="margin-top: 2%;overflow:scroll; height:550px;">
         <div class="" style="padding:0;border-radius: 0;margin-top: -2% ">
             <h1 class="page-header" style="margin: 0;font-size: 1.3em;"><?php echo $banner_text; ?></h1>
             <?php $this->load->view($content_view); ?>

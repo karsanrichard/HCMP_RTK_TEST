@@ -73,9 +73,8 @@ table{
                 <th>Tests Done</th>
                 <th>Closing Balance</th>
                 <th>Requested Qty</th>
-                <th>Out of Stock days</th>
-                <th>Expiring Qty</th>
-                <th>Allocated Qty</th>
+                <th>No. of Facilities with </br>Out of Stock days</th>
+                <th>Quantity Expiring </br>(in the next 6 months)</th>
             </thead>
             <tbody>
                 <?php 
@@ -93,7 +92,6 @@ table{
                         <td><?php echo $value['sum_requested']; ?></td>
                         <td><?php echo $value['sum_days']; ?></td>
                         <td><?php echo $value['sum_expiring']; ?></td>
-                        <td><?php echo $value['sum_allocated']; ?></td>
                     </tr>
                     <?php } }?>
                 </tbody>

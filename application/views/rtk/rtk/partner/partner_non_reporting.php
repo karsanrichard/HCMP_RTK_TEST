@@ -175,10 +175,32 @@ table tr{
           cleanElements: "th td",
           customClass: "my-table"
         });
+        //  $('#pending_facilities').dataTable({
+        //     "bJQueryUI": false,
+        //     "bPaginate": true,
+        //     "aaSorting": [[3, "desc"]]
+        // });
          $('#pending_facilities').dataTable({
-            "bJQueryUI": false,
-            "bPaginate": true,
-            "aaSorting": [[3, "desc"]]
+            "sDom": "T lfrtip",
+             "aaSorting": [],
+             "bJQueryUI": false,
+              "bPaginate": false,
+              "oLanguage": {
+                "sLengthMenu": "_MENU_ Records per page",
+                "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
+              },
+              "oTableTools": {
+              "aButtons": [      
+              "copy",
+              "print",
+              {
+                "sExtends": "collection",
+                "sButtonText": 'Save',
+                "aButtons": ["csv", "xls", "pdf"]
+              }
+              ],  
+              "sSwfPath": "<?php echo base_url();?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
+            }
         });
         
         });

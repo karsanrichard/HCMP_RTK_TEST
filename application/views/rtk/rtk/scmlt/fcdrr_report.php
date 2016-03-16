@@ -217,7 +217,6 @@ border-bottom: solid 1px #ccc;">
                 <tr></tr>
                 <tr > 				<th rowspan = "2" colspan = "2" style = "text-align:center;font-size:12"><b>Category Name</b></th>
                     <th rowspan = "2" colspan = "2" style = "text-align:center;font-size:12"><b>Commodity Name</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Unit of Issue (e.g. Test)</b></th>
                     <th rowspan = "2" style = "text-align:center;font-size:12"><b>Beginning Balance</b></th>
                     <th rowspan = "2" style = "text-align:center;font-size:12"><b>Quantity Received</b></th>
                     <th rowspan = "2" style = "text-align:center;font-size:12"><b>Quantity Used</b></th>
@@ -239,7 +238,6 @@ border-bottom: solid 1px #ccc;">
                     <tr>
                         <td colspan = "2" style = "text-align:left"><b><?php echo $detail['category_name']; ?></b></td>		    
                         <td class="commodity_names" id="commodity_name_<?php echo $checker;?>" colspan = "2" style = "text-align:left"></b><?php echo $detail['commodity_name']; ?></td>
-                        <td style = "text-align:center"><?php echo $detail['unit_of_issue']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['beginning_bal']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['q_received']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['q_used']; ?></td>
@@ -295,6 +293,5 @@ border-bottom: solid 1px #ccc;">
             striped: true,            
             clean: false,            
         });
-        $('#commodity_name_0').append(' <br/>(Old Algorithm)');
-        $('#commodity_name_1').append(' <br/>(Old Algorithm)');
+       
         </script>

@@ -141,7 +141,7 @@ class Home extends MY_Controller
 	$facility_donations=redistribution_data::get_all_active($facility_code,"to-me")->count();
 	//get items they have been donated and are pending
 	$facility_donations_pending=redistribution_data::get_all_active($facility_code)->count();
-	//get stocks from v1
+	//get stocks from vs
 	$stocks_from_v1=0;
 	if($facility_stock_count==0 && $facility_donations==0 && $facility_donations_pending==0 ){
 	$stocks_from_v1=count(facility_stocks::import_stock_from_v1($facility_code));	

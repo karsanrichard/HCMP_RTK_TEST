@@ -98,7 +98,9 @@ $(function(){
             <?php 
             $count = count($reports);
             if($count>=1){
-                foreach ($reports as $key => $value) { ?>
+                foreach ($reports as $key => $value) {
+                // print_r($reports); ?>
+
                 <div class="accordion-group">
                     <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#report-<?php echo $value['id']; ?>">
@@ -111,7 +113,6 @@ $(function(){
                                 <thead>
                                     <tr>
                                         <th>Kit</th>
-                                        <th> AMC </th>
                                         <th>Beginning Balance</th>
                                         <th>Received Quantity</th>
                                         <th>Used Total</th>
@@ -130,8 +131,7 @@ $(function(){
                                        
                                         ?>
                                        <tr>
-                                        <td><?php echo $values['commodity_name'];?></td>
-                                        <td><?php echo $values['amc'];?></td>                                    
+                                        <td><?php echo $values['commodity_name'];?></td>                                                               
                                         <td><?php echo $values['beginning_bal']; ?></td>
                                         <td><?php echo $values['q_received']; ?></td>
                                         <td><?php echo $values['q_used']; ?></td>

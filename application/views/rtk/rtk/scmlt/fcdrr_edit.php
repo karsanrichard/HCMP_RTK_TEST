@@ -547,8 +547,7 @@ $("#dialog").dialog({
         striped: true,            
         clean: true,                
     });
-    $('#commodity_name_0').append(' <br/>(Old Algorithm)');
-    $('#commodity_name_1').append(' <br/>(Old Algorithm)');
+    
     $('#calc').css('color','blue');
     $('#calc').css('text-align','center');
     $('#calc').css('font-size','12px');

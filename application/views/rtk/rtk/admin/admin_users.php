@@ -198,6 +198,13 @@ foreach ($res_arr2 as $value) {
                     }else if ($value['status'] == '2') {
                         $status = 'Inactive';
                     }
+
+                     if ($value['fname'] == '') {
+                        $value['fname'] = 'N/A';
+                    }
+                     if ($value['lname'] == '') {
+                        $value['lname'] = 'N/A';
+                    }
                     ?>  
 
                     <tr>

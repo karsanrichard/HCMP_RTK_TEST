@@ -78,17 +78,20 @@
 									    	
 										     <select id="download-report-period" class="form-control">
 												<?php
+												// echo "preety";
+												// print_r($years);
 												$x = 0;
 												foreach ($years as $value){
 													for ($i=12; $i >=1 ; $i--) {
-														if($x == 0){//Only get up to current month for the first year
-															$monthNum = date('n') - 1;
-															if($i>$monthNum){
-																continue;
-															}
-															$x++;
-														} 
+														// if($x == 0){//Only get up to current month for the first year
+														// 	$monthNum = date('n') - 1;
+														// 	if($i>$monthNum){
+														// 		continue;
+														// 	}
+														// 	$x++;
+														// } 
 														$period = $value.'-'.$i;
+														// echo $period;
 														$monthName = date("F", mktime(0, 0, 0, $i, 10));
 														echo "<option value=\"$period\">$monthName - $value</option>\n";
 													}
