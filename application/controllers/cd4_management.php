@@ -20,7 +20,81 @@ class cd4_Management extends Home_controller {
         echo "|";
     }
 
-    //SCMLT FUNCTUONS
+ public function scmlt_home(){
+        $district = $this->session->userdata('district_id');                
+        $facilities = Facilities::get_total_facilities_rtk_in_district($district);       
+        $district_name = districts::get_district_name_($district);                    
+        $table_body = '';
+        $reported = 0;
+        $nonreported = 0;
+        $date = date('d', time());
+
+        $msg = $this->session->flashdata('message');
+        if(isset($msg)){
+            $data['notif_message'] = $msg;
+        }
+        if(isset($popout)){
+            $data['popout'] = $popout;
+        }
+        
+        $sql = "select distinct rtk_settings.* 
+        from rtk_settings, facilities 
+        where facilities.zone = rtk_settings.zone 
+        and facilities.rtk_enabled = 1";
+        $res_ddl = $this->db->query($sql);
+        $deadline_date = null;
+        $settings = $res_ddl->result_array();
+        foreach ($settings as $key => $value) {
+            $deadline_date = $value['deadline'];
+            $five_day_alert = $value['5_day_alert'];
+            $report_day_alert = $value['report_day_alert'];
+            $overdue_alert = $value['overdue_alert'];
+        }
+        date_default_timezone_set("EUROPE/Moscow");
+
+        foreach ($facilities as $facility_detail) {
+
+           $lastmonth = date('F', strtotime("last day of previous month"));
+           if($date>$deadline_date){
+            $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span> <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'></a></td>";
+        }else{
+            $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span> <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'> Report</a></td>";
+        }
+
+
+        $table_body .="<tr><td><a class='ajax_call_1' id='county_facility' name='" . base_url() . "rtk_management/get_rtk_facility_detail/$facility_detail[facility_code]' href='#'>" . $facility_detail["facility_code"] . "</td>";
+        $table_body .="<td>" . $facility_detail['facility_name'] . "</td><td>" . $district_name['district'] . "</td>";
+        $table_body .="<td>";
+
+        $lab_count = lab_commodity_orders::get_recent_lab_orders($facility_detail['facility_code']);
+        if ($lab_count > 0) {
+            $reported = $reported + 1;              
+            $table_body .="<span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
+        } else {
+            $nonreported = $nonreported + 1;
+            $table_body .=$report_link;
+        }
+
+        $table_body .="</td>";
+    }   
+    $county = $this->session->userdata('county_name');
+    $countyid = $this->session->userdata('county_id');
+    $data['countyid'] = $countyid;
+    $data['county'] = $county;
+    $data['table_body'] = $table_body;
+    $data['content_view'] = "rtk/rtk/scmlt/dpp_home_with_table";
+    $data['title'] = "Home";
+    $data['link'] = "home";
+    $total = $reported + $nonreported;
+    $percentage_complete = ceil($reported / $total * 100);
+    $percentage_complete = number_format($percentage_complete, 0);
+    $data['percentage_complete'] = $percentage_complete;
+    $data['reported'] = $reported;
+    $data['nonreported'] = $nonreported;
+    $data['facilities'] = Facilities::get_total_facilities_rtk_in_district($district);
+    $this->load->view('rtk/template', $data);
+
+}
 
     
 
