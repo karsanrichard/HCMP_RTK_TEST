@@ -20,6 +20,26 @@ class cd4_Management extends Home_controller {
         echo "|";
     }
 
+ public function facility_home(){
+
+
+        echo $facility_id = $this->session->userdata('facility_id');  
+
+        // // print_r($this->session->all_userdata());die;
+
+
+        // echo $sql = "SELECT * FROM facility WHERE id = '$facility_id'";
+
+        // $res = $this->db->query($sql);
+
+        // print_r($res);die;
+
+        // $mfl = $res[0]["mfl_code"];
+
+
+        redirect("cd4_management/facility_profile/$facility_id");
+
+ }
  public function scmlt_home(){
         $district = $this->session->userdata('district_id');                
         $facilities = Facilities::get_total_facilities_rtk_in_district($district);       
