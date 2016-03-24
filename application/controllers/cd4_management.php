@@ -20,6 +20,26 @@ class cd4_Management extends Home_controller {
         echo "|";
     }
 
+ public function facility_home(){
+
+
+        echo $facility_id = $this->session->userdata('facility_id');  
+
+        // // print_r($this->session->all_userdata());die;
+
+
+        // echo $sql = "SELECT * FROM facility WHERE id = '$facility_id'";
+
+        // $res = $this->db->query($sql);
+
+        // print_r($res);die;
+
+        // $mfl = $res[0]["mfl_code"];
+
+
+        redirect("cd4_management/facility_profile/$facility_id");
+
+ }
  public function scmlt_home(){
         $district = $this->session->userdata('district_id');                
         $facilities = Facilities::get_total_facilities_rtk_in_district($district);       
@@ -140,100 +160,7 @@ function _get_cd4_begining_balance($facility_code) {
     return $result_bal;
 }
 
-      //Save FCDRR
-public function save_lab_report_data() {
 
-    date_default_timezone_set("EUROPE/Moscow");
-    $firstday = date('D dS M Y', strtotime("first day of previous month"));
-    $lastday = date('D dS M Y', strtotime("last day of previous month"));
-    $lastmonth = date('F', strtotime("last day of previous month"));
-
-    $month = $lastmonth;
-    $district_id = $_POST['district'];
-    $facility_code = $_POST['facility_code'];
-    $drug_id = $_POST['commodity_id'];
-    $unit_of_issue = $_POST['unit_of_issue'];
-    $b_balance = $_POST['b_balance'];
-    $q_received = $_POST['q_received'];
-    $q_used = $_POST['q_used'];
-    $tests_done = $_POST['tests_done'];
-    $losses = $_POST['losses'];
-    $pos_adj = $_POST['pos_adj'];
-    $neg_adj = $_POST['neg_adj'];
-    $physical_count = $_POST['physical_count'];
-    $q_expiring = $_POST['q_expiring'];
-    $days_out_of_stock = $_POST['days_out_of_stock'];
-    $q_requested = $_POST['q_requested'];
-    $commodity_count = count($drug_id);
-
-    $vct = $_POST['vct'];
-    $pitc = $_POST['pitc'];
-    $pmtct = $_POST['pmtct'];
-    $b_screening = $_POST['blood_screening'];
-    $other = $_POST['other2'];
-    $specification = $_POST['specification'];
-    $rdt_under_tests = $_POST['rdt_under_tests'];
-    $rdt_under_pos = $_POST['rdt_under_positive'];
-    $rdt_btwn_tests = $_POST['rdt_to_tests'];
-    $rdt_btwn_pos = $_POST['rdt_to_positive'];
-    $rdt_over_tests = $_POST['rdt_over_tests'];
-    $rdt_over_pos = $_POST['rdt_over_positive'];
-    $micro_under_tests = $_POST['micro_under_tests'];
-    $micro_under_pos = $_POST['micro_under_positive'];
-    $micro_btwn_tests = $_POST['micro_to_tests'];
-    $micro_btwn_pos = $_POST['micro_to_positive'];
-    $micro_over_tests = $_POST['micro_over_tests'];
-    $micro_over_pos = $_POST['micro_over_positive'];
-    $beg_date = $_POST['begin_date'];
-    $end_date = $_POST['end_date'];
-    $explanation = $_POST['explanation'];
-    $compiled_by = $_POST['compiled_by'];
-    $moh_642 = $_POST['moh_642'];
-    $moh_643 = $_POST['moh_643'];
-
-    date_default_timezone_set('EUROPE/Moscow');
-    $beg_date = date('Y-m-d', strtotime("first day of previous month"));
-    $end_date = date('Y-m-d', strtotime("last day of previous month"));
-
-    $user_id = $this->session->userdata('user_id');        
-
-    $order_date = date('y-m-d');
-    $count = 1;
-    $data = array('facility_code' => $facility_code, 'district_id' => $district_id, 'compiled_by' => $compiled_by, 'order_date' => $order_date, 'vct' => $vct, 'pitc' => $pitc, 'pmtct' => $pmtct, 'b_screening' => $b_screening, 'other' => $other, 'specification' => $specification, 'rdt_under_tests' => $rdt_under_tests, 'rdt_under_pos' => $rdt_under_pos, 'rdt_btwn_tests' => $rdt_btwn_tests, 'rdt_btwn_pos' => $rdt_btwn_pos, 'rdt_over_tests' => $rdt_over_tests, 'rdt_over_pos' => $rdt_over_pos, 'micro_under_tests' => $micro_under_tests, 'micro_under_pos' => $micro_under_pos, 'micro_btwn_tests' => $micro_btwn_tests, 'micro_btwn_pos' => $micro_btwn_pos, 'micro_over_tests' => $micro_over_tests, 'micro_over_pos' => $micro_over_pos, 'beg_date' => $beg_date, 'end_date' => $end_date, 'explanation' => $explanation, 'moh_642' => $moh_642, 'moh_643' => $moh_643, 'report_for' => $lastmonth);
-    $u = new Lab_Commodity_Orders();
-    $u->fromArray($data);
-    $u->save();
-    $object_id = $u->get('id');
-    $this->logData('13', $object_id);
-    // $this->update_amc($facility_code);
-
-    $lastId = Lab_Commodity_Orders::get_new_order($facility_code);
-    $new_order_id = $lastId->maxId;
-    $count++;
-
-    for ($i = 0; $i < $commodity_count; $i++) {            
-        $mydata = array('order_id' => $new_order_id, 'facility_code' => $facility_code, 'district_id' => $district_id, 'commodity_id' => $drug_id[$i], 'unit_of_issue' => $unit_of_issue[$i], 'beginning_bal' => $b_balance[$i], 'q_received' => $q_received[$i], 'q_used' => $q_used[$i], 'no_of_tests_done' => $tests_done[$i], 'losses' => $losses[$i], 'positive_adj' => $pos_adj[$i], 'negative_adj' => $neg_adj[$i], 'closing_stock' => $physical_count[$i], 'q_expiring' => $q_expiring[$i], 'days_out_of_stock' => $days_out_of_stock[$i], 'q_requested' => $q_requested[$i]);
-        Lab_Commodity_Details::save_lab_commodities($mydata);           
-    }
-    $q = "select county from districts where id='$district_id'";
-    $res = $this->db->query($q)->result_array();
-    foreach ($res as $key => $value) {
-        $county = $value['county'];
-    }
-
-    $r = "select partner from facilities where facility_code='$facility_code'";
-    $resr = $this->db->query($r)->result_array();
-    foreach ($resr as $key => $value) {
-        $partner = $value['partner'];
-    }
-    if($partner=0){
-        $partner = null;
-    }
-    $this->_update_reports_count('add',$county,$district_id,$partner);
-    $this->session->set_flashdata('message', 'The report has been saved');
-    redirect('rtk_management/scmlt_home');
-
-}
     //Save cd4 FCDRR
 public function save_cd4_report_data() {
 
@@ -366,7 +293,7 @@ public function save_cd4_report_data() {
     // }
     // // $this->_update_reports_count('add',$county,$district_id,$partner);
     // $this->session->set_flashdata('message', 'The report has been saved');
-    redirect('rtk_management/scmlt_home');
+    redirect('cd4_management/facility_home');
 
 }
 

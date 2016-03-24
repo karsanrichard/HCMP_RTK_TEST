@@ -86,7 +86,7 @@ class Home_Controller extends MY_Controller {
             redirect('rtk_management/allocation_dashboard');
         }
        else if ($access_level == "facility") {
-            redirect('cd4_management/facility_profile');
+            redirect('cd4_management/facility_home');
         }
 //             $counties = Counties::getAll();
 //             $table_data = "";
