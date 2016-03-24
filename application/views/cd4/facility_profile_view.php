@@ -82,13 +82,13 @@ $(function(){
     <div class="span4">
 
         <ul class="nav nav-tabs nav-stacked">
-                        <!-- <li><a href="<?php echo base_url() . 'rtk_management/county_profile/' . $county_id; ?>"><?php echo $facility_county; ?></a></li> -->
-            <li><a href="<?php echo base_url() . 'rtk_management/district_profile/' . $district_id; ?>"><?php echo $facility_district; ?></a></li>
             <li class="active"><a href="#"><?php echo $banner_text; ?></a></li>
+            <li><a href="<?php echo base_url() . 'rtk_management/get_cd4_report/' . $mfl; ?>">Submit New CD4 Lab Commodity Report</a></li>
+            <!-- <li><a href="<?php echo base_url() . 'rtk_management/district_profile/' . $district_id; ?>"><?php echo $facility_district; ?></a></li> -->
             <li class="active"><a href="#" data-target="#Edit_Facility" data-toggle="modal">Edit Facility</a></li>
-            <li><a>
+         <!--    <li><a>
                 <input class="form-control" id="typeahead" type="text" data-items="5" value="" placeholder="Search Facility">
-            </a></li>
+            </a></li> -->
 
         </ul>
     </div>
