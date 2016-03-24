@@ -85,6 +85,9 @@ class Home_Controller extends MY_Controller {
 		else if ($access_level == "allocation_committee") {
             redirect('rtk_management/allocation_dashboard');
         }
+       else if ($access_level == "facility") {
+            redirect('cd4_management/facility_profile');
+        }
 //             $counties = Counties::getAll();
 //             $table_data = "";
 //             $allocation_rate = 0;
