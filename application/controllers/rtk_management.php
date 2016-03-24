@@ -534,7 +534,7 @@ public function save_cd4_report_data() {
     // }
     // // $this->_update_reports_count('add',$county,$district_id,$partner);
     // $this->session->set_flashdata('message', 'The report has been saved');
-    redirect('rtk_management/scmlt_home');
+    redirect('cd4_management/facility_home');
 
 }
 
