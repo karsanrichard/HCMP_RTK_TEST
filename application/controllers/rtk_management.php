@@ -219,13 +219,64 @@ public function get_cd4_report($facility_code) {
 
   $this->load->view("rtk/template", $data);
 }
+function update_lab_details(){
+    $sql = "SELECT 
+                facilities.facility_code, lab_commodity_orders.id
+            FROM
+                facilities,
+                lab_commodity_orders
+            WHERE
+                order_date BETWEEN '2016-03-01' AND '2016-03-31'
+                    AND facilities.facility_code = lab_commodity_orders.facility_code";
+    $result = $this->db->query($sql)->result_array();
 
+    foreach ($result as $key => $value) {
+
+        $order_id = $value['id'];
+        $mfl = $value['facility_code'];
+
+        $sql2 = "SELECT 
+                    lab_commodity_details.commodity_id,
+                    lab_commodity_details.closing_stock
+                FROM
+                    lab_commodity_details,
+                    lab_commodity_orders
+                WHERE
+                    lab_commodity_details.order_id = lab_commodity_orders.id
+                    AND lab_commodity_orders.id = '$order_id'";
+                    
+        $result2 = $this->db->query($sql2)->result_array();
+        
+
+        $khb = $result2[1]['closing_stock'];
+        $confirm = $result2[2]['closing_stock'];
+        $tie = $result2[3]['closing_stock'];
+        $dbs = $result2[4]['closing_stock'];
+        $determine = $result2[0]['closing_stock'];
+        $new_screening = $khb + $determine;
+        
+        echo "$mfl order id = $order_id determine $determine + khb $khb = $new_screening, confrim = $confirm, tie = $tie <br/>";
+        
+        $sql3 ="UPDATE lab_commodity_details
+                SET newclosingstock = CASE commodity_id
+                WHEN '4' THEN '$new_screening'
+                WHEN '5' THEN '$confirm'
+                WHEN '6' THEN '$tie'
+                WHEN '7' THEN '$dbs'
+                END
+                WHERE commodity_id IN ('4','5','6','7') and order_id = $order_id";
+
+        $this->db->query($sql3);
+        
+        // echo "<pre>"; print_r($result2);die;
+    }
+}
       //Begining Balances
 function _get_begining_balance($facility_code) {
     $result_bal = array();
     $start_date_bal = date('Y-m-d', strtotime("first day of previous month"));
     $end_date_bal = date('Y-m-d', strtotime("last day of previous month"));
-    $sql_bal = "SELECT lab_commodity_details.closing_stock from lab_commodity_orders, lab_commodity_details 
+    $sql_bal = "SELECT lab_commodity_details.newclosingstock from lab_commodity_orders, lab_commodity_details 
     where lab_commodity_orders.id = lab_commodity_details.order_id 
     and lab_commodity_orders.order_date between '$start_date_bal' and '$end_date_bal' 
     and lab_commodity_orders.facility_code='$facility_code'";
@@ -233,7 +284,7 @@ function _get_begining_balance($facility_code) {
     $res_bal = $this->db->query($sql_bal)->result_array();
 
     foreach ($res_bal as $row_bal) {
-        array_push($result_bal, $row_bal['closing_stock']);
+        array_push($result_bal, $row_bal['newclosingstock']);
     }
     return $result_bal;
 }
@@ -271,6 +322,7 @@ public function save_lab_report_data() {
     $unit_of_issue = $_POST['unit_of_issue'];
     $b_balance = $_POST['b_balance'];
     $q_received = $_POST['q_received'];
+    $q_received_other = $_POST['q_received_other'];
     $q_used = $_POST['q_used'];
     $tests_done = $_POST['tests_done'];
     $losses = $_POST['losses'];
@@ -328,7 +380,7 @@ public function save_lab_report_data() {
     $count++;
 
     for ($i = 0; $i < $commodity_count; $i++) {            
-        $mydata = array('order_id' => $new_order_id, 'facility_code' => $facility_code, 'district_id' => $district_id, 'commodity_id' => $drug_id[$i], 'unit_of_issue' => $unit_of_issue[$i], 'beginning_bal' => $b_balance[$i], 'q_received' => $q_received[$i], 'q_used' => $q_used[$i], 'no_of_tests_done' => $tests_done[$i], 'losses' => $losses[$i], 'positive_adj' => $pos_adj[$i], 'negative_adj' => $neg_adj[$i], 'closing_stock' => $physical_count[$i], 'q_expiring' => $q_expiring[$i], 'days_out_of_stock' => $days_out_of_stock[$i], 'q_requested' => $q_requested[$i]);
+        $mydata = array('order_id' => $new_order_id, 'facility_code' => $facility_code, 'district_id' => $district_id, 'commodity_id' => $drug_id[$i], 'unit_of_issue' => $unit_of_issue[$i], 'beginning_bal' => $b_balance[$i], 'q_received' => $q_received[$i], 'q_recieved_others' => $q_received_other[$i], 'q_used' => $q_used[$i], 'no_of_tests_done' => $tests_done[$i], 'losses' => $losses[$i], 'positive_adj' => $pos_adj[$i], 'negative_adj' => $neg_adj[$i], 'closing_stock' => $physical_count[$i], 'q_expiring' => $q_expiring[$i], 'days_out_of_stock' => $days_out_of_stock[$i], 'q_requested' => $q_requested[$i]);
         Lab_Commodity_Details::save_lab_commodities($mydata);           
     }
     $q = "select county from districts where id='$district_id'";
@@ -3098,6 +3150,7 @@ public function allocation_details($zone, $a,$b ){ // to browser view
                         AND districts.county = counties.id
                         AND facilities.rtk_enabled = 1
                         and counties.zone = '$zone'
+                        and counties.id in(39,41)
                 ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC limit $a, $b";
 
         $result = $this->db->query($sql)->result_array();
@@ -3114,16 +3167,16 @@ public function allocation_details($zone, $a,$b ){ // to browser view
 
 
             $sql2 = "SELECT distinct
-                        facility_amc_d.amc as amc,
-                        facility_amc_d.amc_6 as amc_6,
-                        facility_amc_d.commodity_id
+                        facility_amc_b.amc as amc,
+                        facility_amc_b.amc_6 as amc_6,
+                        facility_amc_b.commodity_id
                     FROM
                         facilities,
-                        facility_amc_d
+                        facility_amc_b
                     WHERE
-                        facilities.facility_code = facility_amc_d.facility_code
+                        facilities.facility_code = facility_amc_b.facility_code
                             AND facilities.facility_code = '$fcode'           
-                    ORDER BY facility_amc_d.commodity_id ASC";
+                    ORDER BY facility_amc_b.commodity_id ASC";
                     ;
             $result2 = $this->db->query($sql2)->result_array();
             // $sql2 = "SELECT distinct
@@ -6096,7 +6149,7 @@ public function rtk_summary_county($county, $year, $month) {
             //     $res = $this->db->query($sql); 
             // }else{
 
-                $sql = "INSERT INTO `facility_amc_d`(`facility_code`, `commodity_id`, `amc`,`amc_6`,`last_update`) VALUES ('$mfl','$commodity_id','$amc_3','$amc_6','$last_update')";
+                $sql = "INSERT INTO `facility_amc_b`(`facility_code`, `commodity_id`, `amc`,`amc_6`,`last_update`) VALUES ('$mfl','$commodity_id','$amc_3','$amc_6','$last_update')";
                 $res = $this->db->query($sql);
             // }
             
@@ -6213,6 +6266,7 @@ WHERE
     facilities.rtk_enabled = '1'
     and facilities.district = districts.id
     and districts.county = counties.id
+    and counties.id in (39,41)
 
         AND counties.zone = '$zone' limit $a, $b";
         $res = $this->db->query($sql);
