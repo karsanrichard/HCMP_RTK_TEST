@@ -5,7 +5,7 @@
 	  <input type="text" class="input-sm"   name="oqualkit" size="5" value="<?php echo $openingqualkit;?>"  style="color:#999999; font-weight:bold"/>
 	</div></td>
 	<td><div align="center">
-	  <input type="text" class="input-sm"  name="recqualkit" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo $qualkitreceived;?>"/>
+	  <input type="text" class="input-sm"  name="recqualkit" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo $ae_qualkitreceived;?>"/>
 	</div></td>
 	<td><div align="center">
       <input type="text" class="input-sm" name="qualkitlotno" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $qualkitlotno;?>"/>
@@ -14,7 +14,7 @@
 		  <input type="text" class="input-sm"  name="uqualkit2" size="5"  value="<?php echo ceil($uqualkit);?>"  style="color:#999999; font-weight:bold"/>
 		</div></td><td><div align="center"><input type="text" class="input-sm" value="<?php echo $wqualkit;?>"  name="wqualkit" size="5" style="color:#999999; font-weight:bold"   /></div></td>
 		<td><div align="center">
-      <input type="text" class="input-sm" name="pqualkit" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lqualkitreceived;?>"/>
+      <input type="text" class="input-sm" name="pqualkit" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posqualkit;?>"/>
     </div></td>
 		<td><div align="center"><input type="text" class="input-sm" name="iqualkit" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $iqualkit;?>"   /></div></td><td><div align="center">
 		  <input type="text" class="input-sm" name="equalkit" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $equalkit;?>" />
@@ -33,7 +33,7 @@
 		  <input type="text" class="input-sm"   name="ocontrol" size="5"  value="<?php echo $openingcontrol;?>"  style="color:#999999; font-weight:bold"/>
 		</div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="reccontrol" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($controlreceived);?>"/>
+		  <input type="text" class="input-sm"  name="reccontrol" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_controlreceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
       <input type="text" class="input-sm" name="controllotno" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $controllotno;?>"/>
@@ -42,7 +42,7 @@
 		  <input type="text" class="input-sm" name="ucontrol2" size="5" value="<?php echo ceil($ucontrol);?>" style="color:#999999; font-weight:bold" />
 		</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="wcontrol" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wcontrol;?>"   /></div></td>
 		<td><div align="center">
-      <input type="text" class="input-sm"  name="pcontrol" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lcontrolreceived;?>"/>
+      <input type="text" class="input-sm"  name="pcontrol" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_poscontrol;?>"/>
     </div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="icontrol" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $icontrol;?>" /></div></td>
 		<td><div align="center"><input type="text" class="input-sm"  name="econtrol" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $econtrol;?>"  /></div></td>
@@ -57,7 +57,7 @@
 		</div></td>
 		
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recbuffer" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($bufferreceived);?>"/>
+		  <input type="text" class="input-sm"  name="recbuffer" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_bufferreceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
       <input type="text" class="input-sm" name="bufferlotno" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $bufferlotno;?>"/>
@@ -66,7 +66,7 @@
 		  <input type="text" class="input-sm" name="ubuffer2" size="5" value="<?php echo ceil($ubuffer);?>" style="color:#999999; font-weight:bold"/>
 		</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="wbuffer" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wbuffer;?>"   /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm"  name="pbuffer" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lbufferreceived;?>"/>
+      <input type="text" class="input-sm"  name="pbuffer" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posbuffer;?>"/>
     </div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"name="ibuffer" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ibuffer;?>"  /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="ebuffer" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $ebuffer;?>" /></div></td>
@@ -80,7 +80,7 @@
 		  <input type="text" class="input-sm"   name="opreparation" size="5"  value="<?php echo $openingpreparation;?>"   style="color:#999999; font-weight:bold"/>
 		</div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recpreparation" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($preparationreceived);?>"/>
+		  <input type="text" class="input-sm"  name="recpreparation" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_preparationreceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
       <input type="text" class="input-sm" name="preparationlotno" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $preparationlotno;?>"/>
@@ -90,7 +90,7 @@
 		</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="wpreparation" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wpreparation;?>"  /></div></td>
 		
 		<td><div align="center">
-      <input type="text" class="input-sm"  name="ppreparation" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lpreparationreceived;?>"/>
+      <input type="text" class="input-sm"  name="ppreparation" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_pospreparation;?>"/>
     </div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="ipreparation" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ipreparation;?>" /></div></td>
 		<td><div align="center"><input type="text" class="input-sm" name="epreparation" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $epreparation;?>" /></div></td>
@@ -105,14 +105,14 @@
 		  <input type="text" class="input-sm"  name="oadhesive" size="5"  value="<?php echo $openingadhesive;?>"   style="color:#999999; font-weight:bold"/>
 		  </div></td>
 		  <td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recadhesive" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($adhesivereceived);?>"/>
+		  <input type="text" class="input-sm"  name="recadhesive" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_adhesivereceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="hidden" name="uadhesive" size="5" value="<?php echo ceil($uadhesive);?>" style="color:#999999; font-weight:bold"/>
 		      <input type="text" class="input-sm" name="uadhesive2" size="5" value="<?php echo ceil($uadhesive);?>" style="color:#999999; font-weight:bold"/>
 		  </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="wadhesive" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wadhesive;?>"   /></div></td>
 		  <td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm"  name="padhesive" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ladhesivereceived;?>"/>
+      <input type="text" class="input-sm"  name="padhesive" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posadhesive;?>"/>
     </div></td>
 		  <td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="iadhesive" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $iadhesive;?>" /></div></td>
 		  <td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="eadhesive" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $eadhesive;?>" /></div></td>
@@ -127,7 +127,7 @@
 		  <input type="text" class="input-sm"   name="odeepplate" size="5"  value="<?php echo $openingdeepplate;?>"  style="color:#999999; font-weight:bold"/>
 	    </div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recdeepplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($deepplatereceived);?>"/>
+		  <input type="text" class="input-sm"  name="recdeepplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_adeepplatereceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td><div align="center">
@@ -135,7 +135,7 @@
 		  <input type="text" class="input-sm"  name="udeepplate2" size="5" value="<?php echo ceil($udeepplate);?>"  style="color:#999999; font-weight:bold"/>
 		</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="wdeepplate"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wdeepplate;?>"  /></div></td>
 		<td><div align="center">
-      <input type="text" class="input-sm"  name="pdeepplate" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ldeepplatereceived;?>"/>
+      <input type="text" class="input-sm"  name="pdeepplate" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posdeepplate;?>"/>
     </div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="ideepplate"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ideepplate;?>" /></div></td>
 		<td><div align="center"><input type="text" class="input-sm"  name="edeepplate" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $edeepplate;?>" /></div></td>
@@ -150,14 +150,14 @@
 		  <input type="text" class="input-sm"   name="omixtube" size="5"  value="<?php echo $openingmixtube;?>"   style="color:#999999; font-weight:bold"/>
 	    </div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recmixtube" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($mixtubereceived);?>"/>
+		  <input type="text" class="input-sm"  name="recmixtube" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_mixtubereceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="hidden"  name="umixtube" size="5" value="<?php echo ceil($umixtube);?>"  style="color:#999999; font-weight:bold"/>
 	        <input type="text" class="input-sm"  name="umixtube2" size="5" value="<?php echo ceil($umixtube);?>"  style="color:#999999; font-weight:bold"/>
 	    </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="wmixtube" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wmixtube;?>"   /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm"  name="pmixtube" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lmixtubereceived;?>"/>
+      <input type="text" class="input-sm"  name="pmixtube" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posmixtube;?>"/>
     </div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="imixtube" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $imixtube;?>" /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="emixtube" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $emixtube;?>" /></div></td>
@@ -172,14 +172,14 @@
 		  <input type="text" class="input-sm"   name="oreactionvessels" size="5"  value="<?php echo $openingreactionvessels;?>"  style="color:#999999; font-weight:bold"/>
 	    </div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recreactionvessels" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($reactionvesselsreceived);?>"/>
+		  <input type="text" class="input-sm"  name="recreactionvessels" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_reactionvesselsreceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td><div align="center"><input type="hidden"  name="ureactionvessels" size="5" value="<?php echo ceil($ureactionvessels);?>" style="color:#999999; font-weight:bold" />
 	        <input type="text" class="input-sm"  name="ureactionvessels2" size="5" value="<?php echo ceil($ureactionvessels);?>" style="color:#999999; font-weight:bold" />
 	    </div></td><td><div align="center"><input type="text" class="input-sm"  name="wreactionvessels"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wreactionvessels;?>" /></div></td>
 		<td><div align="center">
-      <input type="text" class="input-sm"  name="preactionvessels" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lreactionvesselsreceived;?>"/>
+      <input type="text" class="input-sm"  name="preactionvessels" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posreactionvessels;?>"/>
     </div></td>
 		<td><div align="center"><input type="text" class="input-sm"  name="ireactionvessels"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ireactionvessels;?>"  /></div></td>
 		<td><div align="center"><input type="text" class="input-sm"  name="ereactionvessels" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $ereactionvessels;?>" /></div></td>
@@ -194,14 +194,14 @@
 		  <input type="text" class="input-sm"   name="oreagent" size="5"  value="<?php echo $openingreagent;?>"  style="color:#999999; font-weight:bold"/>
 	    </div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recreagent" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($reagentreceived);?>"/>
+		  <input type="text" class="input-sm"  name="recreagent" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_reagentreceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="hidden" name="ureagent" size="5" value="<?php echo ceil($ureagent);?>"  style="color:#999999; font-weight:bold"/>
 	        <input type="text" class="input-sm" name="ureagent2" size="5" value="<?php echo ceil($ureagent);?>"  style="color:#999999; font-weight:bold"/>
 	    </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="wreagent"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wreagent;?>"  /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm"  name="preagent" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lreagentreceived;?>"/>
+      <input type="text" class="input-sm"  name="preagent" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posreagent;?>"/>
     </div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="ireagent"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ireagent;?>" /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="ereagent" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $ereagent;?>" /></div></td>
@@ -216,14 +216,14 @@
 		  <input type="text" class="input-sm"  name="oreactionplate" size="5"  value="<?php echo $openingreactionplate;?>" style="color:#999999; font-weight:bold"/>
 	    </div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="recreactionplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($reactionplatereceived);?>"/>
+		  <input type="text" class="input-sm"  name="recreactionplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_reactionplatereceived);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 		<td><div align="center"><input type="hidden" name="ureactionplate" size="5" value="<?php echo ceil($ureactionplate);?>" style="color:#999999; font-weight:bold"/>
 	        <input type="text" class="input-sm" name="ureactionplate2" size="5" value="<?php echo ceil($ureactionplate);?>" style="color:#999999; font-weight:bold"/>
 	    </div></td><td><div align="center"><input type="text" class="input-sm"  name="wreactionplate"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $wreactionplate;?>" /></div></td>
 		<td><div align="center">
-      <input type="text" class="input-sm"  name="preactionplate" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $lreactionplatereceived;?>"/>
+      <input type="text" class="input-sm"  name="preactionplate" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_posreactionplate;?>"/>
     </div></td>
 		<td><div align="center"><input type="text" class="input-sm"  name="ireactionplate"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ireactionplate;?>" /></div></td>
 		<td><div align="center"><input type="text" class="input-sm" name="ereactionplate" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $ereactionplate;?>" /></div></td>
@@ -237,14 +237,14 @@
 		  <!--<input type="hidden" name="o1000disposable" size="5"  value="<?php //echo $opening1000disposable;?>"  style="color:#999999; font-weight:bold"/> -->
 		  <input type="text" class="input-sm"  name="o1000disposable" size="5"  value="<?php echo $opening1000disposable;?>" style="color:#999999; font-weight:bold"/>
 	    </div></td><td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="rec1000disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($disposable1000received);?>"/>
+		  <input type="text" class="input-sm"  name="rec1000disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_disposable1000received);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="hidden" name="u1000disposable" size="5" value="<?php echo ceil($u1000disposable);?>" style="color:#999999; font-weight:bold"/>
 	        <input type="text" class="input-sm" name="u1000disposable2" size="5" value="<?php echo ceil($u1000disposable);?>" style="color:#999999; font-weight:bold"/>
 	    </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="w1000disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $w1000disposable;?>"  /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm"  name="p1000disposable" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ldisposable1000received;?>"/>
+      <input type="text" class="input-sm"  name="p1000disposable" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_pos1000disposable;?>"/>
     </div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="i1000disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $i1000disposable;?>"  /></div></td>
 		<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="e1000disposable" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $e1000disposable;?>" /></div></td>
@@ -259,14 +259,14 @@
 		  <input type="text" class="input-sm"  name="o200disposable" size="5"  value="<?php echo $opening200disposable;?>" style="color:#999999; font-weight:bold"/>
 	    </div></td>
 		<td style="background-color:#FFFFFF"><div align="center">
-		  <input type="text" class="input-sm"  name="rec200disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($disposable200received);?>"/>
+		  <input type="text" class="input-sm"  name="rec200disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($ae_disposable200received);?>"/>
 		</div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td><div align="center"><input type="hidden"  name="u200disposable" size="5" value="<?php echo ceil($u200disposable);?>" style="color:#999999; font-weight:bold"/>
 	        <input type="text" class="input-sm"  name="u200disposable2" size="5" value="<?php echo ceil($u200disposable);?>" style="color:#999999; font-weight:bold"/>
 	    </div></td><td><div align="center"><input type="text" class="input-sm"  name="w200disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $w200disposable;?>" /></div></td>
 		<td><div align="center">
-      <input type="text" class="input-sm"  name="p200disposable" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ldisposable200received;?>"/>
+      <input type="text" class="input-sm"  name="p200disposable" size="5" style = "color:#999999; font-weight:bold"  value="<?php echo $ae_pos200disposable;?>"/>
     </div></td>
 		<td><div align="center"><input type="text" class="input-sm"  name="i200disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $i200disposable;?>" /></div></td>
 		<td><div align="center"><input type="text" class="input-sm"  name="e200disposable" size="5"  style="color:#999999; font-weight:bold"  value="<?php echo $e200disposable;?>" /></div></td>

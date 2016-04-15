@@ -177,6 +177,7 @@ public function get_report($facility_code) {
   $data['link'] = "rtk_management";
   $data['quick_link'] = "commodity_list";
   $my_arr = $this->_get_begining_balance($facility_code);
+  // print_r($my_arr);die;
   $my_count = count($my_arr);
   $data['beginning_bal'] = $my_arr;         
   $data['facilities'] = Facilities::get_one_facility_details($facility_code);            
@@ -276,12 +277,16 @@ function _get_begining_balance($facility_code) {
     $result_bal = array();
     $start_date_bal = date('Y-m-d', strtotime("first day of previous month"));
     $end_date_bal = date('Y-m-d', strtotime("last day of previous month"));
-    $sql_bal = "SELECT lab_commodity_details.newclosingstock from lab_commodity_orders, lab_commodity_details 
+    $sql_bal = "SELECT lab_commodity_details.newclosingstock from lab_commodity_orders, lab_commodity_details, lab_commodities 
     where lab_commodity_orders.id = lab_commodity_details.order_id 
     and lab_commodity_orders.order_date between '$start_date_bal' and '$end_date_bal' 
-    and lab_commodity_orders.facility_code='$facility_code'";
+    and lab_commodity_orders.facility_code='$facility_code'
+     AND lab_commodities.id = lab_commodity_details.commodity_id
+        AND lab_commodities.category = 1";
 
     $res_bal = $this->db->query($sql_bal)->result_array();
+    // echo "$sql_bal";
+    // print_r($res_bal);
 
     foreach ($res_bal as $row_bal) {
         array_push($result_bal, $row_bal['newclosingstock']);

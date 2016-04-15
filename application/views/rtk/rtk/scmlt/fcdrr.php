@@ -549,7 +549,8 @@ date_default_timezone_set('EUROPE/Moscow');
       <div class="modal-body">
         <p>Please note that the FCDRR has changed. <br/>
         1. Determine and KHB commodities have been combined into one commodity <b>Screening</b><br/>
-        2. DBS bundles are reported as either the 20 pack or 50 pack</p>
+        2. DBS bundles are reported as either the 20 pack or 50 pack<br/>
+        3. The name of the lab technician who compiled the report should be added</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

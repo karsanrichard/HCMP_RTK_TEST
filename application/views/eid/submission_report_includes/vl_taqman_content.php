@@ -6,7 +6,7 @@
 	  <input type="text"  name="voqualkit"  class="input-sm" size="10" value="<?php echo @$vopeningqualkit;?>" style = "background:#F6F6F6; font-weight:bold"/>
     </div></td>
 	<td><div align="center">
-      <input type="text"  name="vrecqualkit"  class="input-sm" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="" value="<?php echo @$vqualkitreceived_a;?>"/>
+      <input type="text"  name="vrecqualkit"  class="input-sm" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="" value="<?php echo @$vqualkitreceived;?>"/>
     </div></td>
 	<td><div align="center">
       <input type="text" name="vkitlotno"  class="input-sm" size="20" style = "background:#F6F6F6; font-weight:bold; color:#999999" value="<?php echo @$vkitlotno_a;?>"/>
@@ -18,7 +18,7 @@
 	  <input type="text"  class="input-sm"  value="<?php echo @$vwqualkit;?>" name="vwqualkit" size="10" style = "background:#F6F6F6; font-weight:bold" />
     </div></td>
 	<td><div align="center">
-      <input type="text"  class="input-sm" name="vpqualkit" size="10" style = "background:#F6F6F6;"  value="<?php echo @$vqualkitreceived;?>"/>
+      <input type="text"  class="input-sm" name="vpqualkit" size="10" style = "background:#F6F6F6;"  value="<?php echo @$vposqualkit;?>"/>
     </div></td>
 	<td><div align="center">
 	  <input type="text"  class="input-sm" value="<?php echo @$viqualkit;?>" name="viqualkit" size="10" style = "background:#F6F6F6; font-weight:bold"/>
@@ -41,7 +41,7 @@
 	  <input type="text"  class="input-sm" name="vospexagent" size="10" value="<?php echo @$vopeningspexagent;?>" style = "background:#ffffff; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text"  class="input-sm" name="vrecspexagent" size="10" style = "background:#ffffff; font-weight:bold; color:#999999" value="<?php echo ceil(@$vspexagentreceived_a);?>"/>
+      <input type="text"  class="input-sm" name="vrecspexagent" size="10" style = "background:#ffffff; font-weight:bold; color:#999999" value="<?php echo ceil(@$vspexagentreceived);?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td style="background-color:#FFFFFF"><div align="center">
@@ -51,7 +51,7 @@
 	  <input type="text"  class="input-sm" value="<?php echo @$vwspexagent;?>" name="vwspexagent" size="10" style = "background:#ffffff; font-weight:bold" />
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text"  class="input-sm" name="vpspexagent" size="10" style = "background:#FFFFff;" value="<?php echo @$vspexagentreceived;?>"/>
+      <input type="text"  class="input-sm" name="vpspexagent" size="10" style = "background:#FFFFff;" value="<?php echo @$vposspexagent;?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
 	  <input type="text"  class="input-sm" value="<?php echo @$vispexagent;?>" name="vispexagent" size="10" style = "background:#ffffff; font-weight:bold"/>
@@ -74,7 +74,7 @@
 	  <input type="text"  class="input-sm" name="voampinput" size="10" value="<?php echo @$vopeningampinput;?>" style = "background:#F6F6F6; font-weight:bold"/>
     </div></td>
 	<td><div align="center">
-      <input type="text"  class="input-sm" name="vrecampinput" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$vampinputreceived_a);?>"/>
+      <input type="text"  class="input-sm" name="vrecampinput" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$vampinputreceived);?>"/>
     </div></td>
 	<td>-</td>
 	<td><div align="center">
@@ -84,7 +84,7 @@
 	  <input type="text"  class="input-sm" value="<?php echo @$vwampinput;?>" name="vwampinput" size="10" style = "background:#F6F6F6; font-weight:bold" />
     </div></td>
 	<td><div align="center">
-      <input type="text"  class="input-sm" name="vpampinput" size="10" style = "background:#F6F6F6;" value="<?php echo @$vampinputreceived;?>"/>
+      <input type="text"  class="input-sm" name="vpampinput" size="10" style = "background:#F6F6F6;" value="<?php echo @$vposampinput;?>"/>
     </div></td>
 	<td><div align="center">
 	  <input type="text"  class="input-sm" value="<?php echo @$viampinput;?>" name="viampinput" size="10" style = "background:#F6F6F6; font-weight:bold"/>
@@ -108,7 +108,7 @@
 	  <input type="text"  class="input-sm" name="voampflapless" size="10" value="<?php echo @$vopeningampflapless;?>" style = "background:#ffffff; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text"  class="input-sm" name="vrecampflapless" size="10" style = "background:#ffffff; font-weight:bold; color:#999999" value="<?php echo ceil(@$vampflaplessreceived_a);?>"/>
+      <input type="text"  class="input-sm" name="vrecampflapless" size="10" style = "background:#ffffff; font-weight:bold; color:#999999" value="<?php echo ceil(@$vampflaplessreceived);?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td style="background-color:#FFFFFF"><div align="center">
@@ -118,7 +118,7 @@
 	  <input type="text"  class="input-sm" value="<?php echo @$vwampflapless;?>" name="vwampflapless" size="10" style = "background:#ffffff; font-weight:bold" />
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text"  class="input-sm" name="vpampflapless" size="10" style = "background:#FFFFff;" value="<?php echo @$vampflaplessreceived;?>"/>
+      <input type="text"  class="input-sm" name="vpampflapless" size="10" style = "background:#FFFFff;" value="<?php echo @$vposampflapless;?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
 	  <input type="text"  class="input-sm" value="<?php echo @$viampflapless;?>" name="viampflapless" size="10" style = "background:#ffffff; font-weight:bold"/>
@@ -141,7 +141,7 @@
 	  <input type="text" class="input-sm"  name="voampwash" size="10" value="<?php echo @$vopeningampwash;?>" style = "background:#F6F6F6; font-weight:bold"/>
     </div></td>
 	<td><div align="center">
-      <input type="text" class="input-sm" name="vrecampwash" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$vampwashreceived_a);?>"/>
+      <input type="text" class="input-sm" name="vrecampwash" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$vampwashreceived);?>"/>
     </div></td>
 	<td>-</td>
 	<td><div align="center">
@@ -151,7 +151,7 @@
 	  <input type="text"  class="input-sm" value="<?php echo @$vwampwash;?>" name="vwampwash" size="10" style = "background:#F6F6F6; font-weight:bold" />
     </div></td>
 	<td><div align="center">
-      <input type="text" class="input-sm" name="vpampwash" size="10" style = "background:#F6F6F6;" value="<?php echo @$vampwashreceived;?>"/>
+      <input type="text" class="input-sm" name="vpampwash" size="10" style = "background:#F6F6F6;" value="<?php echo @$vposampwash;?>"/>
     </div></td>
 	<td><div align="center">
 	  <input type="text" class="input-sm"  value="<?php echo @$viampwash;?>" name="viampwash" size="10" style = "background:#F6F6F6; font-weight:bold"/>
@@ -174,7 +174,7 @@
 	  <input type="text"  class="input-sm" name="voampktips" size="10" value="<?php echo @$vopeningampktips;?>" style = "background:#ffffff; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text"  class="input-sm" name="vrecampktips" size="10" style = "background:#ffffff; font-weight:bold; color:#999999" value="<?php echo ceil(@$vampktipsreceived_a);?>"/>
+      <input type="text"  class="input-sm" name="vrecampktips" size="10" style = "background:#ffffff; font-weight:bold; color:#999999" value="<?php echo ceil(@$vampktipsreceived);?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td style="background-color:#FFFFFF"><div align="center">
@@ -184,7 +184,7 @@
 	  <input type="text"  class="input-sm" value="<?php echo @$vwampktips;?>" name="vwampktips" size="10" style = "background:#ffffff; font-weight:bold" />
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm" name="vpampktips" size="10" style = "background:#FFFFff;" value="<?php echo @$vampktipsreceived;?>"/>
+      <input type="text" class="input-sm" name="vpampktips" size="10" style = "background:#FFFFff;" value="<?php echo @$vposampktips;?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
 	  <input type="text" class="input-sm"  value="<?php echo @$viampktips;?>" name="viampktips" size="10" style = "background:#ffffff; font-weight:bold"/>
@@ -207,7 +207,7 @@
 	  <input type="text" class="input-sm"  name="voktubes" size="10" value="<?php echo @$vopeningktubes;?>" style = "background:#F6F6F6; font-weight:bold"/>
     </div></td>
 	<td><div align="center">
-      <input type="text" class="input-sm" name="vrecktubes" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$vktubesreceived_a);?>"/>
+      <input type="text" class="input-sm" name="vrecktubes" size="10" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$vktubesreceived);?>"/>
     </div></td>
 	<td>-</td>
 	<td><div align="center">
@@ -217,7 +217,7 @@
 	  <input type="text" class="input-sm"  value="<?php echo @$vwktubes;?>" name="vwktubes" size="10" style = "background:#F6F6F6; font-weight:bold" />
     </div></td>
 	<td><div align="center">
-      <input type="text" class="input-sm" name="vpktubes" size="10" style = "background:#F6F6F6;" value="<?php echo @$vktubesreceived;?>"/>
+      <input type="text" class="input-sm" name="vpktubes" size="10" style = "background:#F6F6F6;" value="<?php echo @$vposktubes;?>"/>
     </div></td>
 	<td><div align="center">
 	  <input type="text" class="input-sm"  value="<?php echo @$viktubes;?>" name="viktubes" size="10" style = "background:#F6F6F6; font-weight:bold"/>
