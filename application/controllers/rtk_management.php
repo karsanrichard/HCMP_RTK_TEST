@@ -167,6 +167,99 @@ public function scmlt_allocations($msg = NULL) {
 
     $this->load->view("rtk/template", $data);
 }
+public function scmlt_summary( $year, $month) {
+      
+    $district = $this->session->userdata('district_id');   
+    $district_name = Districts::get_district_name($district)->toArray();
+    $d_name = $district_name[0]['district'];
+    $month = $this->session->userdata('Month');
+
+    if ($month == '') {
+        $month = date('mY', time());
+    }
+    $year = substr($month, -4);
+
+    $sql3 = "select *  from rtk_district_percentage where month ='$month' and district_id = '$district' ";
+    $result3 = $this->db->query($sql3)->result_array();  
+    
+    $total_facilities = $result3[0]['facilities'];
+    $reported_facilities=$result3[0]['reported'];
+    $nonreported_facilities= $total_facilities - $reported_facilities;
+    $data['reported_facilities'] = $reported_facilities;
+    $data['reported_facilities_percentage'] = $result3[0]['percentage'];
+    $data['total_facilities'] = $total_facilities;
+    $data['nonreported_facilities'] =$nonreported_facilities;
+    $data['nonreported_facilities_percentage'] = ($nonreported_facilities/$total_facilities)*100;
+     
+    $today = date('Y-m-d');
+    $end_date = date('Y-m-t', strtotime($today));
+    $beg_date = date('Y-m-');
+    $beg_date .= '01';
+    $q1 = "SELECT DISTINCT
+                facilities.facility_code, facilities.facility_name
+            FROM
+                lab_commodity_orders,
+                facilities,
+                districts
+            WHERE
+                facilities.district = districts.id
+            AND facilities.facility_code = lab_commodity_orders.facility_code
+            AND districts.id = '$district'
+            AND lab_commodity_orders.order_date BETWEEN '$beg_date' AND '$end_date'
+            group by lab_commodity_orders.facility_code";
+        
+    $q_res1 = $this->db->query($q1)->result_array();
+    foreach ($q_res1 as $vals) {
+        if ($vals['order_date'] >$day15 ) {
+            $late_reporting += 1;
+        }
+    }
+
+    $sql = "select * from facilities where district = '$district'";
+    $result = $this->db->query($sql)->result_array();
+
+    $facilities = array();
+    foreach($result as $value) {
+        $facilities[$value['rtk_enabled']][] = $value;
+    }
+    // echo '<pre>';print_r($facilities[1]);die;
+   
+   $months_texts = array();
+   $percentages = array();
+
+    for ($i=11; $i >=0; $i--) { 
+        $months =  date("mY", strtotime( date( 'Y-m-01' )." -$i months"));
+        $j = $i+1;            
+        $month_text =  date("M Y", strtotime( date( 'Y-m-01' )." -$j months")); 
+        array_push($months_texts,$month_text);
+        $sql2 = "select sum(reported) as reported, sum(facilities) as total, month from rtk_district_percentage where month ='$months' and district_id = '$district'";
+
+        $result2 = $this->db->query($sql2)->result_array();            
+        foreach ($result2 as $key => $value) {
+            $reported = $value['reported'];
+            $total = $value['total'];
+            $percentage = round(($reported/$total)*100);
+            if($percentage>100){
+                $percentage = 100;
+            }
+            array_push($percentages, $percentage);
+            $trend_details[$month] = array('reported'=>$reported,'total'=>$total,'percentage'=>$percentage);
+        }
+    }
+    // echo '<pre>';print_r($result2);die;
+    $data['trend_details'] = json_encode($trend_details);        
+    $data['months_texts'] = str_replace('"',"'",json_encode($months_texts));        
+    $data['percentages'] = str_replace('"',"'",json_encode($percentages));                
+    $data['first_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -12 months")); 
+    $data['last_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -1 months")); 
+    $data['district_consumption_data'] = $this->district_totals($year, $month, $district,$commodity_id);
+    $data['d_name'] = $d_name;
+    $data['facilities_list'] = $facilities;
+    $data['title'] = "Summary";
+    $data['link'] = "home";    
+    $data['content_view'] = "rtk/rtk/scmlt/scmlt_summary";      
+    $this->load->view('rtk/template', $data);
+}
 
     //Load FCDRR
 public function get_report($facility_code) {       

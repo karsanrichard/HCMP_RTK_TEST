@@ -71,7 +71,7 @@ $englishdate = date('F, Y', strtotime($monthyear));
                 <div class="panel panel-default" id="stats">
                     <div class="panel-heading">
                         <h4 class="panel-title" id="dpp_stats">                        
-                            <a href="#" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-stats">
+                            <a href="<?php echo site_url('rtk_management/scmlt_summary'); ?>" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-stats">
                             </span>Statistics</a>
                         </h4>
                     </div>
