@@ -6694,7 +6694,7 @@ function _facilities_in_county($county, $type = null) {
     where facilities.district = districts.id
     AND districts.county = counties.id
     AND counties.id =' . $county . '
-    ORDER BY  `districts`.`district` ASC ';
+    ORDER BY  facilities.facility_name ASC ';
     $res = $this->db->query($q);
     $returnable = $res->result_array();
     return $returnable;
