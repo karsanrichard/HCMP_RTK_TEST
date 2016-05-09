@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 $month = $this->session->userdata('Month');
 if ($month == '') {
     $month = date('mY', time());
@@ -8,30 +8,44 @@ $month = substr_replace($month, "", -4);
 $monthyear = $year . '-' . $month . '-1';
 $englishdate = date('F, Y', strtotime($monthyear));
 
-?>
+?> -->
 
 
-<style>  
-    #switch_district{font-size: 17px;margin: 8px 0px 13px 0px;}
-    body > div.container-fluid > div > div > div.leftpanel > div > span{font-size: 18px;text-transform: uppercase;font-style: oblique;font-family: calibri;padding: 0px 6px 5px 17px;border-bottom: solid 1px #ccc;background: #D6CA00;width: 100%;font-style: normal;}
-    .label {font-size: 11px;padding: 3px;}
-    body > div.container-fluid > div > h1{margin-left: 235px;}
+<style>     
+ 
+    .label {
+        font-size: 11px;
+        padding: 3px;
+    }
+    
     table {
         font-size: 13px;
+    }
+    #fixed-topbar{
+       position: fixed;
+       margin-left:16.5%; 
+       top: 80px;
+       background: #36BB24; 
+       width: 71%;
+       padding: 7px 1px 0px 13px;
+       border-bottom: 1px solid #ccc;
+       border-bottom: 1px solid #ccc;
+       border-radius: 4px; 
     }
 </style>
 
 <?php if ($this->session->userdata('switched_from') == 'rtk_manager') { ?>
-<div id="fixed-topbar" style="position: fixed;margin-left:18%; top: 74px;background: rgb(164, 213, 58); width: 100%;padding: 7px 1px 0px 13px;border-bottom: 1px solid #ccc;border-bottom: 1px solid #ccc;border-radius: 4px 0px 0px 4px;">
-    <span class="lead" style="color: #fff;">Switch back to RTK Manager</span>
+<div id="fixed-topbar" style="">
+    <span class="lead" style="color: #fff; margin-left: 100px;">Switch back to RTK Manager</span>
     &nbsp;
     &nbsp;
-    <a href="<?php echo base_url(); ?>rtk_management/switch_district/0/rtk_manager/0/home_controller/0//" class="btn btn-primary" id="switch_idenity" style="margin-top: -10px;">Go</a>
+    <a href="<?php echo base_url(); ?>rtk_management/switch_district/0/rtk_manager/0/home_controller/0//" class="btn btn-primary" id="switch_idenity" style="margin-top: -5px;margin-left: 50px; margin-bottom: 5px;">Go</a>
 </div><?php } ?>
 
+<?php include ('scmlt_sidebar.php');?>
 
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
-    <div class="leftpanel">
+<div class="container" style="margin-left: 250px;">
+   <!--  <div class="leftpanel">
         <div class="sidebar">
             <?php
             $option = '';
@@ -71,7 +85,7 @@ $englishdate = date('F, Y', strtotime($monthyear));
                 <div class="panel panel-default" id="stats">
                     <div class="panel-heading">
                         <h4 class="panel-title" id="dpp_stats">                        
-                            <a href="#" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-stats">
+                            <a href="<?php echo site_url('rtk_management/scmlt_summary'); ?>" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-stats">
                             </span>Statistics</a>
                         </h4>
                     </div>
@@ -94,9 +108,9 @@ $englishdate = date('F, Y', strtotime($monthyear));
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <div class="dash_main" id = "dash_main">
-        <div style="font-size: 13px;">
+        <div style="font-size: 13px; margin-top: 20px;">
             <?php
             $district = $this->session->userdata('district_id');
             $district_name = Districts::get_district_name($district)->toArray();
@@ -146,9 +160,8 @@ $englishdate = date('F, Y', strtotime($monthyear));
            $five_days_prior = $deadline_date - 5;
 
            if($date>0 && $date <$five_days_prior){
-            $alertmsg = '<strong>Take note: ' . $d_name . ' Sub-County</strong><br /><br />
-            Reporting for ' . $lastmonth . ' is on, and the Deadline is on the '.$deadline_date.'<br > Click on <u>Report</u> for all Facilities with the red label
-            after this label within the table below<br > <span class="label label-important">  Pending for ' . $lastmonth . '</span>';            
+            $alertmsg = '<strong>Take note: ' . $d_name . ' Sub-County</strong><br />
+            Reporting for ' . $lastmonth . ' is on, and the Deadline is on the '.$deadline_date.'<br > Click on <u>Report</u> for all Facilities with the red label within the table below<br > <span style = "color: #000;">  Pending for ' . $lastmonth . '</span>';            
             $alertype = 'danger';
             if($percentage_complete==100){
                 $alertype = 'success';
@@ -246,6 +259,7 @@ $englishdate = date('F, Y', strtotime($monthyear));
                         <th><b>Facility Name</b></th>
                         <th><b>District</b></th>
                         <th ><b>FCDRR Reports</b></th> 
+                        <th ><b>CD4 FCDRR Reports</b></th> 
 
                     </tr>
                 </thead>
@@ -253,7 +267,6 @@ $englishdate = date('F, Y', strtotime($monthyear));
                     <?php echo $table_body; ?>
                 </tbody>            
             </table>
-            <br /><br /><br />
 
         </div>
     </div>
@@ -286,8 +299,6 @@ $englishdate = date('F, Y', strtotime($monthyear));
             $('.report').hide();
         }
 
-
-
         $('#maintable').dataTable({
             "sDom": "T lfrtip",
             "bPaginate": false,
@@ -298,19 +309,8 @@ $englishdate = date('F, Y', strtotime($monthyear));
             "oLanguage": {
                 "sLengthMenu": "_MENU_ Records per page",
                 "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
-            },
-            "oTableTools": {
-                "aButtons": [
-                "copy",
-                "print",
-                {
-                    "sExtends": "collection",
-                    "sButtonText": 'Save',
-                    "aButtons": ["csv", "xls", "pdf"]
-                }
-                ],
-                "sSwfPath": "<?php echo base_url(); ?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
             }
+            
         });
 
         //Slider for Report Saved
@@ -322,15 +322,7 @@ $englishdate = date('F, Y', strtotime($monthyear));
         };
         $(".notif").delay(20000).slideUp(1000);
         $("#tablediv").delay(15000).css("height", '450px');
-        $(".dataTables_filter").delay(15000).css("color", '#ccc');
-
-
-        //Load Statistics
-        $("#dpp_stats").click(function(event) {
-            $(".dataTables_wrapper").load("<?php echo base_url(); ?>rtk_management/summary_tab_display/" + <?php echo $countyid; ?> + "/<?php echo $year; ?>/<?php echo $month; ?>/");
-            $('#home').removeClass('active-panel');
-            $('#stats').addClass('active-panel');
-        });
+        $(".dataTables_filter").delay(15000).css("color", '#ccc');        
 
         //Switch Districts
         $('#switch_district').change(function() {

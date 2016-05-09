@@ -240,6 +240,7 @@ border-bottom: solid 1px #ccc;">
                         <td class="commodity_names" id="commodity_name_<?php echo $checker;?>" colspan = "2" style = "text-align:left"></b><?php echo $detail['commodity_name']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['beginning_bal']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['q_received']; ?></td>
+                        <td style = "text-align:center"><?php echo $detail['q_received_others']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['q_used']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['no_of_tests_done']; ?></td>
                         <td style = "text-align:center"><?php echo $detail['losses']; ?></td>

@@ -330,6 +330,11 @@ $("#dialog").dialog({
     height: 140,
     modal: true
 });
+function blinker() {
+    $('.blinking').fadeOut(500);
+    $('.blinking').fadeIn(500);
+}
+setInterval(blinker, 1000);
 
 
 });
@@ -431,6 +436,7 @@ date_default_timezone_set('EUROPE/Moscow');
                     <td rowspan = "2" colspan = "2"><b>Commodity Name</b></td>
                     <td rowspan = "2"><b>Unit of Issue (e.g. Test)</b></td>
                     <td rowspan = "2"><b>Beginning Balance</b></td>
+                    <td rowspan = "2"><b>Physical Count -Beginning Balance</b></td>
                     <td rowspan = "2"><b>Quantity Received This Month - from Central Warehouses (e.g. KEMSA)</b></td>
                     <td rowspan = "2"><b>Quantity Received from other sources (e.g. local suppliers)</b></td>
                     <td rowspan = "2"><b>Quantity Used</b></td>
@@ -438,6 +444,7 @@ date_default_timezone_set('EUROPE/Moscow');
                     <td rowspan = "2"><b>Losses and Wastage</b></td>
                     <td colspan = "2"><b>Adjustments [indicate if (+) or (-)]</b></td>  
                     <td rowspan = "2"><b>End of Month Physical Count</b></td>
+                    <td rowspan = "2"><b>Computed Ending Balance</b></td>
                     <td rowspan = "2"><b>Quantity Expriing in <u>less than</u> 6 Months</b></td>
                     <td rowspan = "2"><b>Days out of Stock</b></td> 
                     <td rowspan = "2"><b>Quantity Requested for&nbsp;Re-Supply</b></td>
@@ -463,6 +470,7 @@ date_default_timezone_set('EUROPE/Moscow');
                         <td class="commodity_names" id="commodity_name_<?php echo $checker;?>" colspan = "2" style = "text-align:left"></b><?php echo $lab_commodities['commodity_name']; ?></td>
                         <td style = "color:#000; border:none; text; text-align:center" id="commodity_unit_type_<?php echo $checker;?>"><?php //echo $lab_commodities['unit_of_issue'];  ?></td>
                         <td><input id="b_balance_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "b_balance[<?php echo $checker ?>]" class='bbal' size="10" type="text" value="0" style = "text-align:center"/></td>
+                        <td><input id="phisical_b_balance_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "phisical_b_balance[<?php echo $checker ?>]" class='pbbal' size="10" type="text" value="0" style = "text-align:center"/></td>
                         <td><input id="q_received_<?php echo $checker ?>" name = "q_received[<?php echo $checker ?>]" class='qty_rcvd' size="10" type="text" value="0" style = "text-align:center"/></td>
                          <td><input id="q_received_other<?php echo $checker ?>" name = "q_received_other[<?php echo $checker ?>]" class='qty_rcvd' size="10" type="text" value="0" style = "text-align:center"/></td>
                         <td><input id="q_used_<?php echo $checker ?>" name = "q_used[<?php echo $checker ?>]" class='qty_used' size="10" type="text" value="0" style = "text-align:center"/></td>
@@ -470,7 +478,8 @@ date_default_timezone_set('EUROPE/Moscow');
                         <td><input id="losses_<?php echo $checker ?>" name = "losses[<?php echo $checker ?>]" class='losses' size="10" type="text" value="0" style = "text-align:center" /></td>
                         <td><input id="pos_adj_<?php echo $checker ?>" name = "pos_adj[<?php echo $checker ?>]" class='pos_adj' size="10" type="text" value="0" style = "text-align:center"/></td>  
                         <td><input id="neg_adj_<?php echo $checker ?>" name = "neg_adj[<?php echo $checker ?>]" class='neg_adj' size="10" type="text" value="0" style = "text-align:center"/></td>
-                        <td><input id="physical_count_<?php echo $checker ?>"  name = "physical_count[<?php echo $checker ?>]" class='phys_count' value="0" size="10" type="text" style = "text-align:center"/></td>
+                        <td><input id="fcdrr_physical_count_<?php echo $checker ?>"  name = "fcdrr_physical_count[<?php echo $checker ?>]" class='phys_count' value="0" size="10" type="text" style = "text-align:center"/></td>
+                         <td><input id="physical_count_<?php echo $checker ?>"  name = "physical_count[<?php echo $checker ?>]" class='phys_count' value="0" size="10" type="text" style = "text-align:center"/></td>
                         <td><input id="q_expiring_<?php echo $checker ?>" name = "q_expiring[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>
                         <td><input id="days_out_of_stock_<?php echo $checker ?>" name = "days_out_of_stock[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>  
                         <td><input id="q_requested_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>"name = "q_requested[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>                  
@@ -544,12 +553,16 @@ date_default_timezone_set('EUROPE/Moscow');
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">FCDRR Changes</h4>
+        <h4 class="modal-title blinking" style="text-align: center; color: #C95A42;">New Alert!!</h4>
       </div>
       <div class="modal-body">
-        <p>Please note that the FCDRR has changed. <br/>
-        1. Determine and KHB commodities have been combined into one commodity <b>Screening</b><br/>
-        2. DBS bundles are reported as either the 20 pack or 50 pack</p>
+        <p>Due to difference in the values from the system and from the actual FCDRR, there are two fields for beginning and ending balances. <br/><br/>
+        1. Enter the begining balance in the FCDRR in the cells under  <br/><b> Physical Count - Beginning Balance</b><br/><br/>
+        2. Enter the ending balance in the FCDRR in the cells under  <br/><b>End of Month Physical Count</b></p>
+        <br/>
+        <br/>
+        <p align="center"> <i>Remember: Enter the name of the person who compiled the FCDRR</i></p>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

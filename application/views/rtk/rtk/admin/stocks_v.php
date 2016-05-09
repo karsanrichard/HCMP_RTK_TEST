@@ -18,21 +18,28 @@ table{
 </style>
 <script type="text/javascript">
   
-// $(document).ready(function(){
+$(document).ready(function(){
 
-//     $('#switch_month').change(function() {
-//             var value = $('#switch_month').val();
-//             var path_full = 'rtk_management/switch_month/'+value+'/rtk_manager/';
-//             var path = "<?php echo base_url(); ?>" + path_full;
-// //              alert (path);
-//             window.location.href = path;
-//         });
+    $('#switch_month').change(function() {
+            var value = $('#switch_month').val();
+            var path_full = 'rtk_management/switch_month/'+value+'/rtk_manager_stocks/';
+            var path = "<?php echo base_url(); ?>" + path_full;
+//              alert (path);
+            window.location.href = path;
+        });
 
 
-//    });
+   });
 </script>
+<?php
+$current_year =  date('Y'); 
+$current_month = date('F', strtotime("-1 month")); 
+$current_month_year = $current_month.' '.$current_year;
+                
+ ?>
 <div class="tabbable">
-   <!--  <div>Select Month
+<h3 align="center"> RTK Stock Status for <?php echo $current_month_year ?> in Tests</h3>
+    <!-- <div> -->
         <?php
             $month = $this->session->userdata('Month');
             if ($month==''){
@@ -45,7 +52,7 @@ table{
             $englishdate = date('F, Y', strtotime($monthyear));
         ?>
          <select id="switch_month" class="form-control" style="max-width: 220px;background-color: #ffffff;border: 1px solid #cccccc;">
-           <option>-- <?php echo $englishdate;?> --</option>
+           <option>-- Switch Month --</option>
             <?php 
 
 
@@ -59,9 +66,11 @@ table{
             <option value="<?php echo $month_value ?>"><?php echo $month_text ?></option>;
         <?php } ?>
         </select>
+        <br/>
+        <br/>
+        <br/>
         
-    </div>    -->
-        
+    <!-- </div>    -->
     <div class="tab-pane" id="StockStatus">
         <table id="stock_table">
             <thead>
@@ -71,6 +80,8 @@ table{
                 <th>Received Qty</th>
                 <th>Used Qty</th>
                 <th>Tests Done</th>
+                <th>Positive Adjustments</th>
+                <th>Negative Adjustments</th>
                 <th>Closing Balance</th>
                 <th>Requested Qty</th>
                 <th>No. of Facilities with </br>Out of Stock days</th>
@@ -88,6 +99,8 @@ table{
                         <td><?php echo $value['sum_received']; ?></td>
                         <td><?php echo $value['sum_used']; ?></td>
                         <td><?php echo $value['sum_tests']; ?></td>
+                        <td><?php echo $value['sum_positive']; ?></td>
+                        <td><?php echo $value['sum_negative']; ?></td>
                         <td><?php echo $value['sum_closing_bal']; ?></td>
                         <td><?php echo $value['sum_requested']; ?></td>
                         <td><?php echo $value['sum_days']; ?></td>

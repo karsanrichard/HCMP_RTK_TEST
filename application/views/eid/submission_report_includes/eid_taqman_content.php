@@ -6,7 +6,7 @@
 	  <input type="text" class="input-sm" value="<?php echo @$openingqualkit;?>" name="oqualkit" size="5" style = "background:#F6F6F6; font-weight:bold" />
     </div></td>
 	<td><div align="center">
-      <input type="text" class="input-sm" " name="recqualkit" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="" value="<?php echo @$qualkitreceived_a;?>"/>
+      <input type="text" class="input-sm"  name="recqualkit" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="" value="<?php echo @$qualkitreceived;?>"/> <!--not working-->
     </div></td>
 	<td><div align="center">
       <input type="text" class="input-sm" name="kitlotno" size="20" style = "background:#F6F6F6; font-weight:bold; color:#999999" value="<?php echo @$kitlotno_a;?>"/>
@@ -18,7 +18,7 @@
 	  <input type="text" class="input-sm"   value="<?php echo @$wqualkit;?>" name="wqualkit" size="5" style = "background:#F6F6F6;font-weight:bold;"/>
     </div></td>
 	<td><div align="center">
-      <input type="text" class="input-sm"  name="pqualkit" size="5" style = "background:#F6F6F6;"  value="<?php echo @$qualkitreceived;?>"/>
+      <input type="text" class="input-sm"  name="pqualkit" size="5" style = "background:#F6F6F6;"  value="<?php echo @$posqualkit;?>"/> <!--not working-->
     </div></td>
 	<td><div align="center">
 	  <input type="text" class="input-sm"   value="<?php echo @$iqualkit;?>" name="iqualkit" size="5" style = "background:#F6F6F6;font-weight:bold;" />
@@ -42,7 +42,7 @@
 	  <input type="text" class="input-sm"  value="<?php echo @$openingspexagent;?>" name="ospexagent" size="5" style = "background:#FfFfFf; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm"  name="recspexagent" size="5" style = "background:#FfFfFf; font-weight:bold; color:#999999" value="<?php echo ceil(@$spexagentreceived_a);?>"/>
+      <input type="text" class="input-sm"  name="recspexagent" size="5" style = "background:#FfFfFf; font-weight:bold; color:#999999" value="<?php echo ceil(@$spexagentreceived);?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF">-</td>
 	<td style="background-color:#FFFFFF"><div align="center">
@@ -52,7 +52,7 @@
 	  <input type="text" class="input-sm"  value="<?php echo @$wspexagent;?>" name="wspexagent" size="5" style = "background:#FfFfFf;font-weight:bold;"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-      <input type="text" class="input-sm" name="pspexagent" size="5" style = "background:#FFFFff;" value="<?php echo @$spexagentreceived;?>"/>
+      <input type="text" class="input-sm" name="pspexagent" size="5" style = "background:#FFFFff;" value="<?php echo @$posspexagent;?>"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
 	  <input type="text" class="input-sm"  value="<?php echo @$ispexagent;?>" name="ispexagent" size="5" style = "background:#FfFfFf;font-weight:bold;" />
@@ -75,7 +75,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$openingampinput;?>" name="oampinput" size="5" style = "background:#F6F6F6; font-weight:bold"/>
 </div></td>
 <td><div align="center">
-  <input type="text" class="input-sm"  name="recampinput" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$ampinputreceived_a);?>"/>
+  <input type="text" class="input-sm"  name="recampinput" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999" onkeyup="writeMessage()" value="<?php echo ceil(@$ampinputreceived);?>"/>
 </div></td>
 <td>-</td>
 <td><div align="center">
@@ -85,7 +85,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$wampinput;?>" name="wampinput" size="5" style = "background:#F6F6F6;font-weight:bold;"/>
 </div></td>
 <td><div align="center">
-  <input type="text" class="input-sm"  name="pampinput" size="5" style = "background:#F6F6F6;" value="<?php echo @$ampinputreceived;?>"/>
+  <input type="text" class="input-sm"  name="pampinput" size="5" style = "background:#F6F6F6;" value="<?php echo @$posampinput;?>"/>
 </div></td>
 <td><div align="center">
   <input type="text" class="input-sm"  value="<?php echo @$iampinput;?>" name="iampinput" size="5" style = "background:#F6F6F6;font-weight:bold;" />
@@ -108,7 +108,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$openingampflapless;?>" name="oampflapless" size="5" style = "background:#FfFfFf; font-weight:bold"/>
 </div></td>
 <td style="background-color:#FFFFFF"><div align="center">
-  <input type="text" class="input-sm"  name="recampflapless" size="5" style = "background:#FfFfFf; font-weight:bold; color:#999999"  value="<?php echo ceil(@$ampflaplessreceived_a);?>"/>
+  <input type="text" class="input-sm"  name="recampflapless" size="5" style = "background:#FfFfFf; font-weight:bold; color:#999999"  value="<?php echo ceil(@$ampflaplessreceived);?>"/>
 </div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td style="background-color:#FFFFFF"><div align="center">
@@ -118,7 +118,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$wampflapless;?>" name="wampflapless" size="5" style = "background:#FfFfFf;font-weight:bold;"/>
 </div></td>
 <td style="background-color:#FFFFFF"><div align="center">
-  <input type="text" class="input-sm"  name="pampflapless" size="5" style = "background:#FfFfFf;"  value="<?php echo @$ampflaplessreceived;?>"/>
+  <input type="text" class="input-sm"  name="pampflapless" size="5" style = "background:#FfFfFf;"  value="<?php echo @$posampflapless;?>"/>
 </div></td>
 <td style="background-color:#FFFFFF"><div align="center">
   <input type="text" class="input-sm"  value="<?php echo @$iampflapless;?>" name="iampflapless" size="5" style = "background:#FfFfFf;font-weight:bold;" />
@@ -141,7 +141,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$openingampwash;?>" name="oampwash" size="5" style = "background:#F6F6F6; font-weight:bold"/>
 </div></td>
 <td><div align="center">
-  <input type="text" class="input-sm" name="recampwash" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999"  value="<?php echo ceil(@$ampwashreceived_a);?>"/>
+  <input type="text" class="input-sm" name="recampwash" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999"  value="<?php echo ceil(@$ampwashreceived);?>"/>
 </div></td>
 <td>-</td>
 <td><div align="center">
@@ -151,7 +151,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$wampwash;?>" name="wampwash" size="5" style = "background:#F6F6F6;font-weight:bold;"/>
 </div></td>
 <td><div align="center">
-  <input type="text" class="input-sm" name="pampwash" size="5" style = "background:#F6F6F6;"  value="<?php echo @$ampwashreceived;?>"/>
+  <input type="text" class="input-sm" name="pampwash" size="5" style = "background:#F6F6F6;"  value="<?php echo @$posampwash;?>"/>
 </div></td>
 <td><div align="center">
   <input type="text" class="input-sm"  value="<?php echo @$iampwash;?>" name="iampwash" size="5" style = "background:#F6F6F6;font-weight:bold;" />
@@ -174,7 +174,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$openingampktips;?>" name="oampktips" size="5" style = "background:#FFFFFF; font-weight:bold"/>
 </div></td>
 <td style="background-color:#FFFFFF"><div align="center">
-  <input type="text" class="input-sm"  name="recampktips" size="5" style = "background:#FFFFFF; font-weight:bold; color:#999999" value="<?php echo ceil(@$ampktipsreceived_a);?>"/>
+  <input type="text" class="input-sm"  name="recampktips" size="5" style = "background:#FFFFFF; font-weight:bold; color:#999999" value="<?php echo ceil(@$ampktipsreceived);?>"/>
 </div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td style="background-color:#FFFFFF"><div align="center">
@@ -184,7 +184,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$wampktips;?>" name="wampktips" size="5" style = "background:#FfFfFf;font-weight:bold;" />
 </div></td>
 <td style="background-color:#FFFFFF"><div align="center">
-  <input type="text" class="input-sm" name="pampktips" size="5" style = "background:#FFFFFF;" value="<?php echo @$ampktipsreceived;?>"/>
+  <input type="text" class="input-sm" name="pampktips" size="5" style = "background:#FFFFFF;" value="<?php echo @$posampktips;?>"/>
 </div></td>
 <td style="background-color:#FFFFFF"><div align="center">
   <input type="text" class="input-sm"  value="<?php echo @$iampktips;?>" name="iampktips" size="5" style = "background:#FfFfFf;font-weight:bold;" />
@@ -207,7 +207,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$openingktubes;?>" name="oktubes" size="5" style = "background:#F6F6F6; font-weight:bold"/>
 </div></td>
 <td><div align="center">
-  <input type="text" class="input-sm" name="recktubes" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999"  value="<?php echo ceil(@$ktubesreceived_a);?>"/>
+  <input type="text" class="input-sm" name="recktubes" size="5" style = "background:#F6F6F6; font-weight:bold; color:#999999"  value="<?php echo ceil(@$ktubesreceived);?>"/>
 </div></td>
 <td>-</td>
 <td><div align="center">
@@ -217,7 +217,7 @@
   <input type="text" class="input-sm"   value="<?php echo @$wktubes;?>" name="wktubes" size="5" style = "background:#F6F6F6;font-weight:bold;"/>
 </div></td>
 <td><div align="center">
-  <input type="text" class="input-sm"  name="pktubes" size="5" style = "background:#F6F6F6;" value="<?php echo @$ktubesreceived;?>"/>
+  <input type="text" class="input-sm"  name="pktubes" size="5" style = "background:#F6F6F6;" value="<?php echo @$posktubes;?>"/>
 </div></td>
 <td><div align="center">
   <input type="text" class="input-sm"  value="<?php echo @$iktubes;?>" name="iktubes" size="5" style = "background:#F6F6F6;font-weight:bold;" />
