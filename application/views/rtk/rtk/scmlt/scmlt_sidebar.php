@@ -1,32 +1,38 @@
 <?php
-            $option = '';
-            $id = $this->session->userdata('user_id');
-            $q = 'SELECT * from dmlt_districts,districts 
-            where dmlt_districts.district=districts.id
-            and dmlt_districts.dmlt=' . $id;
-            $q1 = 'SELECT * from user,districts 
-            where user.district=districts.id
-            and user.id=' . $id;
-            $res = $this->db->query($q);
-            $res1 = $this->db->query($q1);
-            foreach ($res->result_array() as $key => $value) {
-                $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
-            }
-            foreach ($res1->result_array() as $key => $value) {
-                $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
-            }
-            ?>
-<div class="col-md-2" style="border-right: solid 1px #ccc;padding-right: 20px;margin-left:-5px">
-   
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    $option = '';
+    $id = $this->session->userdata('user_id');
+    $q = 'SELECT * from dmlt_districts,districts 
+    where dmlt_districts.district=districts.id
+    and dmlt_districts.dmlt=' . $id;
+    
+    $res = $this->db->query($q)->result_array();
+    
+    foreach ($res as $key => $value) {
+        $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
+    }
+    
+    if(count($res)>0){
+        $style = 'display:block';
+    }else{
+        $style = 'display:none';
+    }
+    
+?>
 
-    <select id="switch_county" class="form-control" style="max-width: 220px;background-color: #ffffff;border: 1px solid #cccccc;">
-        <option>-- Select Sub County --</option>
+
+<div class="col-md-2" style="padding-right: 20px;margin-left:-5px; top: 30px;">
+    <span style="<?php echo $style ?>;font-size: 16px;" class="label label-info">Switch Sub-Counties</span>
+    <br />
+    <br />
+   
+    <select id="switch_district" class="form-control select_switch" style="<?php echo $style ?>;">
+        <option>-- Select Sub-County --</option>
         <?php echo $option; ?>
     </select>
-
+    
+    
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <select id="switch_month" class="form-control" style="max-width: 220px;background-color: #ffffff;border: 1px solid #cccccc;">       
+    <select id="switch_month" class="form-control select_switch">       
         <?php 
 
             for ($i=1; $i <=21 ; $i++) { 
@@ -42,7 +48,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
     <ul class="main_list" style="font-size:100%;border:ridge 1px #ccc">
-        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_home'?>">>> Home</a></li>        
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url('Home')?>">>> Home</a></li>        
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_summary'?>">>> Summary</a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_orders'?>">>> Reports</a></li>       
     </ul>
@@ -75,5 +81,20 @@
     .side_links_a{
         color: #fff;
     }
+    .select_switch{
+        max-width: 220px;
+        background-color: #ffffff;
+        border: 1px solid #cccccc; 
+        font-size: 14px;
+    }
 
 </style>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#switch_district').change(function() {
+        var value = $('#switch_district').val();
+        var path = "<?php echo base_url() . 'rtk_management/switch_district/'; ?>" + value + "/scmlt";
+        window.location.href = path;
+    });
+});
+</script>

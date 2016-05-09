@@ -103,6 +103,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Quantity Allocated by County</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
+
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
@@ -187,8 +188,8 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         }
 
         $mmos_s = ceil(($amc_s * 4)/50);
-        $mmos_c = 5;
-        $mmos_t = 10;
+        $mmos_c = ceil(($amc_c * 4)/30);
+        $mmos_t = ceil(($amc_t * 4)/20);
       
         if ($mmos_s >6) {
           $style_s = "style='background-color:#ff7f50'"; //red
