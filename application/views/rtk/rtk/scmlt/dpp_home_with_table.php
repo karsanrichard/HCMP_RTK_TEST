@@ -111,6 +111,10 @@ $englishdate = date('F, Y', strtotime($monthyear));
     </div> -->
     <div class="dash_main" id = "dash_main">
         <div style="font-size: 13px; margin-top: 20px;">
+        <div class="alert alert-success" style="margin-top:-18px;">
+            <p class="blinking" style="margin-left: 300px; font-size: 16px;"> <b>ANNOUNCEMENT</b></p>
+            The deadline for reporting has been moved to 25th to accomodate late reports. However NOTE that reports entered after 15th are considered late reports and may not be included in decision making processes done after the reporting period. <br/>To ensure correct analysis of data collected, <b class="blinking">Please report on or before the 15th.</b>
+        </div>
             <?php
             $district = $this->session->userdata('district_id');
             $district_name = Districts::get_district_name($district)->toArray();
@@ -330,7 +334,12 @@ $englishdate = date('F, Y', strtotime($monthyear));
             var path = "<?php echo base_url() . 'rtk_management/switch_district/'; ?>" + value + "/scmlt";
             window.location.href = path;
         });
-
+        
+        function blinker() {
+            $('.blinking').fadeOut(500);
+            $('.blinking').fadeIn(500);
+        }
+        setInterval(blinker, 1000);
     });
 
 </script>
