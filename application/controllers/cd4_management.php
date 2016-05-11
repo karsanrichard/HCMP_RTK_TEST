@@ -593,6 +593,161 @@ private function _facilities_in_district($district) {
 }
 
 
+public function cd4_reporting_table(){
+
+        $countyid = $this->session->userdata('county_id');  
+        
+        $districts = districts::getDistrict($countyid);
+        $county_name = counties::get_county_name($countyid);
+
+        $County = $county_name['county'];
+        $month = $this->session->userdata('Month');
+        if ($month == '') {
+            $month = date('mY', strtotime('-1 month'));
+        }
+        $year = substr($month, -4);
+        $month = substr_replace($month, "", -4);
+        $date = date('F-Y', mktime(0, 0, 0, $month, 1, $year));   
+
+        $pending_facilities = $this->cd4_facilities_not_reported( $countyid, $year,$month);     
+        // $pending_facilities = $this->rtk_facilities_not_reported(NULL, $countyid,NULL,NULL, $year,$month); 
+
+        $data['county'] = $County; 
+        $data['pending_facility'] = $pending_facilities;
+        $data['title'] = 'RTK County Admin';       
+        $data['banner_text'] = 'CD4 County Admin Facility Reporting'; 
+        $data['content_view'] = "cd4/reporting_table";
+        $this->load->view("rtk/template", $data);
+
+
+}
+public function cd4_facilities_not_reported($county = NULL, $year = NULL, $month = NULL) {
+
+    $date = "$year-$month-1";
+
+    $sql =  "SELECT     `f`.*, 
+                        `cf`.`beg_date`,
+                        MONTHNAME(`cf`.`beg_date`) as 'report_for',
+                        `c`.`county` as county_name,
+                        `d`.`district` as district_name,
+                        u.fname,
+                        u.lname,
+                        u.email
+
+                FROM `facilities` `f`  
+                    LEFT JOIN `cd4_fcdrr` `cf` 
+                        ON  `cf`.`facility_code` = `f`.`facility_code`
+                        AND `cf`.`beg_date` = '$date'
+                    LEFT JOIN `user` u 
+                        ON u.facility = `f`.`facility_code`
+                        AND u.usertype_id = 5
+                    LEFT JOIN districts d
+                        on d.id = f.district
+                        LEFT JOIN counties c
+                        ON c.id=  d.county
+                WHERE `cd4_enabled` = '1'
+                AND c.id = '$county'
+                ";
+
+    $res = $this->db->query($sql)->result_array();
+
+    // print_r($res);
+
+    return $res;
+
+}
+
+
+// public function rtk_facilities_not_reported($zone = NULL, $county = NULL, $district = NULL, $facility = NULL, $year = NULL, $month = NULL,$partner= NULL) {
+
+//     if (!isset($month)) {
+//         $month_text = date('mY', strtotime('-1 month'));
+//         $month = date('m', strtotime("-1 month", time()));
+//     }
+
+//     if (!isset($year)) {
+//         $year = substr($month_text, -4);
+//     }
+
+//     $firstdate = $year . '-' . $month . '-01';
+//     $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+//     $lastdate = $year . '-' . $month . '-' . $num_days;
+
+//     $conditions = '';
+//     $conditions = (isset($zone)) ? "AND facilities.Zone = 'Zone $zone'" : '';
+//     $conditions = (isset($county)) ? $conditions . " AND counties.id = $county" : $conditions . ' ';
+//     $conditions = (isset($partner)) ? $conditions . " AND facilities.partner = $partner" : $conditions . ' ';
+//     $conditions = (isset($district)) ? $conditions . " AND districts.id = $district" : $conditions . ' ';
+//     $conditions = (isset($facility)) ? $conditions . " AND facilities.facility_code = $facility" : $conditions . ' ';
+
+//     $sql = "select distinct lab_commodity_orders.facility_code
+//     from lab_commodity_orders, facilities, districts, counties 
+//     where lab_commodity_orders.order_date between '$firstdate' and '$lastdate'
+//     and facilities.district=districts.id 
+//     and districts.county = counties.id
+//     and facilities.rtk_enabled='1'";
+
+//         //echo "$sql";die();
+
+//     $sql2 = "select facilities.facility_code
+//     from facilities, districts, counties 
+//     where facilities.district=districts.id
+//     $conditions
+//     and districts.county = counties.id
+//     and facilities.rtk_enabled='1'
+//     ";
+
+//     $res = $this->db->query($sql);
+//     $reported = $res->result_array();
+//     $res2 = $this->db->query($sql2);
+//     $all = $res2->result_array();
+
+
+//     $unreported = array();
+//     $new_all = array();
+//     $new_reported = array();
+
+//     foreach ($all AS $key => $value) {
+//         $new_all[] = $value['facility_code'];
+//     }
+//     foreach ($reported AS $key => $value) {
+//         $new_reported[] = $value['facility_code'];
+//     }
+//     sort($new_all);
+//     sort($new_reported);
+
+//     $returnable = $this->flip_array_diff_key($new_all, $new_reported);
+
+//     foreach ($returnable as $value) {
+//         $sql3 = "select facilities.facility_code,facilities.facility_name, districts.district, counties.county,facilities.zone
+//         from facilities, districts, counties 
+//         where facilities.district=districts.id 
+//         and districts.county = counties.id
+//         and rtk_enabled='1'
+//         and facilities.facility_code = '$value'
+//         $conditions";
+//         $res3 = $this->db->query($sql3);
+//         $my_value = $res3->result_array();
+//         array_push($unreported, $my_value);
+//     }
+//     $report_for = $month . "-" . $year;
+
+
+
+//     foreach ($unreported AS $key => $value) {
+//         $new_unreported[] = $value[0];
+//     }
+//     foreach ($new_unreported as $key => $value) {
+//         $new_unreported[$key]['report_for'] = $report_for;
+//     }
+
+
+//     return $new_unreported;
+// }
+
+
+
+
     
 }
 
