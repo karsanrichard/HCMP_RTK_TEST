@@ -262,8 +262,8 @@ $englishdate = date('F, Y', strtotime($monthyear));
                         <th><b>MFL Code</b></th>
                         <th><b>Facility Name</b></th>
                         <th><b>District</b></th>
-                        <th ><b>FCDRR Reports</b></th> 
-                        <th ><b>CD4 FCDRR Reports</b></th> 
+                        <th ><b>RTK FCDRR Reports</b></th> 
+                        <th ><b>CD4 FCDRR Reports</b><br/> This link applies to facilities that report for CD4 only.</th> 
 
                     </tr>
                 </thead>

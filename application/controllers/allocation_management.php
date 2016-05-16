@@ -17,23 +17,140 @@ class Allocation_Management extends CI_controller {
     }
 
     public function index() {
-        echo "It works";
+        echo "blee";
     }
-    public function allocation_reports(){
+    public function county_reports(){
+        $county = $this->session->userdata('county_id'); 
+        $user_id = $county;
+        $user_type=13;
+        require('rtk_management.php');
+        $rtk = new rtk_management();
  
+        $commodity_id = 4;
+        $month = $this->session->userdata('Month');
+
+    if ($month == '') {
+        $month = date('mY', time());
+    }
+        $month= '042016';
+    $year = substr($month, -4);
+    $months_texts = array();
+    $percentages = array();
+
+    for ($i=11; $i >=0; $i--) { 
+        $months =  date("mY", strtotime( date( 'Y-m-01' )." -$i months"));
+        $j = $i+1;            
+        $month_text =  date("M Y", strtotime( date( 'Y-m-01' )." -$j months")); 
+        array_push($months_texts,$month_text);
+        $sql2 = "select sum(reported) as reported, sum(facilities) as total, month from rtk_county_percentage where month ='$months' and county_id = '$county'";
+
+        $result2 = $this->db->query($sql2)->result_array();            
+        foreach ($result2 as $key => $value) {
+            $reported = $value['reported'];
+            $total = $value['total'];
+            $percentage = round(($reported/$total)*100);
+            if($percentage>100){
+                $percentage = 100;
+            }
+            array_push($percentages, $percentage);
+            $trend_details[$month] = array('reported'=>$reported,'total'=>$total,'percentage'=>$percentage);
+        }
+    }
+    $sql3 = "select *  from rtk_county_percentage where month ='$month' and county_id = '$county' ";
+    $result3 = $this->db->query($sql3)->result_array();  
+    // echo "$sql3";
+    $total_facilities = $result3[0]['facilities'];
+    $reported_facilities=$result3[0]['reported'];
+    $nonreported_facilities= $total_facilities - $reported_facilities;
+    $data['reported_facilities'] = $reported_facilities;
+    $data['reported_facilities_percentage'] = $result3[0]['percentage'];
+    $data['total_facilities'] = $total_facilities;
+    $data['nonreported_facilities'] =$nonreported_facilities;
+    $data['nonreported_facilities_percentage'] = ceil(($nonreported_facilities/$total_facilities)*100);
+    // echo '<pre>';print_r($result3);die;
+
+    $sql4 = "SELECT 
+                facilities.facility_name,
+                facilities.facility_code,
+                lab_commodity_orders.order_date
+            FROM
+                facilities,
+                districts,
+                counties,
+                lab_commodity_orders
+            WHERE
+                lab_commodity_orders.facility_code = facilities.facility_code
+                    AND facilities.district = districts.id
+                    AND counties.id = districts.county
+                    AND counties.id = 2
+                    AND lab_commodity_orders.order_date BETWEEN '2016-04-01' AND '2016-04-31'";
+    $result4 = $this->db->query($sql4)->result_array();  
+    $sql5 = "SELECT 
+   
+    count(facilities.facility_code) as late_facilities
+FROM
+    facilities,
+    districts,
+    counties,
+    lab_commodity_orders
+WHERE
+    lab_commodity_orders.facility_code = facilities.facility_code
+        AND facilities.district = districts.id
+        AND counties.id = districts.county
+        AND counties.id = 2
+        AND lab_commodity_orders.order_date BETWEEN '2016-04-16' AND '2016-04-31'";
+    $result5 = $this->db->query($sql5)->result_array();  
+
+    $data['reported_facilities_text'] = $result4;
+    $data['late_reported_facilities'] = $result5;
+    $data['trend_details'] = json_encode($trend_details);        
+    $data['months_texts'] = str_replace('"',"'",json_encode($months_texts));        
+  $data['percentages'] = str_replace('"',"'",json_encode($percentages));              
+    $data['first_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -12 months")); 
+    $data['last_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -1 months")); 
+ 
+        $data['graphdata'] = $rtk->partner_commodity_percentages($user_id,$user_type, $commodity_id);
+        print_r($data['graphdata']);die;
         $data['banner_text'] = 'Allocation Reports';
         $data['active_zone'] = "$zone";
-        $data['content_view'] = 'rtk/rtk/allocation/allocation_reports';
+        $data['content_view'] = 'rtk/rtk/clc/county_reports';
         $data['title'] = 'Download Allocation Reports ';       
         $this->load->view("rtk/template", $data);
     }
-    public function county_allocation_reports(){
- 
-        $data['banner_text'] = 'Allocation Reports';
-        $data['active_zone'] = "$zone";
-        $data['content_view'] = 'rtk/rtk/clc/county_allocation_report';
-        $data['title'] = 'Download Allocation Reports ';       
-        $this->load->view("rtk/template", $data);
+
+    function get_county_reporting_trend($county_id, $district_id){
+      $month = $this->session->userdata('Month');
+
+    if ($month == '') {
+        $month = date('mY', time());
+    }
+    $year = substr($month, -4);
+    $months_texts = array();
+    $percentages = array();
+
+    for ($i=11; $i >=0; $i--) { 
+        $months =  date("mY", strtotime( date( 'Y-m-01' )." -$i months"));
+        $j = $i+1;            
+        $month_text =  date("M Y", strtotime( date( 'Y-m-01' )." -$j months")); 
+        array_push($months_texts,$month_text);
+        $sql2 = "select sum(reported) as reported, sum(facilities) as total, month from rtk_county_percentage where month ='$months' and county_id = '$county_id'";
+// echo "$sql2";
+        $result2 = $this->db->query($sql2)->result_array();            
+        // print_r($result2);die;
+        foreach ($result2 as $key => $value) {
+            $reported = $value['reported'];
+            $total = $value['total'];
+            $percentage = round(($reported/$total)*100);
+            if($percentage>100){
+                $percentage = 100;
+            }
+            array_push($percentages, $percentage);
+            $trend_details[$month] = array('reported'=>$reported,'total'=>$total,'percentage'=>$percentage,'months_texts'=>$months_texts);
+        }
+    }
+
+    $output =  json_encode($trend_details);        
+
     }
     //get amcs from facility_amc table and facility details then insert into allocation table
     function get_amcs(){
@@ -93,28 +210,76 @@ class Allocation_Management extends CI_controller {
        }
                    
     }
-    
-    function get_counties_districts(){
+    public function allocation_reports(){
+        
+ 
+        $data['banner_text'] = 'Allocation Reports';
+        $data['active_zone'] = "$zone";
+        $data['content_view'] = 'rtk/rtk/allocation/allocation_reports';
+        $data['title'] = 'Download Allocation Reports ';       
+        $this->load->view("rtk/template", $data);
+    }
+
+    function get_counties_districts($county){
+     
+        // $county = $this->session->userdata('county_id');   
         $sql = 'select counties.id as county_id, counties.county from counties';
         $sql2 = 'select districts.id as district_id, districts.district from districts';
+        $sql3 = 'select districts.id as district_id, districts.district from districts where county = '.$county;
         $counties = $this->db->query($sql)->result_array();
         $districts = $this->db->query($sql2)->result_array();
+        $districts_county = $this->db->query($sql3)->result_array();
        
         // echo('<pre>'); print_r($districts);die;
-       $option_district .= '<option value = "">--Select Sub-County</option>';
+       $option_district .= '<option value = "">--Select Sub-County--</option>';
        foreach ($districts as $key => $value) {
             $option_district .= '<option value = "' . $value['district_id'] . '">' . $value['district'] . '</option>';
+        } 
+        $option_district_county .= '<option value = "0">--All Sub-Counties--</option>';
+       foreach ($districts_county as $key => $value) {
+            $option_district_county .= '<option value = "' . $value['district_id'] . '">' . $value['district'] . '</option>';
         } 
 
         $option_county .= '<option value = "">--Select County</option>';
         foreach ($counties as $key => $value) {
             $option_county .= '<option value = "' . $value['county_id'] . '">' . $value['county'] . '</option>';
         } 
-        
-        $output = array('counties_list'=>$option_county,'districts_list'=>$option_district,'month_list'=>$option_month);  
+
+          $month = $this->session->userdata('Month');
+
+    if ($month == '') {
+        $month = date('mY', time());
+    }
+    $year = substr($month, -4);
+    $months_texts = array();
+    $percentages = array();
+
+    for ($i=11; $i >=0; $i--) { 
+        $months =  date("mY", strtotime( date( 'Y-m-01' )." -$i months"));
+        $j = $i+1;            
+        $month_text =  date("M Y", strtotime( date( 'Y-m-01' )." -$j months")); 
+        array_push($months_texts,$month_text);
+        $sql2 = "select sum(reported) as reported, sum(facilities) as total, month from rtk_county_percentage where month ='$months' and county_id = '$county'";
+// echo "$sql2";
+        $result2 = $this->db->query($sql2)->result_array();            
+        // print_r($result2);die;
+        foreach ($result2 as $key => $value) {
+            $reported = $value['reported'];
+            $total = $value['total'];
+            $percentage = round(($reported/$total)*100);
+            if($percentage>100){
+                $percentage = 100;
+            }
+            array_push($percentages, $percentage);
+            $trend_details[$month] = array('reported'=>$reported,'total'=>$total,'percentage'=>$percentage,'months_texts'=>$months_texts);
+        }
+    }
+        // print_r($trend_details);die;
+        $output = array('counties_list'=>$option_county,'districts_list'=>$option_district,'district_county_list'=>$option_district_county, 'trend_details'=>$trend_details);  
         echo json_encode($output);
         
     }
+
 
     //get allocation details from all facilities in the country
     function get_all_facilities_amcs(){
@@ -580,14 +745,13 @@ class Allocation_Management extends CI_controller {
                 counties,
                 districts
             WHERE
-                district_id = '83'
+                district_id = '$district'
                     AND districts.county = counties.id
                     AND facilities.district = districts.id
                     AND facilities.facility_code = allocation_details.facility_code";
     $result = $this->db->query($sql)->result_array();
-        // echo $sql;
         // echo"<pre>";print_r($result);die;
-
+    
         
     foreach ($result as $key => $id_details) {
         
@@ -720,14 +884,10 @@ class Allocation_Management extends CI_controller {
                 // $this->excel->getActiveSheet()->getStyle('B6')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                 $this->excel->getActiveSheet()->getStyle('C6')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                  
-                $filename='County Allocation('.$alocation_details[0][1].' Sub-County)'; //save our workbook as this file name
-
-                ob_end_clean(); //cleans output 
-
+                $filename='County Allocation('.$alocation_details[0][1].' Sub-County).XLSX'; //save our workbook as this file name
                 header('Content-Type: application/vnd.ms-excel'); //mime type
                 header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
                 header('Cache-Control: max-age=0'); //no cache
-
  
                 //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
                 //if you want to save it as .XLSX Excel 2007 format
@@ -841,9 +1001,6 @@ class Allocation_Management extends CI_controller {
                 $this->excel->getActiveSheet()->getStyle('C6')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                  
                 $filename='Commodity Allocation('.$commodity_name .').xls'; //save our workbook as this file name
-
-                ob_end_clean(); //cleans output 
-
                 header('Content-Type: application/vnd.ms-excel'); //mime type
                 header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
                 header('Cache-Control: max-age=0'); //no cache
@@ -937,9 +1094,6 @@ class Allocation_Management extends CI_controller {
                 $this->excel->getActiveSheet()->getStyle('C6')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                  
                 $filename='Monthly Allocation ('.$month_text.').xls'; //save our workbook as this file name
-
-                ob_end_clean(); //cleans output 
-                
                 header('Content-Type: application/vnd.ms-excel'); //mime type
                 header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
                 header('Cache-Control: max-age=0'); //no cache
@@ -948,6 +1102,279 @@ class Allocation_Management extends CI_controller {
                 //if you want to save it as .XLSX Excel 2007 format
                 $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');  
                 //force user to download the Excel file without writing it to server's HD
+                $objWriter->save('php://output');
+
+    }
+    function get_fcdrr_details($type, $month, $county_id, $district_id, $commodity){
+
+        $district_conditions = '';
+        if($district_id > 0){
+            $district_conditions = ' AND districts.id = '.$district_id;
+        }
+
+        $commodity_conditions = '';
+        if($commodity >0){
+            $commodity_conditions = ' AND lab_commodity_details.commodity_id = '.$commodity;
+        }
+
+        $year = substr($month, -4);
+        $month = substr_replace($month, "", -4);              
+        $firstdate = $year . '-' . $month . '-01';     
+        $lastdate = $year . '-' . $month . '-31';     
+        $month_text =  date("F Y", strtotime($firstdate)); 
+
+        $sql = "SELECT 
+                    counties.county,
+                    districts.district,
+                    facilities.facility_code,
+                    facilities.facility_name,                    
+                    lab_commodities.commodity_name,
+                    lab_commodity_details.*
+                FROM
+                    lab_commodity_details,
+                    lab_commodities,
+                    facilities,
+                    districts,
+                    counties
+                WHERE
+                    lab_commodity_details.created_at BETWEEN '$firstdate' AND '$lastdate'                    
+                        AND lab_commodities.id = lab_commodity_details.commodity_id $commodity_conditions
+                        AND facilities.facility_code = lab_commodity_details.facility_code
+                        AND facilities.district = districts.id
+                        AND districts.county = counties.id
+                        AND counties.id = '$county_id' $district_conditions
+                ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id";
+        $result = $this->db->query($sql)->result_array();
+       
+        //convert the date into text        
+
+        foreach ($result as $key => $details) {
+        
+        $facility_code = $details['facility_code'];
+        $county = $details['county'];
+        $district = $details['district'];
+        $facility_name = $details['facility_name'];
+        $commodity_name = $details['commodity_name'];
+        $beginning_bal = $details['beginning_bal'];
+        $q_received = $details['q_received'];
+        $q_used = $details['q_used'];
+        $no_of_tests_done = $details['no_of_tests_done'];
+        $positive_adj = $details['positive_adj'];
+        $negative_adj = $details['negative_adj'];
+        $closing_stock = $details['closing_stock'];
+        $days_out_of_stock = $details['days_out_of_stock'];
+        $q_expiring = $details['q_expiring'];
+       // $no_of_tests_done = 0;        
+        
+        //based on the results, put them in an array to be used in the excel file.
+
+        $fcdrr_details[] = array($county,$district,$facility_code,$facility_name,$commodity_name,$beginning_bal,$q_received,$q_used,$no_of_tests_done,$positive_adj,$negative_adj, $closing_stock,$days_out_of_stock, $q_expiring);
+}
+        // echo"<pre>";print_r($alocation_details);
+    
+         $this->excel->setActiveSheetIndex(0);
+        //name the worksheet
+        $this->excel->getActiveSheet()->setTitle(' Counties');
+        //set cell A1 content with some text
+        $this->excel->getActiveSheet()->setCellValue('A1', 'Commodity Consumption Data (in Tests)');
+        $this->excel->getActiveSheet()->setCellValue('A4', 'County');
+        $this->excel->getActiveSheet()->setCellValue('B4', 'Sub-County');
+        $this->excel->getActiveSheet()->setCellValue('C4', 'MFL Code');
+        $this->excel->getActiveSheet()->setCellValue('D4', 'Facility Name');
+        $this->excel->getActiveSheet()->setCellValue('E4', 'Commodity Name');
+        $this->excel->getActiveSheet()->setCellValue('F4', 'Begining Balance');
+        $this->excel->getActiveSheet()->setCellValue('G4', 'Quantity Received');
+        $this->excel->getActiveSheet()->setCellValue('H4', 'Quantity Used');
+        $this->excel->getActiveSheet()->setCellValue('I4', 'Tests Done');
+        $this->excel->getActiveSheet()->setCellValue('J4', 'Positive Adjustments');
+        $this->excel->getActiveSheet()->setCellValue('K4', 'Negative Adjustments');
+        $this->excel->getActiveSheet()->setCellValue('L4', 'Ending Balance');
+        $this->excel->getActiveSheet()->setCellValue('M4', 'Days out of Stock');
+        $this->excel->getActiveSheet()->setCellValue('N4', 'Quantity Expiring');
+
+        
+
+        //merge cell A1 until C1
+        $this->excel->getActiveSheet()->mergeCells('A1:N1');
+        //set aligment to center for that merged cell (A1 to C1)
+        $this->excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('G4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('H4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        //make the font become bold
+        $this->excel->getActiveSheet()->getStyle('A4:N4')->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(16);
+        $this->excel->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('#333');
+
+       for($col = ord('A'); $col <= ord('M'); $col++){
+                //set column dimension
+                $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(false);
+                 //change the font size
+                $this->excel->getActiveSheet()->getStyle(chr($col))->getFont()->setSize(12);
+                 
+        }
+                            
+        foreach ($fcdrr_details as $row){
+                $exceldata[] = $row;
+        }        
+
+                //Fill data 
+                $this->excel->getActiveSheet()->fromArray($exceldata, null, 'A5');
+                 
+                $filename= $county.' County FCDRR Details ('.$month_text.').xlsx'; //save our workbook as this file name
+                header('Content-Type: application/vnd.ms-excel'); //mime type
+                header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+                header('Cache-Control: max-age=0'); //no cache
+ 
+                //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
+                //if you want to save it as .XLSX Excel 2007 format
+                $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel2007');  
+                //force user to download the Excel file without writing it to server's HD
+                ob_end_clean();
+                $objWriter->save('php://output');
+
+    }
+    function get_one_fcdrr_details($type, $month, $county_id, $district_id, $commodity){
+
+        $district_conditions = '';
+        if($district_id > 0){
+            $district_conditions = ' AND districts.id = '.$district_id;
+        }
+
+        $commodity_conditions = '';
+        if($commodity >0){
+            $commodity_conditions = ' AND lab_commodity_details.commodity_id = '.$commodity;
+        }
+
+        $year = substr($month, -4);
+        $month = substr_replace($month, "", -4);              
+        $firstdate = $year . '-' . $month . '-01';     
+        $lastdate = $year . '-' . $month . '-31';     
+        $month_text =  date("F Y", strtotime($firstdate)); 
+
+        if($type = 1){
+            $type_text = 'closing_stock';
+            $type_title = 'Ending Balance';
+        }else if($type = 2){            
+            $type_text = 'q_used';
+            $type_title = 'Quantity Used';
+        }else if($type = 3){            
+            $type_text = 'no_of_tests_done';
+            $type_title = 'No of Tests done';
+        }
+
+        $sql = "SELECT 
+                    counties.county,
+                    districts.district,
+                    facilities.facility_code,
+                    facilities.facility_name,                    
+                    lab_commodities.commodity_name,
+                    lab_commodity_details.$type_text as type_of_text
+                FROM
+                    lab_commodity_details,
+                    lab_commodities,
+                    facilities,
+                    districts,
+                    counties
+                WHERE
+                    lab_commodity_details.created_at BETWEEN '$firstdate' AND '$lastdate'                    
+                        AND lab_commodities.id = lab_commodity_details.commodity_id $commodity_conditions
+                        AND facilities.facility_code = lab_commodity_details.facility_code
+                        AND facilities.district = districts.id
+                        AND districts.county = counties.id
+                        AND counties.id = '$county_id' $district_conditions
+                ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id";
+        $result = $this->db->query($sql)->result_array();
+       
+        //convert the date into text        
+
+        foreach ($result as $key => $details) {
+        
+        $facility_code = $details['facility_code'];
+        $county = $details['county'];
+        $district = $details['district'];
+        $facility_name = $details['facility_name'];
+        $commodity_name = $details['commodity_name'];
+        $type_value = $details['type_of_text'];
+        // $q_received = $details['q_received'];
+        // $q_used = $details['q_used'];
+        // $no_of_tests_done = $details['no_of_tests_done'];
+        // $positive_adj = $details['positive_adj'];
+        // $negative_adj = $details['negative_adj'];
+        // $closing_stock = $details['closing_stock'];
+        // $days_out_of_stock = $details['days_out_of_stock'];
+        // $q_expiring = $details['q_expiring'];
+       // $no_of_tests_done = 0;        
+        
+        //based on the results, put them in an array to be used in the excel file.
+
+        $fcdrr_details[] = array($county,$district,$facility_code,$facility_name,$commodity_name,$type_value);
+}
+        // echo"<pre>";print_r($alocation_details);
+    
+         $this->excel->setActiveSheetIndex(0);
+        //name the worksheet
+        $this->excel->getActiveSheet()->setTitle(' Counties');
+        //set cell A1 content with some text
+        $this->excel->getActiveSheet()->setCellValue('A1', $district.' RTKCommodity Consumption Data (in Tests)');
+        $this->excel->getActiveSheet()->setCellValue('A4', 'County');
+        $this->excel->getActiveSheet()->setCellValue('B4', 'Sub-County');
+        $this->excel->getActiveSheet()->setCellValue('C4', 'MFL Code');
+        $this->excel->getActiveSheet()->setCellValue('D4', 'Facility Name');
+        $this->excel->getActiveSheet()->setCellValue('E4', 'Commodity Name');
+        $this->excel->getActiveSheet()->setCellValue('F4',  $type_title);
+        // $this->excel->getActiveSheet()->setCellValue('G4', 'Quantity Received');
+        // $this->excel->getActiveSheet()->setCellValue('H4', 'Quantity Used');
+        // $this->excel->getActiveSheet()->setCellValue('I4', 'Tests Done');
+        // $this->excel->getActiveSheet()->setCellValue('J4', 'Positive Adjustments');
+        // $this->excel->getActiveSheet()->setCellValue('K4', 'Negative Adjustments');
+        // $this->excel->getActiveSheet()->setCellValue('L4', 'Ending Balance');
+        // $this->excel->getActiveSheet()->setCellValue('M4', 'Days out of Stock');
+        // $this->excel->getActiveSheet()->setCellValue('N4', 'Quantity Expiring');
+
+        
+
+        //merge cell A1 until C1
+        $this->excel->getActiveSheet()->mergeCells('A1:F1');
+        //set aligment to center for that merged cell (A1 to C1)
+        $this->excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('G4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $this->excel->getActiveSheet()->getStyle('H4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        //make the font become bold
+        $this->excel->getActiveSheet()->getStyle('A4:F4')->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(16);
+        $this->excel->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('#333');
+
+       for($col = ord('A'); $col <= ord('F'); $col++){
+                //set column dimension
+                $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(false);
+                 //change the font size
+                $this->excel->getActiveSheet()->getStyle(chr($col))->getFont()->setSize(12);
+                 
+        }
+                            
+        foreach ($fcdrr_details as $row){
+                $exceldata[] = $row;
+        }        
+
+                //Fill data 
+                $this->excel->getActiveSheet()->fromArray($exceldata, null, 'A5');
+                 
+                $filename= $county.' County '.$type_title.' ('.$month_text.').xlsx'; //save our workbook as this file name
+                header('Content-Type: application/vnd.ms-excel'); //mime type
+                header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+                header('Cache-Control: max-age=0'); //no cache
+ 
+                //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
+                //if you want to save it as .XLSX Excel 2007 format
+                $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel2007');  
+                //force user to download the Excel file without writing it to server's HD
+                ob_end_clean();
                 $objWriter->save('php://output');
 
     }

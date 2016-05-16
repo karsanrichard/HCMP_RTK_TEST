@@ -11,11 +11,11 @@
         $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
     }
     
-    if(count($res)>0){
+    // if(count($res)>0){
         $style = 'display:block';
-    }else{
-        $style = 'display:none';
-    }
+    // }else{
+    //     $style = 'display:none';
+    // }
     
 ?>
 

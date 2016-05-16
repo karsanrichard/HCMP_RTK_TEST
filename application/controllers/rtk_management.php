@@ -4949,7 +4949,7 @@ where
 group by extract(YEAR_MONTH from lab_commodity_details.created_at) limit 10,19";
 
         $query = $this->db->query($q)->result_array();
-        //echo "$q";die;
+        echo "$q";die;
 
         // $sql = $this->db->select('count(id) as county_facility')->get_where('facilities', array('partner' =>7))->result_array();
         // foreach ($sql as $key => $value) {
