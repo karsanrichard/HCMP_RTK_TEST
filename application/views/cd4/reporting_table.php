@@ -118,12 +118,15 @@ foreach ($res->result_array() as $key => $value) {
         <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto">
         	 <table id="pending_facilities" class="data-table"> 
                     <thead>                   
-                        <th>MFL</th>
-                        <th>Facility Name</th>
+                        <th>MFL </th>
+                        <th>Facility Name </th>
                         <th>Sub-County</th>
                         <th>County</th>
                         <th>Zone</th>
                         <th>reporting Status</th>
+                        <th>Contact Person</th>
+                        <th>mobile number</th>
+                        <th>email</th>
                     </thead>
                     <tbody>
                         <?php
@@ -133,7 +136,7 @@ foreach ($res->result_array() as $key => $value) {
                     $facil = $value['facility_code'];
                     ?> 
                     <tr>                             
-                      <td><?php echo $value['facility_code'];?></td>
+                      <td><?php echo $value['facility_code'];?> <a href="<?php echo base_url().'cd4_management/facility_profile/'.$value['facility_code'];?>">View</a></td>
                       <td><?php echo $value['facility_name'];?></td>
                       <td><?php echo $value['district_name'];?></td>
                       <td><?php echo $value['county_name'];?></td>
@@ -150,6 +153,10 @@ foreach ($res->result_array() as $key => $value) {
                       <?php 
                       	}
                       ?>
+
+                      <td><?php echo $value['fname'].'',$value['lname'] ;?></td>
+                      <td><?php echo $value['telephone'];?></td>
+                      <td><?php echo $value['email'];?></td>
                     </tr>
                     <?php   }
                   }else{ ?>

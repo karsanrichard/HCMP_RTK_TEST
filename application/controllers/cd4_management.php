@@ -632,6 +632,7 @@ public function cd4_facilities_not_reported($county = NULL, $year = NULL, $month
                         `d`.`district` as district_name,
                         u.fname,
                         u.lname,
+                        u.telephone,
                         u.email
 
                 FROM `facilities` `f`  
@@ -647,7 +648,11 @@ public function cd4_facilities_not_reported($county = NULL, $year = NULL, $month
                         ON c.id=  d.county
                 WHERE `cd4_enabled` = '1'
                 AND c.id = '$county'
+
+
+                GROUP BY f.id
                 ";
+    // echo $sql;die;
 
     $res = $this->db->query($sql)->result_array();
 
