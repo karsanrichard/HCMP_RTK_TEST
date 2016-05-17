@@ -109,8 +109,8 @@ WHERE
     $data['first_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -12 months")); 
     $data['last_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -1 months")); 
  
-        $data['graphdata'] = $rtk->partner_commodity_percentages($user_id,$user_type, $commodity_id);
-        print_r($data['graphdata']);die;
+        $data['graphdata'] = $rtk->partner_commodity_percentages($user_type,$user_id, $commodity_id);
+        // print_r($data['graphdata']);die;
         $data['banner_text'] = 'Allocation Reports';
         $data['active_zone'] = "$zone";
         $data['content_view'] = 'rtk/rtk/clc/county_reports';
@@ -1145,6 +1145,7 @@ WHERE
                         AND counties.id = '$county_id' $district_conditions
                 ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id";
         $result = $this->db->query($sql)->result_array();
+       echo "$sql";die;
        
         //convert the date into text        
 
@@ -1287,7 +1288,6 @@ WHERE
                         AND counties.id = '$county_id' $district_conditions
                 ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id";
         $result = $this->db->query($sql)->result_array();
-       
         //convert the date into text        
 
         foreach ($result as $key => $details) {

@@ -4923,15 +4923,22 @@ $sql3 = "select sum(screening_current_amount) as screening, sum(confirmatory_cur
         //        $this->load->view('rtk/rtk/rca/county_reporting_view', $data);
         return $data;
     }    
-function partner_commodity_percentages($partner, $commodity, $month) {  
+function partner_commodity_percentages($usertype, $user_id, $commodity, $month) {  
         //$q = 'select extract(YEAR_MONTH from lab_commodity_details.created_at)as current_month, lab_commodity_details.commodity_id, lab_commodity_details.q_requested, lab_commodity_details.beginning_bal,lab_commodity_details.q_received,lab_commodity_details.no_of_tests_done,lab_commodity_details.losses,lab_commodity_details.closing_stock,lab_commodity_details.q_received, facilities.partner from facilities, lab_commodity_details where facilities.partner = 7 group by extract(YEAR_MONTH from lab_commodity_details.created_at) ';
+        // echo "$user_id and usertype as $usertype        ";
+        $conditions = '';
+        if ($usertype =='14' ) {
+            $conditions = ' facilities.partner = '.$user_id;
+        } elseif ($usertype =='13') {
+            $conditions = ' counties.id = '.$user_id;
+        }
         $q = "
         select 
     extract(YEAR_MONTH from lab_commodity_details.created_at) as current_month,
     lab_commodity_details.commodity_id,
     sum(lab_commodity_details.q_requested) as q_requested ,
     sum(lab_commodity_details.beginning_bal) as beginning_bal,
-    sum(lab_commodity_details.q_received) as q_received,
+    sum(lab_commodity_details.q_used) as q_used,
     sum(lab_commodity_details.no_of_tests_done) as no_of_tests_done ,
     sum(lab_commodity_details.losses) as losses,
     sum(lab_commodity_details.closing_stock) as closing_stock,
@@ -4940,16 +4947,20 @@ function partner_commodity_percentages($partner, $commodity, $month) {
 from
     facilities,
     lab_commodity_details,
-    lab_commodities
+    lab_commodities,
+    counties,
+    districts
 where
-    facilities.partner = '$partner'
+    $conditions
+    and facilities.district = districts.id
+        AND districts.county = counties.id
         and lab_commodity_details.facility_code = facilities.facility_code
         and lab_commodity_details.commodity_id = lab_commodities.id
         AND lab_commodities.id ='$commodity'
 group by extract(YEAR_MONTH from lab_commodity_details.created_at) limit 10,19";
 
         $query = $this->db->query($q)->result_array();
-        echo "$q";die;
+        // echo "$  q";die;
 
         // $sql = $this->db->select('count(id) as county_facility')->get_where('facilities', array('partner' =>7))->result_array();
         // foreach ($sql as $key => $value) {
@@ -4964,13 +4975,14 @@ group by extract(YEAR_MONTH from lab_commodity_details.created_at) limit 10,19";
         $losses = array();
         $ending_bal = array();
         $qty_requested = array();
-        $month_array = array();
-        $beginning_bal_array = array();
-        $qty_received_array = array();
-        $total_tests_array = array();
-        $losses_array = array();
-        $ending_bal_array = array();
-        $qty_requested_array = array();
+        $qty_used = array();
+        // $month_array = array();
+        // $beginning_bal_array = array();
+        // $qty_received_array = array();
+        // $total_tests_array = array();
+        // $losses_array = array();
+        // $ending_bal_array = array();
+        // $qty_requested_array = array();
 
 
         foreach ($query as $val) {
@@ -4987,6 +4999,7 @@ group by extract(YEAR_MONTH from lab_commodity_details.created_at) limit 10,19";
             array_push($losses, intval($val['losses']));
             array_push($ending_bal, intval($val['closing_stock']));
             array_push($qty_requested, intval($val['q_requested']));
+            array_push($qty_used, intval($val['q_used']));
             //$percentage_reported = $this->district_reporting_percentages($val['district_id'], $year, $month);
             
            
@@ -5016,6 +5029,7 @@ group by extract(YEAR_MONTH from lab_commodity_details.created_at) limit 10,19";
         $data['losses'] = $losses_data;
         $data['ending_bal'] = $ending_bal_data;
         $data['qty_requested'] = $qty_requested_data;
+        $data['qty_used'] = json_encode($qty_used);
         //        $this->load->view('rtk/rtk/rca/county_reporting_view', $data);
         return $data;
     }    

@@ -5,7 +5,7 @@ include('rca_sidabar.php');
         $county = $this->session->userdata('county_id');   
 
 ?>
-<div class="dash_main" style="margin-left: 260px; margin-top: 10px;">
+<div class="dash_main" style="margin-left: 360px; margin-top: 10px;">
 
 <div class="clc_contents">
 
@@ -22,14 +22,14 @@ include('rca_sidabar.php');
 				<option value="6"> Tie Breaker</option>							
 			</select>&nbsp;&nbsp;&nbsp;
 			<select id="date_select" class="form-control select_options" > By Period
-							<option value="0"> -- Select Period--</option>
+							
 							<?php 
 
 					            for ($i=1; $i <=12 ; $i++) { 
 					            $month = date('m', strtotime("-$i month")); 
 					            $year = date('Y', strtotime("-$i month")); 
 					            $month_value = $month.$year;
-					            $month_text =  date('F', strtotime("-$i month")); 
+					            $month_text =  date('F', strtotime("$i last month")); 
 					            $month_text = $month_text." ".$year;
 					         ?>
 
@@ -432,8 +432,8 @@ include('rca_sidabar.php');
 		});
 		         
 
- var test_array = <?php echo $graphdata['qty_used']; ?>
- console.log(test_array);         
+ // var test_array = <?php echo $graphdata['qty_used']; ?>
+ // console.log(test_array);         
    
 $('#consumption-chart').highcharts({
                 chart: {
@@ -469,7 +469,7 @@ $('#consumption-chart').highcharts({
             }
         },
         series: [{
-            name: 'Beginning Balance',
+            name: 'Quantity Used',
             data: <?php echo $graphdata['qty_used']; ?>
        
         

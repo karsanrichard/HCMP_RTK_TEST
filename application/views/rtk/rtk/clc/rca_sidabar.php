@@ -32,6 +32,7 @@
         <li class = "side_links"><a href="<?php echo base_url().'rtk_management/rca_districts'?>">Sub-Counties</a></li>
         <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_stock'?>">Stock Card</a></li>
         <li class = "side_links"><a href="<?php echo base_url().'rtk_management/rca_pending_facilities'?>">Non-Reported Facilities</a></li>
+        <li class = "side_links"><a href="<?php echo base_url().'cd4_management/cd4_reporting_table'?>">CD4 Facilities Reporting</a></li>
         <li class = "side_links"><a href="<?php echo base_url().'allocation_management/county_reports' ?>">Reports</a></li>
         <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_admin/users' ?>">Users</a></li>
         <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_admin/facilities' ?>">Facilities</a></li>
