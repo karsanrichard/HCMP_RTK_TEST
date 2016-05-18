@@ -565,7 +565,7 @@ public function fcdrr_values($order_id, $commodity = null) {
     FROM cd4_commodities, cd4_fcdrr_commodities 
     WHERE cd4_fcdrr_commodities.fcdrr_id ='$order_id'   
     AND cd4_fcdrr_commodities.commodity_id = cd4_commodities.id 
-    AND cd4_commodities.category='1'";
+    AND cd4_commodities.category<>'0'";
 
     // echo "$order_id";
     if (isset($commodity)) {
