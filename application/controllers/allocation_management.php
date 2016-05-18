@@ -1145,7 +1145,7 @@ WHERE
                         AND counties.id = '$county_id' $district_conditions
                 ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id";
         $result = $this->db->query($sql)->result_array();
-       echo "$sql";die;
+       // echo "$sql";die;
        
         //convert the date into text        
 
