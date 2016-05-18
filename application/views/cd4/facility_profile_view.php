@@ -128,6 +128,16 @@ $(function(){
                                 <?php
                                     $a = 0;
                                     foreach ($value[$a] as  $values) {
+                                        if(!(($values['beginning_bal']==0)&&
+                                            ($values['q_received']==0)&&
+                                            ($values['q_used']==0)&&
+                                            ($values['no_of_tests_done']==0)&&
+                                            ($values['positive_adj']==0)&&
+                                            ($values['negative_adj']==0)&&
+                                            ($values['losses']==0)&&
+                                            ($values['closing_stock']==0)&&
+                                            ($values['q_requested']==0))
+                                        ){
                                        
                                         ?>
                                        <tr>
@@ -143,6 +153,7 @@ $(function(){
                                         <td><?php echo $values['q_requested']; ?></td>
                                     </tr> 
                                     <?php $a++; }
+                                }
                                 ?>
                                    
                                 </tbody>
