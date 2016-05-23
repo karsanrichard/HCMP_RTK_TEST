@@ -646,6 +646,9 @@ public function cd4_facilities_not_reported($county = NULL, $year = NULL, $month
                         on d.id = f.district
                         LEFT JOIN counties c
                         ON c.id=  d.county
+
+                    RIGHT JOIN `cd4_facility_device` `cfd`
+                    ON cfd.facility_code = f.facility_code
                 WHERE `cd4_enabled` = '1'
                 AND c.id = '$county'
 
