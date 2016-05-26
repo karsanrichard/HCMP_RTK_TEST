@@ -40,6 +40,7 @@
 
     //Set the begining Balance for the Comodities    
     var begining_bal = <?php echo json_encode($beginning_bal);?>;
+    var amcs = <?php echo json_encode($amcs);?>;
 
     for (var a = 0; a < begining_bal.length; a++) {            
         var current_bal = begining_bal[a];
@@ -47,6 +48,11 @@
         $('#physical_count_'+a).attr("value",current_bal); 
     };             
 
+    for (var a = 0; a < amcs.length; a++) {            
+        var current_amc = amcs[a];
+        $('#amc_'+a).attr("value",current_amc); 
+         console.log(current_amc);
+    };   
     //Set the first element uneditable i.e. Screening Determine
    // $('#tests_done_0').attr("readonly",'true');
 
@@ -407,14 +413,14 @@ date_default_timezone_set('EUROPE/Moscow');
            <tr><td style = "text-align:left" colspan = "3"><b>Name of Facility:</b></td>
                     <td colspan = "4"><?php echo $facility_name ?></td>
                     <td colspan = "3" style = "text-align:right"><b>MFL Code:</b></td>
-                    <td colspan = "5"><?php echo $facility_code ?></td>
+                    <td colspan = "6"><?php echo $facility_code ?></td>
                    
  
                 </tr>
                 <tr ><td colspan = "3" style = "text-align:left"><b>County:</b></td>                        
                     <td colspan = "4"><?php echo $county ?></td>
                     <td colspan = "3" style = "text-align:left"><b>District:</b></td>
-                    <td colspan = "5"><?php echo $district ?></td>
+                    <td colspan = "6"><?php echo $district ?></td>
                                        
                 </tr>
                 <tr>
@@ -422,16 +428,16 @@ date_default_timezone_set('EUROPE/Moscow');
                 <td colspan = "2" align="right"><b>Beginning:</b></td> 
                     <td colspan = "3"style="text-align:center;" ><?php echo $beg_date ?></td>
                     <td colspan = "3" align="right"><b>Ending:</b></td>
-                    <td colspan = "5" style="text-align:center;"><?php echo $end_date ?></td>
+                    <td colspan = "6" style="text-align:center;"><?php echo $end_date ?></td>
                     
                 <tr>
-                        <td colspan = "15" style = "text-align:center;" id="calc">
+                        <td colspan = "16" style = "text-align:center;" id="calc">
                             <b>The Ending Balance is Computed as follows: </b><i>Beginning Balance + Quantity Received + Positive Adjustments - Quantity Used - Negative Adjustments - Losses</i> 
                             <b><br/>Note:</b>
                             The Quantity Used Should Not be Less than the Tests Done
                         </td>            
                     </tr>
-                <tr><td colspan = "15" height="60px"></td></tr>
+                <tr><td colspan = "16" height="60px"></td></tr>
                 <tr >       
                     <td rowspan = "2" colspan = "2"><b>Commodity Name</b></td>
                     <td rowspan = "2"><b>Unit of Issue (e.g. Test)</b></td>
@@ -448,6 +454,7 @@ date_default_timezone_set('EUROPE/Moscow');
                     <td rowspan = "2"><b>Quantity Expriing in <u>less than</u> 6 Months</b></td>
                     <td rowspan = "2"><b>Days out of Stock</b></td> 
                     <td rowspan = "2"><b>Quantity Requested for&nbsp;Re-Supply</b></td>
+                    <td rowspan = "2"><b>Average Monthly Consumption</b></td>
                 </tr>
                 <tr>
                     <td>Positive</td>
@@ -460,7 +467,7 @@ date_default_timezone_set('EUROPE/Moscow');
                 // print_r($lab_commodities_categories);die;
                     ?>
                     <tr>
-                        <td colspan = "14" style = "text-align:left"><b><?php echo $lab_category->category_name; ?></b></td>            
+                        <td colspan = "15" style = "text-align:left"><b><?php echo $lab_category->category_name; ?></b></td>            
                     </tr>                    
                     <?php foreach ($lab_category->category_lab_commodities as $lab_commodities) { ?>
                     <tr commodity_id="<?php echo $checker ?>"><input type="hidden" id="commodity_id_<?php echo $checker ?>" name="commodity_id[<?php echo $checker ?>]" value="<?php echo $lab_commodities['id']; ?>" >
@@ -482,17 +489,18 @@ date_default_timezone_set('EUROPE/Moscow');
                          <td><input id="physical_count_<?php echo $checker ?>"  name = "physical_count[<?php echo $checker ?>]" class='phys_count' value="0" size="10" type="text" style = "text-align:center"/></td>
                         <td><input id="q_expiring_<?php echo $checker ?>" name = "q_expiring[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>
                         <td><input id="days_out_of_stock_<?php echo $checker ?>" name = "days_out_of_stock[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>  
-                        <td><input id="q_requested_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>"name = "q_requested[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>                  
+                        <td><input id="q_requested_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>"name = "q_requested[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td> 
+                        <td><input readonly id="amc_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "am_c[<?php echo $checker ?>]" class='amc' size="10" type="text" value="0" style = "text-align:center"/></td>                 
                     </tr>
                     <?php $checker++;
                 }
             }
             ?>
             <tr>
-                <td colspan = "15" height="60px"><br/></td>
+                <td colspan = "16" height="60px"><br/></td>
             </tr>
             <tr>                    
-                <td colspan = "15" style = "text-align:left;background: #EEE;">Explain Losses and Adjustments</td>
+                <td colspan = "16" style = "text-align:left;background: #EEE;">Explain Losses and Adjustments</td>
             </tr>
             <tr>                        
                 <td colspan = "16"><input colspan = "16" id="explanation" name="explanation" size="210" type="text" value="" style=" width: 90%;"/></td>
@@ -505,19 +513,19 @@ date_default_timezone_set('EUROPE/Moscow');
                 <td colspan = "4"><b>(1) Daily Activity Register for Laboratory Reagents and Consumables (MOH 642):</b></td>
                 <td><input class='user2'id="moh_642" name="moh_642" size="10" type="text"/></td>
                 <td colspan = "3"><b>(2) F-CDRR for Laboratory Commodities (MOH 643):</b></td>
-                <td colspan = "3"><input class='user2'id="moh_643" name="moh_643" size="10" type="text"/></td>
+                <td colspan = "4"><input class='user2'id="moh_643" name="moh_643" size="10" type="text"/></td>
             </tr>   
 
 
             <tr><td colspan = "3" style = "text-align:left">Compiled by:</td>
                 <td colspan = "3" style = "text-align:left">Tel:</td>
-                <td colspan = "9" style = "text-align:left">Designation:</td>
+                <td colspan = "10" style = "text-align:left">Designation:</td>
                 
             </tr>
             <tr><td colspan = "3"><input class='user2'id="compiled_by" name="compiled_by" size="10" type="text" />
                 <span style="color: #f33;font-size: 10px;">* Required Field</span></td>                
                 <td colspan = "3"><input class='user2'id="compiled_tel" name="compiled_tel" size="10" type="text" /></td>               
-                <td colspan = "9"><input class='user2'id="compiled_des" name="compiled_des" size="10" type="text" /></td>
+                <td colspan = "10"><input class='user2'id="compiled_des" name="compiled_des" size="10" type="text" /></td>
                 
             </tr>
 
@@ -525,13 +533,13 @@ date_default_timezone_set('EUROPE/Moscow');
 
             <tr><td colspan = "3" style = "text-align:left">Approved by:</td>
                 <td colspan = "3" style = "text-align:left">Tel:</td>
-                <td colspan = "9" style = "text-align:left">Designation:</td>
+                <td colspan = "10" style = "text-align:left">Designation:</td>
                 
             </tr>
             <tr><td colspan = "3"><input class='user2'id="approved_by" name="approved_by" size="10" type="text" colspan = "4"/>
                 <span style="color:#f33;font-size: 10px;">* Required Field</span></td>            
                 <td colspan = "3"><input class='user2'id="approved_tel" name="approved_tel" size="10" type="text" /></td>
-                <td colspan = "9"><input class='user2'id="approved_des" name="approved_des" size="10" type="text" /></td>                
+                <td colspan = "10"><input class='user2'id="approved_des" name="approved_des" size="10" type="text" /></td>                
             </tr>
 
         </table>

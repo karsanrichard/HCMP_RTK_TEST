@@ -275,7 +275,9 @@ public function get_report($facility_code) {
   $my_arr = $this->_get_begining_balance($facility_code);
   // print_r($my_arr);die;
   $my_count = count($my_arr);
-  $data['beginning_bal'] = $my_arr;         
+  // $data['beginning_bal'] = $my_arr; 
+  $data['beginning_bal'] = $my_arr['ending_bal'];         
+  $data['amcs'] = $my_arr['amcs'];         
   $data['facilities'] = Facilities::get_one_facility_details($facility_code);            
   $data['lab_categories'] = Lab_Commodity_Categories::get_active();
   $this->load->view("rtk/template", $data);
@@ -316,14 +318,20 @@ public function get_cd4_report($facility_code) {
 
   $this->load->view("rtk/template", $data);
 }
-function update_lab_details(){
+function update_lab_details($month){
+    $current_month = substr($month, 0,2);
+    $year = substr($month, -4);
+    $firstdate = $year.'-'.$current_month.'-01';
+    $lastdate = $year.'-'.$current_month.'-31';
+
+    echo "$firstdate and $lastdate";
     $sql = "SELECT 
                 facilities.facility_code, lab_commodity_orders.id
             FROM
                 facilities,
                 lab_commodity_orders
             WHERE
-                order_date BETWEEN '2016-02-01' AND '2016-02-31'
+                order_date BETWEEN '2015-11-01' AND '2015-11-31'
                     AND facilities.facility_code = lab_commodity_orders.facility_code";
     $result = $this->db->query($sql)->result_array();
 
@@ -368,6 +376,11 @@ function update_lab_details(){
     }
 }
 function get_commodity_amcs($zone, $month){
+    // $sql3 ="UPDATE lab_commodity_details
+    //             SET amc=0";
+
+    //     $this->db->query($sql3);
+    //     die;
     $current_month = substr($month, 0,2);
     $last_month = $current_month - 1;
     $three_months_ago = $current_month - 2;
@@ -460,7 +473,7 @@ function get_commodity_amcs($zone, $month){
             $count =$count+1;
         }
 
-        // echo $mfl.' commodity '.$i .'  first month:'.$result2[0]['q_used'].' second month:'.$result3[0]['q_used'].' third month:'.$result4[0]['q_used'].'<br/>';
+        echo $mfl.' commodity '.$i .'  first month:'.$result2[0]['q_used'].' second month:'.$result3[0]['q_used'].' third month:'.$result4[0]['q_used'].'<br/>';
 
         // echo $count;
         // die;
@@ -475,24 +488,98 @@ function get_commodity_amcs($zone, $month){
 }
       //Begining Balances
 function _get_begining_balance($facility_code) {
+    // $facility_code = '12865';
     $result_bal = array();
+    $all_amc =array();
+
     $start_date_bal = date('Y-m-d', strtotime("first day of previous month"));
     $end_date_bal = date('Y-m-d', strtotime("last day of previous month"));
-    $sql_bal = "SELECT lab_commodity_details.closing_stock from lab_commodity_orders, lab_commodity_details, lab_commodities 
-    where lab_commodity_orders.id = lab_commodity_details.order_id 
-    and lab_commodity_orders.order_date between '$start_date_bal' and '$end_date_bal' 
-    and lab_commodity_orders.facility_code='$facility_code'
-     AND lab_commodities.id = lab_commodity_details.commodity_id
-        AND lab_commodities.category = 1";
+   
+    $current_month = substr($end_date_bal, 5,2);
+    $last_month = $current_month - 1;
+    $three_months_ago = $current_month - 2;
+    $year = substr($end_date_bal, 0,4);
+    
+    $firstdate = $year.'-'.$current_month.'-01';
+    $lastdate = $year.'-'.$current_month.'-31';
+
+    $firstdate2 = $year.'-0'.$last_month.'-01';
+    $lastdate2 = $year.'-0'.$last_month.'-31';
+
+    $firstdate3 = $year.'-0'.$three_months_ago.'-01';
+    $lastdate3 = $year.'-0'.$three_months_ago.'-31';
+
+
+    for ($i=4; $i <=6 ; $i++) { 
+        //     # code...
+        
+        $sql2 = "SELECT 
+                    commodity_id, newqused as q_used
+                FROM
+                    lab_commodity_details
+                WHERE
+                    commodity_id = '$i'
+                        AND created_at BETWEEN '$firstdate' AND '$lastdate'
+                        and facility_code = '$facility_code'";
+        $sql3 = "SELECT 
+                    commodity_id, newqused as q_used
+                FROM
+                    lab_commodity_details
+                WHERE
+                    commodity_id = '$i'
+                        AND created_at BETWEEN '$firstdate2' AND '$lastdate2'
+                        and facility_code = '$facility_code'";
+
+        $sql4 = "SELECT 
+                    commodity_id, newqused as q_used
+                FROM
+                    lab_commodity_details
+                WHERE
+                    commodity_id = '$i'
+                        AND created_at BETWEEN '$firstdate3' AND '$lastdate3'
+                        and facility_code = '$facility_code'"; 
+
+        $result2 = $this->db->query($sql2)->result_array();
+        $result3 = $this->db->query($sql3)->result_array();
+        $result4 = $this->db->query($sql4)->result_array();
+       
+        $count =0;
+        if (empty($result2)) {
+            $count = $count;
+        }else{
+            $count =$count+1;
+        }
+
+        if (empty($result3)) {
+            $count = $count;
+        }else{
+            $count =$count +1;
+        }
+        
+        if (empty($result4)) {
+            $count = $count;
+        }else{
+            $count =$count+1;
+        }
+        
+         $amc = ceil(($result2[0]['q_used'] + $result3[0]['q_used']+ $result4[0]['q_used']) /$count);
+
+         array_push($all_amc, $amc);
+    }
+    
+    $sql_bal = "SELECT lab_commodity_details.closing_stock from lab_commodity_orders, lab_commodity_details 
+                where lab_commodity_orders.id = lab_commodity_details.order_id 
+                and lab_commodity_orders.order_date between '$start_date_bal' and '$end_date_bal' 
+                and lab_commodity_orders.facility_code='$facility_code'";
 
     $res_bal = $this->db->query($sql_bal)->result_array();
-    // echo "$sql_bal";
-    // print_r($res_bal);
 
     foreach ($res_bal as $row_bal) {
         array_push($result_bal, $row_bal['closing_stock']);
     }
-    return $result_bal;
+
+    $all_values = array('ending_bal' =>$result_bal, 'amcs'=>$all_amc);
+    return $all_values;
 }
 
       //CD4 Begining Balances
