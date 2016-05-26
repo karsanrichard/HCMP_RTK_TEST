@@ -367,6 +367,112 @@ function update_lab_details(){
 
     }
 }
+function get_commodity_amcs($zone, $month){
+    $current_month = substr($month, 0,2);
+    $last_month = $current_month - 1;
+    $three_months_ago = $current_month - 2;
+    $year = substr($month, -4);
+
+    $firstdate = $year.'-'.$current_month.'-01';
+    $lastdate = $year.'-'.$current_month.'-31';
+
+    $firstdate2 = $year.'-0'.$last_month.'-01';
+    $lastdate2 = $year.'-0'.$last_month.'-31';
+
+    $firstdate3 = $year.'-0'.$three_months_ago.'-01';
+    $lastdate3 = $year.'-0'.$three_months_ago.'-31';
+
+// echo "current month dates: $firstdate to $lastdate <br/> <br/>";
+// echo "last month dates: $firstdate2 to $lastdate2 <br/> <br/>";
+// echo "three months ago dates: $firstdate3 to $lastdate3 <br/> <br/>";
+
+// die;
+    $sql = "SELECT 
+                facilities.facility_code
+            FROM
+                facilities,
+                districts,
+                counties
+            WHERE
+                facilities.district = districts.id
+                and facilities.rtk_enabled = 1
+                    AND counties.id = districts.county
+                    AND counties.zone = '$zone' limit 0,20";
+    $result = $this->db->query($sql)->result_array();
+
+//     foreach ($result as $key => $value) {
+//         # code...
+//     }
+
+    foreach ($result as $key => $value) {
+        $mfl = $value['facility_code'];
+// echo "works"; die;
+        
+        for ($i=4; $i <=6 ; $i++) { 
+        //     # code...
+        
+        $sql2 = "SELECT 
+                    commodity_id, newqused as q_used
+                FROM
+                    lab_commodity_details
+                WHERE
+                    commodity_id = '$i'
+                        AND created_at BETWEEN '$firstdate' AND '$lastdate'
+                        and facility_code = '$mfl'";
+// echo "$sql2";die;
+        $sql3 = "SELECT 
+                    commodity_id, newqused as q_used
+                FROM
+                    lab_commodity_details
+                WHERE
+                    commodity_id = '$i'
+                        AND created_at BETWEEN '$firstdate2' AND '$lastdate2'
+                        and facility_code = '$mfl'";
+        $sql4 = "SELECT 
+                    commodity_id, newqused as q_used
+                FROM
+                    lab_commodity_details
+                WHERE
+                    commodity_id = '$i'
+                        AND created_at BETWEEN '$firstdate3' AND '$lastdate3'
+                        and facility_code = '$mfl'"; 
+
+        $result2 = $this->db->query($sql2)->result_array();
+        $result3 = $this->db->query($sql3)->result_array();
+        $result4 = $this->db->query($sql4)->result_array();
+        // print_r($result4);die;
+        $count =0;
+        if (empty($result2)) {
+            $count = $count;
+        }else{
+            $count =$count+1;
+        }
+
+        if (empty($result3)) {
+            $count = $count;
+        }else{
+            $count =$count +1;
+        }
+        
+        if (empty($result4)) {
+            $count = $count;
+        }else{
+            $count =$count+1;
+        }
+
+        // echo $mfl.' commodity '.$i .'  first month:'.$result2[0]['q_used'].' second month:'.$result3[0]['q_used'].' third month:'.$result4[0]['q_used'].'<br/>';
+
+        // echo $count;
+        // die;
+        $amc = ceil(($result2[0]['q_used'] + $result3[0]['q_used']+ $result4[0]['q_used']) /$count);
+        // echo "AMC becomes ".$amc."<br/>";
+        
+        $sql5 = "update lab_commodity_details set amc = '$amc' where commodity_id = '$i' AND created_at BETWEEN '$firstdate' AND '$lastdate' and facility_code = '$mfl'";
+        $this->db->query($sql5);        
+        echo $sql5.'<br/>';
+        }
+    }
+}
       //Begining Balances
 function _get_begining_balance($facility_code) {
     $result_bal = array();
