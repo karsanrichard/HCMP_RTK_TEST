@@ -54,34 +54,55 @@ class Rtk_Management extends Home_controller {
         }
         date_default_timezone_set("EUROPE/Moscow");
 
+
         foreach ($facilities as $facility_detail) {
 
            $lastmonth = date('F', strtotime("last day of previous month"));
-           if($date>$deadline_date){
-            $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span> <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'></a></td>";
-        }else{
-            $cd4_report_link = "<td> <a href=" . site_url('rtk_management/get_cd4_report/' . $facility_detail['facility_code']) . " class='link report'> Report</a></td>";
-        }
-        $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span> <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'> Report</a></td>";
+	        if($date>$deadline_date){
+	            $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'></a></td>";
+
+		        $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></span></td>";
+	            // echo $cd4_report_link;die;
+	        }else{
+		        $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link '> Report</a></span></td>";
+	        }
+
+	        $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></td>";
 
 
         $table_body .="<tr><td><a class='ajax_call_1' id='county_facility' name='" . base_url() . "rtk_management/get_rtk_facility_detail/$facility_detail[facility_code]' href='#'>" . $facility_detail["facility_code"] . "</td>";
         $table_body .="<td>" . $facility_detail['facility_name'] . "</td><td>" . $district_name['district'] . "</td>";
-        $table_body .="<td>";
+        $table_body .="";
 
         $lab_count = lab_commodity_orders::get_recent_lab_orders($facility_detail['facility_code']);
         if ($lab_count > 0) {
             $reported = $reported + 1;              
-            $table_body .="<span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
-        } else {
+            $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
+        } 
+        else {
             $nonreported = $nonreported + 1;
             $table_body .=$report_link;
-        }
+        }	
 
+
+
+        $lab_count = cd4_fcdrr::get_recent_cd4_fcdrr($facility_detail['facility_code']);
+        if ($lab_count > 0) {
+            $reported = $reported + 1;              
+            $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('cd4_management/fcdrrs') . " class='link'> View</a></td>";
+        } 
+        else {
+            $nonreported = $nonreported + 1;
             $table_body .=$cd4_report_link;
+        }	
 
-        $table_body .="</td>";
+
+            // $table_body .=$cd4_report_link;
+	        $table_body .="</tr>";
+
+    // echo  $table_body;die;
     }   
+
     $county = $this->session->userdata('county_name');
     $countyid = $this->session->userdata('county_id');
     $data['countyid'] = $countyid;
