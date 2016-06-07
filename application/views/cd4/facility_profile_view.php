@@ -83,6 +83,7 @@ $(function(){
 
         <ul class="nav nav-tabs nav-stacked">
             <li class="active"><a href="#"><?php echo $banner_text; ?></a></li>
+            <li><a href="<?php echo base_url() . 'rtk_management/get_report/' . $mfl; ?>">Submit New RTK Lab Commodity Report</a></li>
             <li><a href="<?php echo base_url() . 'rtk_management/get_cd4_report/' . $mfl; ?>">Submit New CD4 Lab Commodity Report</a></li>
             <!-- <li><a href="<?php echo base_url() . 'rtk_management/district_profile/' . $district_id; ?>"><?php echo $facility_district; ?></a></li> -->
             <li class="active"><a href="#" data-target="#Edit_Facility" data-toggle="modal">Edit Facility</a></li>
