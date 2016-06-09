@@ -665,6 +665,73 @@ public function cd4_facilities_not_reported($county = NULL, $year = NULL, $month
 
 }
 
+public function fcdrrs($msg = NULL) {
+    $district = $this->session->userdata('district_id');        
+    $district_name = Districts::get_district_name($district)->toArray();        
+    $d_name = $district_name[0]['district'];
+    $countyid = $this->session->userdata('county_id');
+
+    $data['countyid'] = $countyid;
+
+    $data['title'] = "Orders";
+    $data['content_view'] = "cd4/fcdrr_listing_v";
+    $data['banner_text'] = $d_name . "Orders";
+        //        $data['fcdrr_order_list'] = Lab_Commodity_Orders::get_district_orders($district);
+    ini_set('memory_limit', '-1');
+
+    date_default_timezone_set('EUROPE/moscow');
+    $last_month = date('m');
+        //            $month_ago=date('Y-'.$last_month.'-d');
+    $month_ago = date('Y-m-d', strtotime("last day of previous month"));
+    $sql = 'SELECT  
+    facilities.facility_code,facilities.facility_name,cd4_fcdrr.id,cd4_fcdrr.order_date,cd4_fcdrr.district_id,cd4_fcdrr.compiled_by,cd4_fcdrr.facility_code
+    FROM cd4_fcdrr, facilities
+    WHERE cd4_fcdrr.facility_code = facilities.facility_code 
+    AND cd4_fcdrr.order_date between ' . $month_ago . ' AND NOW()
+    AND facilities.district =' . $district . '
+    ORDER BY  cd4_fcdrr.id DESC ';
+          
+$query = $this->db->query($sql);
+
+$data['lab_order_list'] = $query->result_array();
+$data['all_orders'] = Lab_Commodity_Orders::get_district_orders($district);
+$myobj = Doctrine::getTable('districts')->find($district);
+        //$data['district_incharge']=array($id=>$myobj->district);
+$data['myClass'] = $this;
+$data['d_name'] = $d_name;
+$data['msg'] = $msg;
+
+$this->load->view("rtk/template", $data);
+}
+
+
+    //VIew FCDRR Report
+public function fcdrr_details($order_id, $msg = NULL) {
+    $delivery = $this->uri->segment(3);
+    $district = $this->session->userdata('district_id');
+    $data['title'] = "Lab Commodity Order Details";       
+    $data['order_id'] = $order_id;
+    $data['content_view'] = "cd4/fcdrr_report";
+    $data['banner_text'] = "Lab Commodity Order Details";
+
+    $data['lab_categories'] = Cd4_Lab_Commodity_Categories::get_all();
+    $data['detail_list'] = Cd4_Fcdrr_Commodities::get_order($order_id);
+
+    // print_r($data['detail_list']);die;
+
+    $result = $this->db->query('SELECT *,cd4_lab_commodity_categories.name AS category_name
+        FROM cd4_fcdrr_commodities, counties, facilities, districts, cd4_fcdrr, cd4_lab_commodity_categories, cd4_commodities
+        WHERE counties.id = districts.county
+        AND facilities.facility_code = cd4_fcdrr.facility_code
+        AND cd4_fcdrr_commodities.commodity_id = cd4_commodities.id
+        AND cd4_lab_commodity_categories.id = cd4_commodities.category
+        AND facilities.district = districts.id
+        AND cd4_fcdrr_commodities.fcdrr_id = cd4_fcdrr.id
+        AND cd4_fcdrr.id = ' . $order_id . '');
+    $data['all_details'] = $result->result_array();
+    $this->load->view("rtk/template", $data);
+}
+
 
 // public function rtk_facilities_not_reported($zone = NULL, $county = NULL, $district = NULL, $facility = NULL, $year = NULL, $month = NULL,$partner= NULL) {
 
