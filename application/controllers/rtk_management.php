@@ -88,11 +88,11 @@ class Rtk_Management extends Home_controller {
 
         $lab_count = cd4_fcdrr::get_recent_cd4_fcdrr($facility_detail['facility_code']);
         if ($lab_count > 0) {
-            $reported = $reported + 1;              
+            // $reported = $reported + 1;              
             $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('cd4_management/fcdrrs') . " class='link'> View</a></td>";
         } 
         else {
-            $nonreported = $nonreported + 1;
+            // $nonreported = $nonreported + 1;
             $table_body .=$cd4_report_link;
         }	
 
