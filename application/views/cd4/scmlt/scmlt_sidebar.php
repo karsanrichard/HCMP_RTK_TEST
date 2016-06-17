@@ -49,8 +49,8 @@
 
     <ul class="main_list" style="font-size:100%;border:ridge 1px #ccc">
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url('Home')?>">>> Home</a></li>        
-        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_summary'?>">>> Summary</a></li>
-        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_orders'?>">>> Reports</a></li>       
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'cd4_management/scmlt_summary'?>">>> Summary</a></li>
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'cd4_management/fcdrrs'?>">>> Reports</a></li>       
     </ul>
 </div>
 

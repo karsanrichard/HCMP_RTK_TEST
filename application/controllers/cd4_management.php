@@ -128,7 +128,7 @@ public function cd4_manager_home() {
 
     public function scmlt_home(){
         $district = $this->session->userdata('district_id');                
-        $facilities = Facilities::get_total_facilities_rtk_in_district($district);       
+        $facilities = Facilities::get_total_facilities_cd4_in_district($district);       
         $district_name = districts::get_district_name_($district);                    
         $table_body = '';
         $reported = 0;
