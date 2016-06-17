@@ -40,9 +40,95 @@ class cd4_Management extends Home_controller {
         redirect("cd4_management/facility_profile/$facility_id");
 
  }
- public function scmlt_home(){
+
+ /////////CD4 ADMIN FUNCTIONS
+
+
+public function cd4_manager_home() {
+    $data = array();
+    $data['title'] = 'CD4 Manager';
+    $data['banner_text'] = 'CD4 Manager';
+    $data['content_view'] = "cd4/admin/home_v";
+    $counties = $this->_all_counties();
+    $county_arr = array();
+    foreach ($counties as $county) {
+        array_push($county_arr, $county['county']);
+    }
+    $counties_json = json_encode($county_arr);
+    $counties_json = str_replace('"', "'", $counties_json);
+    $data['counties_json'] = $counties_json;
+
+    $thismonth = date('m', time());
+    $thismonth_year = date('Y', time());
+    $this_month_full = $thismonth.$thismonth_year;
+
+    $previous_month = date('m', strtotime("-1 month", time()));
+    $previous_month_year = date('Y', strtotime("-1 month", time()));
+    $previous_month_full = $previous_month.$previous_month_year;
+
+    $prev_prev = date('m', strtotime("-2 month", time()));
+    $prev_prev_year = date('Y', strtotime("-2 month", time()));
+    $prev_prev_month_full = $prev_prev.$prev_prev_year;
+
+    $thismonth_arr1 = array();
+
+    foreach ($counties as $key => $value) {
+        $id = $value['id'];
+        $q = "select percentage from rtk_county_percentage where month='$this_month_full' and county_id=$id";
+        $result = $this->db->query($q)->result_array();
+        foreach ($result as $key => $value) {            
+            $percentage = intval($value['percentage']);  
+                if( $percentage >100){
+                    $percentage = 100;
+                }else{
+                $percentage = intval($value['percentage']);
+                }
+        }        
+        array_push($thismonth_arr1, $percentage);
+    }     
+
+    $previous_month_arr1 = array();
+
+    foreach ($counties as $key => $value) {
+        $id = $value['id'];
+        $q = "select percentage from rtk_county_percentage where month='$previous_month_full' and county_id=$id";
+        $result = $this->db->query($q)->result_array();
+        foreach ($result as $key => $value) {            
+            $percentage = intval($value['percentage']);                               
+        } 
+        array_push($previous_month_arr1, $percentage);
+    }  
+
+    $prev_prev_month_arr1 = array();
+
+    foreach ($counties as $key => $value) {
+        $id = $value['id'];
+        $q = "select percentage from rtk_county_percentage where month='$prev_prev_month_full' and county_id=$id";
+        $result = $this->db->query($q)->result_array();
+        foreach ($result as $key => $value) {            
+            $percentage = intval($value['percentage']);                               
+        } 
+        array_push($prev_prev_month_arr1, $percentage);
+    }         
+    $thismonthjson = json_encode($thismonth_arr1);
+    $thismonthjson = str_replace('"', "", $thismonthjson);
+    $data['thismonthjson'] = $thismonthjson;
+
+    $previous_monthjson = json_encode($previous_month_arr1);
+    $previous_monthjson = str_replace('"', "", $previous_monthjson);
+    $data['previous_monthjson'] = $previous_monthjson;
+
+    $prev_prev_monthjson = json_encode($prev_prev_month_arr1);
+    $prev_prev_monthjson = str_replace('"', "", $prev_prev_monthjson);
+    $data['prev_prev_monthjson'] = $prev_prev_monthjson;
+    $this->load->view('rtk/template', $data);
+}
+
+    //SCMLT FUNCTUONS
+
+    public function scmlt_home(){
         $district = $this->session->userdata('district_id');                
-        $facilities = Facilities::get_total_facilities_rtk_in_district($district);       
+        $facilities = Facilities::get_total_facilities_cd4_in_district($district);       
         $district_name = districts::get_district_name_($district);                    
         $table_body = '';
         $reported = 0;
@@ -72,51 +158,73 @@ class cd4_Management extends Home_controller {
         }
         date_default_timezone_set("EUROPE/Moscow");
 
+
         foreach ($facilities as $facility_detail) {
 
            $lastmonth = date('F', strtotime("last day of previous month"));
-           if($date>$deadline_date){
-            $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span> <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'></a></td>";
-        }else{
-            $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span> <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'> Report</a></td>";
-        }
+            if($date>$deadline_date){
+                $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'></a></td>";
+
+                $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></span></td>";
+                // echo $cd4_report_link;die;
+            }else{
+                $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link '> Report</a></span></td>";
+            }
+
+            $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></td>";
 
 
         $table_body .="<tr><td><a class='ajax_call_1' id='county_facility' name='" . base_url() . "rtk_management/get_rtk_facility_detail/$facility_detail[facility_code]' href='#'>" . $facility_detail["facility_code"] . "</td>";
         $table_body .="<td>" . $facility_detail['facility_name'] . "</td><td>" . $district_name['district'] . "</td>";
-        $table_body .="<td>";
+        $table_body .="";
 
         $lab_count = lab_commodity_orders::get_recent_lab_orders($facility_detail['facility_code']);
+        // if ($lab_count > 0) {
+        //     $reported = $reported + 1;              
+        //     $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
+        // } 
+        // else {
+        //     $nonreported = $nonreported + 1;
+        //     $table_body .=$report_link;
+        // }   
+
+
+
+        $lab_count = cd4_fcdrr::get_recent_cd4_fcdrr($facility_detail['facility_code']);
         if ($lab_count > 0) {
             $reported = $reported + 1;              
-            $table_body .="<span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
-        } else {
+            $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('cd4_management/fcdrrs') . " class='link'> View</a></td>";
+        } 
+        else {
             $nonreported = $nonreported + 1;
-            $table_body .=$report_link;
-        }
+            $table_body .=$cd4_report_link;
+        }   
 
-        $table_body .="</td>";
-    }   
-    $county = $this->session->userdata('county_name');
-    $countyid = $this->session->userdata('county_id');
-    $data['countyid'] = $countyid;
-    $data['county'] = $county;
-    $data['table_body'] = $table_body;
-    $data['content_view'] = "rtk/rtk/scmlt/dpp_home_with_table";
-    $data['title'] = "Home";
-    $data['link'] = "home";
-    $total = $reported + $nonreported;
-    $percentage_complete = ceil($reported / $total * 100);
-    $percentage_complete = number_format($percentage_complete, 0);
-    $data['percentage_complete'] = $percentage_complete;
-    $data['reported'] = $reported;
-    $data['nonreported'] = $nonreported;
-    $data['facilities'] = Facilities::get_total_facilities_rtk_in_district($district);
-    $this->load->view('rtk/template', $data);
+
+            // $table_body .=$cd4_report_link;
+            $table_body .="</tr>";
+
+        // echo  $table_body;die;
+        }   
+
+        $county = $this->session->userdata('county_name');
+        $countyid = $this->session->userdata('county_id');
+        $data['countyid'] = $countyid;
+        $data['county'] = $county;
+        $data['table_body'] = $table_body;
+        $data['content_view'] = "cd4/scmlt/dpp_home_with_table";
+        $data['title'] = "Home";
+        $data['link'] = "home";
+        $total = $reported + $nonreported;
+        $percentage_complete = ceil($reported / $total * 100);
+        $percentage_complete = number_format($percentage_complete, 0);
+        $data['percentage_complete'] = $percentage_complete;
+        $data['reported'] = $reported;
+        $data['nonreported'] = $nonreported;
+        $data['facilities'] = Facilities::get_total_facilities_rtk_in_district($district);
+        $this->load->view('rtk/template', $data);
 
 }
-
-    
 
     //Load CD4 FCDRR
 public function get_cd4_report($facility_code) {    

@@ -577,5 +577,17 @@ public static function get_total_facilities_rtk_in_district($district_id){
 return $q;
 }
 
+public static function get_total_facilities_cd4_in_district($district_id){
+	
+		$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
+		SELECT  f.facility_code , f.owner as facility_owner,f.facility_name
+		FROM facilities f, districts d,cd4_facility_device fd		
+		WHERE d.id='$district_id'
+		AND  fd.facility_code = f.facility_code
+		AND f.`district` = '$district_id'");
+		
+return $q;
+}
+
 	
 }
