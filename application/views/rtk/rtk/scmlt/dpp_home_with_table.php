@@ -1,16 +1,3 @@
-<!-- <?php
-$month = $this->session->userdata('Month');
-if ($month == '') {
-    $month = date('mY', time());
-}
-$year = substr($month, -4);
-$month = substr_replace($month, "", -4);
-$monthyear = $year . '-' . $month . '-1';
-$englishdate = date('F, Y', strtotime($monthyear));
-
-?> -->
-
-
 <style>     
  
     .label {
@@ -26,7 +13,18 @@ $englishdate = date('F, Y', strtotime($monthyear));
        margin-left:16.5%; 
        top: 80px;
        background: #36BB24; 
-       width: 71%;
+       width: 40%;
+       padding: 7px 1px 0px 13px;
+       border-bottom: 1px solid #ccc;
+       border-bottom: 1px solid #ccc;
+       border-radius: 4px; 
+    }
+    #cd4-topbar{
+       position: fixed;
+       margin-left:76.5%; 
+       top: 80px;
+       background: #36BB24; 
+       width: 18%;
        padding: 7px 1px 0px 13px;
        border-bottom: 1px solid #ccc;
        border-bottom: 1px solid #ccc;
@@ -39,232 +37,36 @@ $englishdate = date('F, Y', strtotime($monthyear));
     <span class="lead" style="color: #fff; margin-left: 100px;">Switch back to RTK Manager</span>
     &nbsp;
     &nbsp;
-    <a href="<?php echo base_url(); ?>rtk_management/switch_district/0/rtk_manager/0/home_controller/0//" class="btn btn-primary" id="switch_idenity" style="margin-top: -5px;margin-left: 50px; margin-bottom: 5px;">Go</a>
+    <a href="<?php echo base_url(); ?>rtk_management/switch_district/0/rtk_manager/0/home_controller/0/" class="btn btn-primary" id="switch_idenity" style="margin-top: -5px;margin-left: 50px; margin-bottom: 5px;">Go</a>
 </div><?php } ?>
+
+<div id="cd4-topbar" style="">
+    <span  style="color: #fff; margin-left: 20px; font-size: 16px; ">Switch to CD4 Reports</span>
+    &nbsp;
+    &nbsp;
+    <a href="<?php echo base_url(); ?>cd4_management/scmlt_home" class="btn btn-primary" style="margin-top: -5px;margin-left: 10px; margin-bottom: 5px;">Go</a>
+</div>
 
 <?php include ('scmlt_sidebar.php');?>
 
-<div class="container" style="margin-left: 250px;">
-   <!--  <div class="leftpanel">
-        <div class="sidebar">
-            <?php
-            $option = '';
-            $id = $this->session->userdata('user_id');
-            $q = 'SELECT * from dmlt_districts,districts 
-            where dmlt_districts.district=districts.id
-            and dmlt_districts.dmlt=' . $id;
-            $q1 = 'SELECT * from user,districts 
-            where user.district=districts.id
-            and user.id=' . $id;
-            $res = $this->db->query($q);
-            $res1 = $this->db->query($q1);
-            foreach ($res->result_array() as $key => $value) {
-                $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
-            }
-            foreach ($res1->result_array() as $key => $value) {
-                $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
-            }
-            ?>
-            <span style="" class="label label-info">Switch Sub-Counties</span>
-            <br />
-            <br />
-            <select id="switch_district">
-                <option>-- Select Sub-County --</option>
-                <?php echo $option; ?>
-            </select>
-            <br />
-            <div class="panel-group " id="accordion" style="padding: 0;">
-                <div class="panel panel-default active-panel" id="home">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a href="<?php echo base_url('Home'); ?>" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-home">
-                            </span>Home</a>
-                        </h4>
-                    </div>
-                </div>
-                <div class="panel panel-default" id="stats">
-                    <div class="panel-heading">
-                        <h4 class="panel-title" id="dpp_stats">                        
-                            <a href="<?php echo site_url('rtk_management/scmlt_summary'); ?>" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-stats">
-                            </span>Statistics</a>
-                        </h4>
-                    </div>
-                </div>
-                <div class="panel panel-default" id="orders">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a href="<?php echo site_url('rtk_management/scmlt_orders'); ?>" href="#collapseTwo" id="stocking_levels"><span class="glyphicon glyphicon-shopping-cart">
-                            </span>Orders</a>
-                        </h4>
-                    </div>
-                </div>
-                <div class="panel panel-default" id="allocations">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a href="<?php echo site_url('rtk_management/scmlt_allocations'); ?>" href="#collapseThree" id="expiries"><span class="glyphicon glyphicon-transfer">
-                            </span>Allocation</a>
-                        </h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <div class="dash_main" id = "dash_main">
-        <div style="font-size: 13px; margin-top: 20px;">
-        <div class="alert alert-success" style="margin-top:-18px;">
-            <p class="blinking" style="margin-left: 300px; font-size: 16px;"> <b>ANNOUNCEMENT</b></p>
-            The deadline for reporting has been moved to 25th to accomodate late reports. However NOTE that reports entered after 15th are considered late reports and may not be included in decision making processes done after the reporting period. <br/>To ensure correct analysis of data collected, <b class="blinking">Please report on or before the 15th.</b>
-        </div>
-            <?php
-            $district = $this->session->userdata('district_id');
-            $district_name = Districts::get_district_name($district)->toArray();
-            $d_name = $district_name[0]['district'];
-            ?>
-            <br />
-            <!-- Report Progress-->
-            <?php
-            $progress_class = " ";
-            if ($percentage_complete <= 100) {
-                $progress_class = 'success';
-            }
-            if ($percentage_complete < 75) {
-                $progress_class = 'info';
-            }
-            if ($percentage_complete < 50) {
-                $progress_class = 'warning';
-            }
-            if ($percentage_complete < 25) {
-                $progress_class = 'danger';
-            }
-            $alertype = '';
-            $alertmsg = '';
-            $date = date('d', time());
-            $lastmonth = date('F', strtotime("last day of previous month"));
-            $thismonth = date('F', strtotime("this month"));
-            $nextmonth = date('F', strtotime("next month"));
+<div class="container" style="margin-left: 250px;background-color:   #fbf6f5">
+   
+    <div class="dash_main" id = "dash_main" >
+        <div style="font-size: 13px; margin-top: 20px;">           
+            <br/>
+            <div  style=" margin-left:10px; margin-top:30px; text-align:center;"><h3> <strong><?php echo $district_name; ?> Sub County - <?php echo date('F, Y') ; ?></strong> </div>
 
-            $sql = "select distinct rtk_settings.* 
-            from rtk_settings, facilities 
-            where facilities.zone = rtk_settings.zone 
-            and facilities.rtk_enabled = 1";
-            $res_ddl = $this->db->query($sql);
-            $deadline_date = null;
-            $settings = $res_ddl->result_array();
-            foreach ($settings as $key => $value) {
-                $deadline_date = $value['deadline'];
-                $five_day_alert = $value['5_day_alert'];
-                $report_day_alert = $value['report_day_alert'];
-                $overdue_alert = $value['overdue_alert'];
-            }
-            $remainingdays = $deadline_date - $date;
-            if($remainingdays<0){
-               $remainingdays = 0;
-           }
-           $remainingpercentage = 100 - $percentage_complete;
-           $five_days_prior = $deadline_date - 5;
-
-           if($date>0 && $date <$five_days_prior){
-            $alertmsg = '<strong>Take note: ' . $d_name . ' Sub-County</strong><br />
-            Reporting for ' . $lastmonth . ' is on, and the Deadline is on the '.$deadline_date.'<br > Click on <u>Report</u> for all Facilities with the red label within the table below<br > <span style = "color: #000;">  Pending for ' . $lastmonth . '</span>';            
-            $alertype = 'danger';
-            if($percentage_complete==100){
-                $alertype = 'success';
-                $alertmsg = '<i aria-hidden="true" class="icon-thumbs-up"> </i><strong> Congratulations !</strong> <br /><br />
-                You have reported for all facilities in your district in record time.<br /><br />
-                You have ' . $remainingdays . ' days to cross-check and edit your reports';
-            }
-
-        }else if($date == $five_days_prior){
-            $alertmsg = '<strong>Take note: ' . $d_name . ' District</strong><br /><br />'.$five_day_alert;                
-            $alertype = 'error';
-            if($percentage_complete==100){
-                $alertype = 'success';
-                $alertmsg = '<i aria-hidden="true" class="icon-thumbs-up"> </i><strong> Congratulations !</strong> <br /><br />
-                You have reported for all facilities in your district in record time.<br /><br />
-                You have ' . $remainingdays . ' days to cross-check and edit your reports';
-            }
-
-
-
-        }else if($date>$five_days_prior && $date<$deadline_date){
-            $alertmsg = '<strong>Take note: ' . $d_name . ' District</strong><br /><br />
-            You are Requested to Complete the Reporting Process as you have '.$remainingdays.' days left';                
-            $alertype = 'error';
-            if($percentage_complete==100){
-                $alertype = 'success';
-                $alertmsg = '<i aria-hidden="true" class="icon-thumbs-up"> </i><strong> Congratulations !</strong> <br /><br />
-                You have reported for all facilities in your district in record time.<br /><br />
-                You have ' . $remainingdays . ' days to cross-check and edit your reports';
-            }
-
-
-
-        }else if($date == $deadline_date){
-            $alertmsg = '<strong>Take note: ' . $d_name . ' District</strong><br /><br />'.$report_day_alert;                
-            $alertype = 'error';
-
-            if($percentage_complete==100){
-                $alertype = 'success';
-                $alertmsg = '<i aria-hidden="true" class="icon-thumbs-up"> </i><strong> Congratulations !</strong> <br /><br />
-                You have reported for all facilities in your district in record time.<br /><br />
-                You have ' . $remainingdays . ' days to cross-check and edit your reports';
-            }
-
-
-        }else if($date>$deadline_date){
-            $alertmsg = '<strong>Take note: ' . $d_name . ' District</strong><br /><br />'.$overdue_alert;                
-            $alertype = 'success';
-
-            if($percentage_complete==100){
-                $alertype = 'success';
-                $alertmsg = '<i aria-hidden="true" class="icon-thumbs-up"> </i><strong> Congratulations !</strong> <br /><br />
-                You have reported for all facilities in your district in record time.<br /><br />
-                You have ' . $remainingdays . ' days to cross-check and edit your reports';
-            }
-
-
-        }
-
-        $sql1 = "select distinct rtk_alerts.*, rtk_alerts_reference.* from rtk_alerts,rtk_alerts_reference,facilities,districts 
-        where (facilities.Zone = rtk_alerts_reference.description or rtk_alerts_reference.description = 'All Districts')
-        and facilities.district = $district
-        and rtk_alerts.reference = rtk_alerts_reference.id                                    
-        and rtk_alerts.status = 0
-        ";
-        $res_alerts = $this->db->query($sql1);                                    
-        $notif_alerts = $res_alerts->result_array();
-        foreach ($notif_alerts as $value) {
-            $notification = $value['message'];?>
-            <div class="alert notices alert-warning" style="margin-top:-21px;"><?php echo '<p>'.$notification.'</p>';
-                ?> </div> <?php
-
-            }
-            if($percentage_complete==100){
-                $alertype ='success';
-            }else{
-                $alertype = $progress_class;
-            }
-            ?>
-            <div class="alert alert-<?php echo $alertype ?>" style="margin-top:-18px;"><?php echo $alertmsg ?></div>
-
-            <?php if (isset($notif_message)) {
-                if ($notif_message != '') {
-                    $alertype = "error";
-                    echo '<div class="alert notif alert-success" style="margin-top:-18px;">' . $notif_message . ' </div>';
-                }
-            }?>
+            <div class="alert alert-<?php echo $alertype ?>" style="margin-top:10px; margin-left:40px; width: 500px; text-align:center; float:left;"><?php echo $alertmsg; ?></div>
+            <div class="alert alert-success" style="margin-top:10px; margin-right: 105px; width: 200px; text-align:center; float: right;">Countdown <br/><?php echo $remainingdays; ?><br/>days to go</div>
 
         </div>
-        <div id="tablediv" style="margin-left:5px;">
-            <table  style="margin-left: 0;" id="maintable" width="100%" >
+        <div id="tablediv" style="margin-left:5px; width:80%;">
+            <table  style="margin-left: 15%;" id="maintable" class="table">
                 <thead>
                     <tr>
                         <th><b>MFL Code</b></th>
                         <th><b>Facility Name</b></th>
-                        <th><b>District</b></th>
-                        <th ><b>RTK FCDRR Reports</b></th> 
-                        <th ><b>CD4 FCDRR Reports</b><br/> This link applies to facilities that report for CD4 only.</th> 
-
+                        <th ><b>FCDRR Reports</b></th> 
                     </tr>
                 </thead>
                 <tbody id="facilities_home">
@@ -295,27 +97,29 @@ $englishdate = date('F, Y', strtotime($monthyear));
 <script src="<?php echo base_url(); ?>assets/tablecloth/assets/js/jquery.metadata.js"></script>
 <script src="<?php echo base_url(); ?>assets/tablecloth/assets/js/jquery.tablecloth.js"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $("table").tablecloth({theme: "paper"});
+    $(document).ready(function() {      
+
+
+        // $("table").tablecloth({theme: "paper"});
         var deadline = '<?php echo $deadline_date;?>';
         var date = '<?php echo $date;?>';           
         if(date>deadline){
             $('.report').hide();
         }
 
-        $('#maintable').dataTable({
-            "sDom": "T lfrtip",
-            "bPaginate": false,
-            "aaSorting": [[3, "asc"]],
-            "sScrollY": "377px",
-            "sScrollX": "100%",
-            "sPaginationType": "bootstrap",
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ Records per page",
-                "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
-            }
+        // $('#maintable').dataTable({
+        //     "sDom": "T lfrtip",
+        //     "bPaginate": false,
+        //     "aaSorting": [[3, "asc"]],
+        //     "sScrollY": "377px",
+        //     "sScrollX": "100%",
+        //     "sPaginationType": "bootstrap",
+        //     "oLanguage": {
+        //         "sLengthMenu": "_MENU_ Records per page",
+        //         "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
+        //     }
             
-        });
+        // });
 
         //Slider for Report Saved
         $.fn.slideFadeToggle = function(speed, easing, callback) {
@@ -334,12 +138,7 @@ $englishdate = date('F, Y', strtotime($monthyear));
             var path = "<?php echo base_url() . 'rtk_management/switch_district/'; ?>" + value + "/scmlt";
             window.location.href = path;
         });
-        
-        function blinker() {
-            $('.blinking').fadeOut(500);
-            $('.blinking').fadeIn(500);
-        }
-        setInterval(blinker, 1000);
+
     });
 
 </script>

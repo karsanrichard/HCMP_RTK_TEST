@@ -22,8 +22,9 @@ class Rtk_Management extends Home_controller {
 
     //SCMLT FUNCTUONS
 
-    public function scmlt_home(){
+   public function scmlt_home(){
         $district = $this->session->userdata('district_id');                
+        $user_id = $this->session->userdata('user_id');                
         $facilities = Facilities::get_total_facilities_rtk_in_district($district);       
         $district_name = districts::get_district_name_($district);                    
         $table_body = '';
@@ -38,14 +39,11 @@ class Rtk_Management extends Home_controller {
         if(isset($popout)){
             $data['popout'] = $popout;
         }
-        
-        $sql = "select distinct rtk_settings.* 
-        from rtk_settings, facilities 
-        where facilities.zone = rtk_settings.zone 
-        and facilities.rtk_enabled = 1";
-        $res_ddl = $this->db->query($sql);
+
+        $sql = "select distinct rtk_settings.* from rtk_settings, facilities where facilities.zone = rtk_settings.zone and facilities.rtk_enabled = 1";
+        $settings = $this->db->query($sql)->result_array();
         $deadline_date = null;
-        $settings = $res_ddl->result_array();
+
         foreach ($settings as $key => $value) {
             $deadline_date = $value['deadline'];
             $five_day_alert = $value['5_day_alert'];
@@ -54,70 +52,88 @@ class Rtk_Management extends Home_controller {
         }
         date_default_timezone_set("EUROPE/Moscow");
 
-
         foreach ($facilities as $facility_detail) {
 
            $lastmonth = date('F', strtotime("last day of previous month"));
-	        if($date>$deadline_date){
-	            $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'></a></td>";
-
-		        $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></span></td>";
-	            // echo $cd4_report_link;die;
-	        }else{
-		        $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link '> Report</a></span></td>";
-	        }
-
-	        $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></td>";
+           if($date>$deadline_date){
+            $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span>  <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'></a></td>";
+        }else{
+            $report_link = "<span class='label label-danger'>  Pending for $lastmonth </span> <a href=" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . " class='link report'> Report</a></td>";
+        }
 
 
         $table_body .="<tr><td><a class='ajax_call_1' id='county_facility' name='" . base_url() . "rtk_management/get_rtk_facility_detail/$facility_detail[facility_code]' href='#'>" . $facility_detail["facility_code"] . "</td>";
-        $table_body .="<td>" . $facility_detail['facility_name'] . "</td><td>" . $district_name['district'] . "</td>";
-        $table_body .="";
+        $table_body .="<td>" . $facility_detail['facility_name'] . "</td>";
+        $table_body .="<td>";
 
         $lab_count = lab_commodity_orders::get_recent_lab_orders($facility_detail['facility_code']);
         if ($lab_count > 0) {
             $reported = $reported + 1;              
-            $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
-        } 
-        else {
+            $table_body .="<span class='label label-success'>Submitted for $lastmonth </span> <a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
+        } else {
             $nonreported = $nonreported + 1;
             $table_body .=$report_link;
-        }	
+        }
 
+        $table_body .="</td>";
+        }  
+        $total = $reported + $nonreported;
+        $percentage_complete = ceil($reported / $total * 100);
+        $percentage_complete = number_format($percentage_complete, 0);
 
+        $progress_class = " ";
+            if ($percentage_complete <= 100) {
+                $progress_class = 'success';
+                $alertype = 'success';
+            }
+            if ($percentage_complete < 75) {
+                $progress_class = 'warning';
+                $alertype = 'warning';
+            }
+            if ($percentage_complete < 50) {
+                $progress_class = 'info';
+                $alertype = 'info';
+            }
+            if ($percentage_complete < 25) {
+                $progress_class = 'danger';
+                $alertype = 'danger';
+            }
+           
+            $date = date('d', time());
+            
+            $remainingdays = $deadline_date - $date;
+         
 
-        $lab_count = cd4_fcdrr::get_recent_cd4_fcdrr($facility_detail['facility_code']);
-        if ($lab_count > 0) {
-            // $reported = $reported + 1;              
-            $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('cd4_management/fcdrrs') . " class='link'> View</a></td>";
-        } 
-        else {
-            // $nonreported = $nonreported + 1;
-            $table_body .=$cd4_report_link;
-        }	
+            if($date>0 && $date <=$deadline_date && $percentage_complete<100){
+                $alertmsg = 'Click on <u>Report</u> for all Facilities with the red label within the table below<br > '. $deadline_date;   
 
+            } else if($date>0 && $date <=$deadline_date && $percentage_complete==100){
+                $alertmsg = '<strong>Congratulations!</strong> <br/> You have reported for all facilities in your district. You can cross-check and edit your reports';     
 
-            // $table_body .=$cd4_report_link;
-	        $table_body .="</tr>";
+            } else if($date>0 && $date >$deadline_date && $percentage_complete==100){
+                $alertmsg = '<strong>Congratulations!</strong> <br/> You have reported for all facilities in your district.';     
 
-    // echo  $table_body;die;
-    }   
+            } else if($date>0 && $date >$deadline_date && $percentage_complete < 100){
+                $alertmsg = 'Not all facilities were reported for on time';     
 
-    $county = $this->session->userdata('county_name');
-    $countyid = $this->session->userdata('county_id');
-    $data['countyid'] = $countyid;
-    $data['county'] = $county;
+            }    
+    
+    $sql2 = "select * from user where id = $user_id";
+    $result2 = $this->db->query($sql2)->result_array();
+    
+
+    $data['district_name'] = $district_name['district'];
+    $data['percentage_complete'] = $percentage_complete;
+    $data['report_day_alert'] = $report_day_alert;
+    $data['deadline_date'] = $deadline_date;
+    $data['remainingdays'] = $remainingdays;
+    $data['alertype'] = $alertype;
+    $data['alertmsg'] = $alertmsg;
     $data['table_body'] = $table_body;
     $data['content_view'] = "rtk/rtk/scmlt/dpp_home_with_table";
     $data['title'] = "Home";
-    $data['link'] = "home";
-    $total = $reported + $nonreported;
-    $percentage_complete = ceil($reported / $total * 100);
-    $percentage_complete = number_format($percentage_complete, 0);
-    $data['percentage_complete'] = $percentage_complete;
-    $data['reported'] = $reported;
-    $data['nonreported'] = $nonreported;
-    $data['facilities'] = Facilities::get_total_facilities_rtk_in_district($district);
+    $data['link'] = "home";    
+  
     $this->load->view('rtk/template', $data);
 
 }

@@ -840,7 +840,132 @@ public function fcdrr_details($order_id, $msg = NULL) {
     $this->load->view("rtk/template", $data);
 }
 
+public function county_cd4_reports(){
+    $county_id = $this->session->userdata('county_id');
+    $beg_date = date("Y-m-01");
+    $end_date = date("Y-m-t");
 
+    $sql = "SELECT * FROM hcmp_rtk.counties where id = '$county_id'";
+    $result = $this->db->query($sql)->result_array();
+    $data['county_name'] = $result[0]['county'];
+    
+
+    $sql3 = "SELECT 
+                facilities.facility_code,
+                facilities.facility_name,
+                districts.district,
+                facilities.cd4_enabled,
+                cd4_device.name as device_name
+            FROM
+                facilities,
+                districts,
+                counties,
+                cd4_facility_device,
+                cd4_device
+            WHERE
+                facilities.district = districts.id
+                    AND districts.county = counties.id
+                    AND counties.id = '$county_id'
+                    AND facilities.facility_code = cd4_facility_device.facility_code
+                    and cd4_facility_device.device = cd4_device.id";
+    $result3 = $this->db->query($sql3)->result_array();
+    $data['cd4_facilities']= $result3;
+    // echo "$sql3";
+    // echo "<pre>"; print_r($result3); die;
+
+    $category_details = array();
+   
+    for ($i=1; $i <=8 ; $i++) { 
+        $sql2 = "SELECT * FROM hcmp_rtk.cd4_lab_commodity_categories where id = $i";
+        $result2 = $this->db->query($sql2)->result_array();
+        
+        $sql4 = "SELECT 
+                    
+                    cd4_fcdrr_commodities.created_at,
+                    cd4_lab_commodity_categories.id AS category_id,
+                    cd4_lab_commodity_categories.name AS category_name,
+                    cd4_commodities.commodity_name,
+                    cd4_fcdrr_commodities.commodity_id,
+                    SUM(cd4_fcdrr_commodities.beginning_bal) as sum_opening,
+                    SUM(cd4_fcdrr_commodities.q_received) as sum_received,
+                    SUM(cd4_fcdrr_commodities.q_used) as sum_used,
+                    SUM(cd4_fcdrr_commodities.no_of_tests_done) as sum_tests,
+                    SUM(cd4_fcdrr_commodities.positive_adj) as sum_positive ,
+                    SUM(cd4_fcdrr_commodities.negative_adj) as sum_negative,
+                    SUM(cd4_fcdrr_commodities.closing_stock) as sum_closing_bal
+                FROM
+                    districts,
+                    counties,
+                    facilities,
+                    cd4_fcdrr_commodities,
+                    cd4_fcdrr,
+                    cd4_commodities,
+                    cd4_lab_commodity_categories
+                WHERE
+                    cd4_fcdrr_commodities.created_at BETWEEN '2016-05-01' AND '2016-05-31'
+                        AND counties.id = '1'
+                        AND counties.id = districts.county
+                        AND districts.id = facilities.district
+                        AND cd4_fcdrr_commodities.facility_code = facilities.facility_code
+                        AND cd4_commodities.id = cd4_fcdrr_commodities.commodity_id
+                        AND cd4_lab_commodity_categories.id = cd4_commodities.category
+                        AND cd4_lab_commodity_categories.id = '$i'
+                GROUP BY cd4_fcdrr_commodities.commodity_id";
+        $result4 = $this->db->query($sql4)->result_array();
+        
+        array_push($category_details, $result4);
+        
+    }
+    $data['category_details'] = $category_details;
+
+    $data['title'] = "CD4 County Reports";       
+    $data['order_id'] = $order_id;
+    $data['content_view'] = "cd4/county_report";
+    $data['banner_text'] = "CD4 County Reports";
+    $this->load->view("rtk/template", $data);
+}
+
+public function deactivate_facility($facility_code) {
+    $this->db->query('UPDATE `facilities` SET  `cd4_enabled` =  0 WHERE  `facility_code` =' . $facility_code . '');
+    
+    $q = $this->db->query('SELECT * FROM  `facilities` WHERE  `facility_code` =' . $facility_code . '');
+    $facil = $q->result_array();
+    $object_id = $facil[0]['id'];
+    $this->logData('24', $object_id);
+    $sql = "select district from facilities where facility_code = '$facility_code'";
+    $res = $this->db->query($sql)->result_array();
+    foreach ($res as $key => $value) {
+        $district = $value['district'];
+    }
+    $sql1 = "select county from districts where id = '$district'";
+    $res1 = $this->db->query($sql1)->result_array();
+    foreach ($res1 as $key => $value) {
+        $county = $value['county'];
+    }
+    // $this->_update_facility_count('remove',$county,$district);        
+    redirect('cd4_management/county_cd4_reports');
+}
+
+
+public function activate_facility($facility_code) {
+    $this->db->query('UPDATE `facilities` SET  `cd4_enabled` = 1 WHERE  `facility_code` =' . $facility_code . '');
+    $q = $this->db->query('SELECT * FROM  `facilities` WHERE  `facility_code` =' . $facility_code . '');
+    $facil = $q->result_array();
+    $object_id = $facil[0]['id'];
+    $this->logData('21', $object_id);
+    $sql = "select district from facilities where facility_code = '$facility_code'";
+    $res = $this->db->query($sql)->result_array();
+    foreach ($res as $key => $value) {
+        $district = $value['district'];
+    }
+    $sql1 = "select county from districts where id = '$district'";
+    $res1 = $this->db->query($sql1)->result_array();
+    foreach ($res1 as $key => $value) {
+        $county = $value['county'];
+    }
+    // $this->_update_facility_count('add',$county,$district);        
+    redirect('cd4_management/county_cd4_reports');
+}
 // public function rtk_facilities_not_reported($zone = NULL, $county = NULL, $district = NULL, $facility = NULL, $year = NULL, $month = NULL,$partner= NULL) {
 
 //     if (!isset($month)) {

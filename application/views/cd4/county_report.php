@@ -1,152 +1,193 @@
 
 <?php 
-include('rca_sidabar.php');
-
-        $county = $this->session->userdata('county_id');   
-
-?>
-<div class="dash_main" style="margin-left: 360px; margin-top: 10px;">
-
+include('rtk/rtk/clc/rca_sidabar.php'); ?>
+<div class="dash_main" style="margin-left: 260px; margin-top: 10px;">
+<h3> <?php echo $banner_text;?></h3><br/> <br/>
 <div class="clc_contents">
 
 
-		  <!-- <button id="btn_all_facilities" class=" btn btn-success">All Facilities</button> -->
-	<div class="accordion-group">
-			<select id="subcounty_select" class="form-control select_options"> By Region
-				<option value=""> -- All Sub-Counties--</option>							
-			</select>&nbsp;&nbsp;&nbsp;
-			<select id="commodity_select" class="form-control select_options" > By Commodity
-				<option value="0"> -- All Commodities--</option>							
-				<option value="4"> Screening</option>							
-				<option value="5"> Confirmatory</option>							
-				<option value="6"> Tie Breaker</option>							
-			</select>&nbsp;&nbsp;&nbsp;
-			<select id="date_select" class="form-control select_options" > By Period
-							
-							<?php 
-
-					            for ($i=1; $i <=12 ; $i++) { 
-					            $month = date('m', strtotime("-$i month")); 
-					            $year = date('Y', strtotime("-$i month")); 
-					            $month_value = $month.$year;
-					            $month_text =  date('F', strtotime("-$i month")); 
-					            $month_text = $month_text." ".$year;
-					         ?>
-
-					        <option value="<?php echo $month_value ?>"><?php echo $month_text ?></option>;
-						    <?php } ?>
-						  </select>&nbsp;&nbsp;&nbsp;
-		
-			
-	</div>		
-
-	<div class="accordion-group" style="margin-top: 50px; ">
-		<div id="by_commodities" class="table_divs panel panel-success">
-			  <div class="panel-heading accordion-heading " data-toggle="collapse" data-parent="#accordion2" href="#graphs_main" style="font-size:13px;font-weight:bold" >GRAPHS: <i>(Click to View)</i></div>
-			  <div id="graphs_main" class="accordion-body collapse"  >
-			  <div class="accordion-inner div_height">
-
-				<div class="accordion-group" style="width: 49%;float: left; margin-left: 3px; overflow-y: scroll; height: 350px">
-					<div id="bycons" class="inner_divs panel panel-warning">
-					  <div class="panel-heading accordion-heading " data-toggle=""  href="#trend_graphs" style="font-size:13px;font-weight:bold;" >Yearly Reporting Trend</div>
-					  <div id="trend_graphs" class="accordion-body ">
-					  <div class="accordion-inner ">
-						 
-						<div id="trend-chart" class="accordion-body "></div>
+				<div class="accordion-group" style="width: 70%;">
+					<div id="bycons" class="table_divs panel panel-success">
+					  <div class="panel-heading accordion-heading " data-toggle="collapse" data-parent="#accordion2" href="#facilties_details" style="font-size:13px;font-weight:bold;" >CD4 FAcilities in <?php echo $county_name;?> County</div>
+					  <div id="facilties_details" class="accordion-body collapse">
+					  <div class="accordion-inner div_height" style="overflow-y: scroll;">
 						
-					  </div>
-					  </div>
+						<table id="reporting_summary_table" class="table"  style="width: 80%; font-size: 12px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-top:1px solid #ddd; border-left:1px solid #ddd;float: left; margin-top:10px; margin-left:7%;">
+							<thead>
+								<th>MFL Code</th>
+							    <th>Name</th>
+							    <th>Sub-County</th>
+							    <th>Device Used</th>    
+							    <th>Reporting Status</th>
+							    <th>Action</th>
+							</thead>
+							<tbody>
+								<?php foreach ($cd4_facilities as $row) { 
+								   $code =$row['facility_code'];
+								   ?>
+								    <tr id="<?php echo $row['facil_id'];?>">    
+								    <td><?php echo $code; ?></td>
+								    <td><?php echo $row['facility_name'];?></td>
+								    <td><?php echo $row['districtname'];?></td>
+								    <td><?php echo $row['device_name'];?></td>
+								    <td><?php if($row['cd4_enabled']==0)
+								    {
+
+								      echo "Non-Reporting";
+								      echo ' <a href="../cd4_management/activate_facility/' . $row['facility_code'] . '" title="Add"><span class="glyphicon glyphicon-plus"></span> </i></a>';
+
+
+								    }
+								    else
+								      {
+								        echo "Reporting";
+								        echo ' <a href="../cd4_management/deactivate_facility/' . $row['facility_code'] . '" title="Remove"><span class="glyphicon glyphicon-minus"></span> </i></a>';
+								      }?></td>
+
+								  <td><?php if($row['cd4_enabled']==0)
+								    {      
+								      echo 'N/A';
+
+
+								    }
+								    else
+								      {        
+								        echo ' <a href="../rtk_management/facility_profile/' . $code. '">View</a>';
+								      }?></td>
+								  </tr>
+								<?php }?>
+							</tbody>
+			            </table>
+             		</div>
+					</div>
 					</div>
 				</div>
-				<div class="accordion-group" style="width: 49%;float: left; margin-left: 5px; overflow-y: scroll; height: 350px">
-					<div id="bycons" class="inner_divs panel panel-warning">
-					  <div class="panel-heading accordion-heading " data-toggle=""  href="#cons_graphs" style="font-size:13px;font-weight:bold" >Yearly Consumption Trend</div>
-					  <div id="cons_graphs" class="accordion-body  ">
-					  <div class="accordion-inner ">
-						 
-						<div id="consumption-chart" class="accordion-body section_data"> </div>
-							
-					  </div>
-					  </div>
+
+				<div class="accordion-group" style="width: 70%;">
+					<div id="bycons" class="table_divs panel panel-success">
+					  <div class="panel-heading accordion-heading " data-toggle="collapse" data-parent="#accordion2" href="#facilties_reporting_details" style="font-size:13px;font-weight:bold;" >Facilities Reporting Rate Details</div>
+					  <div id="facilties_reporting_details" class="accordion-body collapse">
+					  <div class="accordion-inner div_height" style="overflow-y: scroll;">
+						
+
+						<table id="reporting_summary_table" class="table" style="width: 100%; font-size: 12px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-left:1px solid #ddd;">
+							<tr>
+								<td> <b>Type</b></td>				
+								<td> <b>Number</b></td>				
+								<td> <b>Percentage</b></td>
+							</tr>
+							<tr>
+								<td>Total Number of Facilities</td>				
+								<td> <?php echo  $total_facilities;?></td>				
+								<td> 100%</td>
+							</tr>
+							<tr>
+								<td>Facilities which Reported </td>				
+								<td> <?php echo  $reported_facilities;?></td>				
+								<td> <?php echo  $reported_facilities_percentage;?>%</td>
+							</tr>				
+							<tr>
+								<td>Facilities with no Reports</td>				
+								<td> <?php echo  $nonreported_facilities;?></td>				
+								<td> <?php echo  $nonreported_facilities_percentage;?>%</td>					
+							</tr>
+						</table>
+
+			            <table class="table" style="width: 40%; font-size: 12px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-left:1px solid #ddd;float: left; margin-left: 15px;">
+			               <tr>
+			               	<td colspan="2" align="center"><b>Facilities with reports</b></td>               	
+			               </tr>
+			               <tr>
+			               	<td>Facility Code</td>
+			               	<td>Facility Name</td>               	
+			               </tr>
+			               <tr>
+			               	<?php 
+			               		foreach ($reported_facilities_text as $key => $value) {   ?>
+					               	<td> <?php echo $value['facility_code']?></td>
+					               	<td><?php echo $value['facility_name']?></td>
+			               </tr>
+							<?php } ?>
+			            </table>
+
+			            <table class="table" style="width: 40%; font-size: 12px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-left:1px solid #ddd;float: right; margin-left: 15px;">
+			               <tr>
+			               	<td colspan="2" align="center"><b>Facilities with No reports</b></td>               	
+			               </tr>
+			               <tr>
+			               	<td>Facility Code</td>
+			               	<td>Facility Name</td>               	
+			               </tr>
+			               <tr>
+			               	<?php 
+			               		foreach ($reported_facilities_text as $key => $value) {   ?>
+					               	<td> <?php echo $value['facility_code']?></td>
+					               	<td><?php echo $value['facility_name']?></td>
+			               </tr>
+							<?php } ?>
+			            </table>
+             		</div>
 					</div>
-				</div>		
-			</div>
-			</div>
-		</div>
-	</div>		
-	<div class="accordion-group" >
+					</div>
+				</div>	
+
+		
+	<div class="accordion-group" style="width: 70%;">
 		<div id="by_dates" class="table_divs panel panel-success">
-		<div class="panel-heading accordion-heading " data-toggle="collapse" data-parent="#accordion2" href="#by_date" style="font-size:13px;font-weight:bold" >FACILITIES<i>(Click to View)</i></div>
+		<div class="panel-heading accordion-heading " data-toggle="collapse" data-parent="#accordion2" href="#by_date" style="font-size:13px;font-weight:bold" >Stock Card<i>(Click to View)</i></div>
 		 <div id="by_date" class="accordion-body collapse">
-			  <div class="accordion-inner div_height" style="overflow-y: scroll ">
-				
-				<p style="font-size: 15px; color: #428bca"> <b><?php echo $reported_facilities ?> </b>facilities reported on time, <b><?php echo $late_reported_facilities[0]['late_facilities'] ?></b> reported past 15th and <b><?php echo $nonreported_facilities ?></b> did not report at all</p>
+			  <div class="accordion-inner div_height" >
+					<?php 
+					$commodity_count = 0;
+        // echo "<pre>"; print_r($category_details);
 
-				<table id="reporting_summary_table" class="table" style="width: 50%; font-size: 12px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-left:1px solid #ddd;float: left">
+					foreach ($category_details as $key => $all_details) {	?>
+						<div class="accordion-group" style="width: 90%;float: left; margin-top: 3px;  ">
+					<div id="bycons" class="table_divs panel panel-warning">
+					  <div class="panel-heading accordion-heading" style="font-size:13px;font-weight:bold;" data-toggle="collapse"  href="#stock_card_<?php echo $commodity_count;?>"  ><?php echo $category_details[$commodity_count][0]['category_name'];?></div>
+					  <div class="accordion-body collapse" id="stock_card_<?php echo $commodity_count;?>" >
+					  <div class="accordion-inner div_height" style="overflow-y: scroll;">
+						<table class="table" style="font-size:13px;">
 					<tr>
-						<td> <b>Type</b></td>				
-						<td> <b>Number</b></td>				
-						<td> <b>Percentage</b></td>
-					</tr>
-					<tr>
-						<td>Total Number of Facilities</td>				
-						<td> <?php echo  $total_facilities;?></td>				
-						<td> 100%</td>
-					</tr>
-					<tr>
-						<td>Facilities which Reported </td>				
-						<td> <?php echo  $reported_facilities;?></td>				
-						<td> <?php echo  $reported_facilities_percentage;?>%</td>
-					</tr>				
-					<tr>
-						<td>Facilities with no Reports</td>				
-						<td> <?php echo  $nonreported_facilities;?></td>				
-						<td> <?php echo  $nonreported_facilities_percentage;?>%</td>					
-					</tr>
-				</table>
-
-            <table class="table" style="width: 30%; font-size: 12px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; border-left:1px solid #ddd;float: left; margin-left: 15px;">
-               <tr>
-               	<td colspan="2" align="center"><b>Facilities with reports</b></td>               	
-               </tr>
-               <tr>
-               	<td>Facility Code</td>
-               	<td>Facility Name</td>               	
-               </tr>
-               <tr>
-               	<?php 
-               		foreach ($reported_facilities_text as $key => $value) {   ?>
-		               	<td> <?php echo $value['facility_code']?></td>
-		               	<td><?php echo $value['facility_name']?></td>
-               </tr>
-				<?php } ?>
-            </table>		
-		</div>
-		</div>
-		</div>
-	</div>
-
-	<div class="accordion-group">
-		<div id="consumption_details" class="table_divs panel panel-success">
-			<div class="panel-heading accordion-heading " data-toggle="collapse" data-parent="#accordion2" href="#kit_consumption" style="font-size:13px;font-weight:bold" >DOWNLOAD CONSUMPTION DATA: <i>(Click to View)</i></div>
-			 <div id="kit_consumption" class="accordion-body collapse form-control">
-				<div class="accordion-group inner_divs">
-				
-					<p style="margin-top: 10px;">Select Type of Report:</p>
+	                            <th>Kit</th>
+	                            <th>Beginning Balance</th>
+	                            <th>Received Quantity</th>
+	                            <th>Used Total</th>
+	                            <th>Total Tests</th>
+	                            <th>Positive Adjustments</th>
+	                            <th>Negative Adjustments</th>
+	                            <th>Closing Balance</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                        <?php
+						//foreach ($all_details as $keys => $commodity_details) {
+				for ($i=0; $i < count($category_details); $i++) { ?>
 					
-					<select id="fcdrr_commodity_select" class="form-control select_options" > By Commodity
-						<option value="0"> -- All FCDRR Details--</option>							
-						<option value="1"> Ending Balances</option>							
-						<option value="2"> Quantity Used</option>							
-						<option value="3"> Tests Done</option>							
-					</select>&nbsp;&nbsp;&nbsp;
+	                        <tr>
+	                            <td><?php echo $all_details[$i]['commodity_name']; ?></td>
+	                            <td><?php echo number_format($all_details[$i]['sum_opening'], $decimals = 0); ?></td>
+	                            <td><?php echo number_format($all_details[$i]['sum_received'], $decimals = 0); ?></td>
+	                            <td><?php echo number_format($all_details[$i]['sum_used'], $decimals = 0); ?></td>
+	                            <td><?php echo number_format($all_details[$i]['sum_tests'], $decimals = 0); ?></td>
+	                            <td><?php echo number_format($all_details[$i]['sum_positive'], $decimals = 0); ?></td>
+	                            <td><?php echo number_format($all_details[$i]['sum_negative'], $decimals = 0); ?></td>
+	                            <td><?php echo number_format($all_details[$i]['sum_closing_bal'], $decimals = 0); ?></td>
+	                        </tr> 
+	                        <?php 	} $commodity_count++;?>                                              
+	                        </tbody>
+	                        </table>
+	                        </div>
+             		</div>
+					</div>
+					</div>
+			<?php 	
+			 }//}?>
+				</div>		
+				
 
-		            <button type="button" id="btn_consumption_select" class="btn btn-primary my_navs">Download Consumption Report</button>
-						  	
-				</div>
-			</div>
-		</div>
-	</div>
+	
+</div>
 </div>
 </div>
 				
@@ -182,7 +223,7 @@ include('rca_sidabar.php');
 	.div_height{
 		margin-left: 1%;
 		margin-top: 5px;
-		height: 400px;
+		height: auto;
 
 	}
 	.inner_div_height{
@@ -210,9 +251,9 @@ include('rca_sidabar.php');
 </style>
 <script type="text/javascript">
 	$(document).ready(function (e){
-
-		county_id = <?php echo $county ?>;		
-		
+	
+	county_id = <?php echo $county ?>;		
+	
 		$.ajax({
 
             url: "<?php echo base_url() . 'allocation_management/get_counties_districts/'; ?>" +county_id,
@@ -227,6 +268,7 @@ include('rca_sidabar.php');
                 console.log(e.responseText);
             }            
         }); 
+	
 
 	function requestData(){
 		county_ids = <?php echo $county ?>;		
@@ -297,7 +339,26 @@ include('rca_sidabar.php');
                     data: <?php echo $percentages;?>
                 }]
             });
-       
+       $('#btn_consumption_select').button().click(function(e) {               
+         
+			var type = $('#fcdrr_commodity_select').val();			
+			var month = $('#date_select').val();			
+			var district = $('#subcounty_select').val();			
+			var county = <?php echo $county ?>;	
+			var commodity = $('#commodity_select').val();
+			var phpfunction = 'get_fcdrr_details';	
+
+			if (type >0) {
+				 phpfunction = 'get_one_fcdrr_details';
+			}		
+
+	        $('#message').html('The report for all FCDRR details is being generated. Please Wait...');                                         
+	        $('#message').css('font-size','13px');                                         
+	        $('#message').css('color','green');  
+	        var url = "<?php echo base_url() . 'allocation_management/'; ?>"+phpfunction+'/'+type+'/'+month+'/'+county+'/'+district+'/'+commodity;
+			// window.location = url;
+       		alert(url);
+		});
         $('#btn_all_facilities').button().click(function(e) {               
          
 	        $('#message').html('The report for all Facilities AMCs is being generated. Please Wait...');                                         
@@ -410,30 +471,10 @@ include('rca_sidabar.php');
 			window.location = url+ month;
        
 		});
-		$('#btn_consumption_select').button().click(function(e) {               
-         
-			var type = $('#fcdrr_commodity_select').val();			
-			var month = $('#date_select').val();			
-			var district = $('#subcounty_select').val();			
-			var county = <?php echo $county ?>;	
-			var commodity = $('#commodity_select').val();
-			var phpfunction = 'get_fcdrr_details';	
-
-			if (type >0) {
-				 phpfunction = 'get_one_fcdrr_details';
-			}		
-
-	        $('#message').html('The report for all FCDRR details is being generated. Please Wait...');                                         
-	        $('#message').css('font-size','13px');                                         
-	        $('#message').css('color','green');  
-	        var url = "<?php echo base_url() . 'allocation_management/'; ?>"+phpfunction+'/'+type+'/'+month+'/'+county+'/'+district+'/'+commodity;
-			window.location = url;
-       		// alert(url);
-		});
+		
 		         
 
- // var test_array = <?php echo $graphdata['qty_used']; ?>
- // console.log(test_array);         
+           
    
 $('#consumption-chart').highcharts({
                 chart: {
@@ -477,9 +518,27 @@ $('#consumption-chart').highcharts({
             });
    
 		
-		
-});
+		// $('#subcounty_select').on('change', function() {
+	 // 		region = 4;
+	 // 		alert(region); // or $(this).val()
+	 // 		// if(region=='zone'){
+	 // 		// 	$('#combination_zone_select').show();
+	 // 		// }
+	 // 		// else if(region=='county'){
+	 // 		// 	$('#combination_county_select').show();
 
+	 // 		// }else if(region=='district'){
+	 // 		// 	$('#combination_subcounty_select').show();
+
+	 // 		// }
+		// });
+
+	});
+// $(document).ajaxStart(function(){
+// 	    $('#loading').show();
+// 	 }).ajaxStop(function(){
+// 	    $('#loading').hide();
+// 	 });
 </script>
 
 
