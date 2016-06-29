@@ -7030,7 +7030,7 @@ function _users_in_county($county, $type = null) {
     AND county_id =' . $county;
 
     if ($type) {
-        $q .= ' AND usertype_id =' . $type;
+        $q .= ' AND (usertype_id =' . $type . ' OR usertype_id = 5 )';
     }
     $res = $this->db->query($q);
     $returnable = $res->result_array();
@@ -7522,7 +7522,7 @@ function _get_rtk_users() {
     AND districts.county = counties.id
     AND user.county_id = counties.id
     AND user.usertype_id = access_level.id
-    AND user.usertype_id = 7';
+    AND user.usertype_id IN (7,5)';
     $res2 = $this->db->query($q2);
     $arr2 = $res2->result_array();
 
