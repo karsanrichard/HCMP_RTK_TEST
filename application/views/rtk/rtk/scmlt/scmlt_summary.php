@@ -62,7 +62,7 @@ $(function() {
 </script>
 <style>
 .section_title{
-	font-size:18px;
+	font-size:15px;
 	font-weight:bold;
 
 }
@@ -81,6 +81,7 @@ table tr td{
 		border: 1px solid #C8C9C8;
 		border-collapse: collapse;
 		padding: 8px;
+		font-size: 13px;
 
 }
 .section_data{
@@ -90,17 +91,17 @@ table tr td{
 }
 </style>
 
-<h3><b><?php echo $d_name; ?> Sub County Summary </b><h3>
+<h3 style="margin-left: 300px;"><b><?php echo $d_name; ?> Sub County Summary </b></h3> <br/> <br/>
 
 <?php include 'scmlt_sidebar.php'; ?>
 	
-<div class="container" style="margin-left: 250px;">
+<div class="container" style="margin-left: 260px;">
 	 <div class="content">
 	    <div class="table_divs panel panel-success sections_left" style="">
 		 <div class="panel-heading accordion-heading section_title"> Reporting Summary</div>
 		 <div id="reporting_summary" class="accordion-body section_data">
 			
-			<table id="reporting_summary_table">
+			<table id="reporting_summary_table" class="table ">
 				<tr>
 					<td> <b>Type</b></td>				
 					<td> <b>Number</b></td>				
@@ -124,9 +125,8 @@ table tr td{
 			</table>
 			<br/>
 			<br/>
-		    <button type="button" align ="center" class="btn btn-primary" data-toggle="modal" data-target="#facilities_detailed">
-		     	Click to view Facillities Reporting Details
-		    </button>
+		    <button type="button" align ="center" class="btn btn-primary" data-toggle="modal" data-target="#reportedfacilities">Reported Facilities</button>
+		    <button type="button" align ="center" class="btn btn-primary" data-toggle="modal" data-target="#nonreportedfacilities">Non-Reported Facilities</button>
 
 	  	</div>
 	  	</div>
@@ -134,7 +134,7 @@ table tr td{
 		 <div class="panel-heading accordion-heading section_title" style="width: 150%">Consumption Summary</div>					 	
 	     <div id="consumption_summary" class="accordion-body section_data">
 			
-			<table id="consumption_summary_table " width="50%">
+			<table id="consumption_summary_table " class="table" width="50%">
 				<tr>
 					<td> <b>Commodity Name</b></td>				
 					<td> <b>Begining Balance</b></td>				
@@ -241,39 +241,83 @@ table tr td{
 	 </div>	
 </div>
 <br/>
-<div class="modal fade" id="facilities_detailed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="reportedfacilities" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Facilities Detailed Summary</h4>
+        <h4 class="modal-title" id="myModalLabel">Reported</h4>
       </div>
       <div class="modal-body">        
         <p style="font-size: 15px; color: #428bca"> 10 facilities reported on time, 5 reported past 15th and 10 did not report at all</p>
             <table>
+              
+               <tr>
+               
+               	<td>Facility Code</td>
+               	<td>Facility Name</td>
+               	<td>View Report</td>
+               </tr>
+               <?php 
+               $reported = $reporting_details['reported'];
+	                $count = count($reported);
+	                if($count==0){?>
+	                  <tr>
+	                    <td>N/A</td>
+	                    <td>N/A</td>
+	                    <td>N/A</td>	                                                        
+	                  </tr>
+	                <?php }else{
+	                  foreach ($reported as $key => $value) {?>
+               <tr>
+               	<td> <?php echo  $value['facility_code'];?></td>				
+				<td> <?php echo  $value['facility_name'];?></td>
+               	<td> <a href="<?php echo site_url('rtk_management/lab_order_details/' . $value['order_id']); ?>"class="link">View</a></td>
+               </tr>
+ 				<?php }
+                                  }
+                                ?>
+            </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="nonreportedfacilities" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Non -Reported Facilities</h4>
+      </div>
+      <div class="modal-body">        
+            <table>
                <tr>
                	<td colspan="2" align="center"><b>Facilities with reports</b></td>
-               	<td colspan="2" align="center"><b>Facilities without reports</b></td>
                </tr>
                <tr>
                	<td>Facility Code</td>
                	<td>Facility Name</td>
-               	<td>Facility Code</td>
-               	<td>Facility Name</td>
                </tr>
+                <?php 
+
+               		$nonreported = $reporting_details['non_reported'];
+	                $count = count($reported);
+	                
+	              foreach ($nonreported as $key => $value) {?>
                <tr>
-               	<td></td>
-               	<td></td>
-               	<td></td>
-               	<td></td>
+               	<td> <?php echo  $value['facility_code'];?></td>				
+				<td> <?php echo  $value['facility_name'];?></td>
                </tr>
+ 				
+ 				<?php } ?>
 
             </table>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" id="save_dmlt" class="btn btn-primary">Save Changes</button>
-      </div>
     </div>
   </div>
 </div>

@@ -18,7 +18,7 @@ include('rtk/rtk/clc/rca_sidabar.php'); ?>
 							    <th>Name</th>
 							    <th>Sub-County</th>
 							    <th>Device Used</th>    
-							    <th>Reporting Status</th>
+							    <!-- <th>Reporting Status</th> -->
 							    <th>Action</th>
 							</thead>
 							<tbody>
@@ -28,32 +28,34 @@ include('rtk/rtk/clc/rca_sidabar.php'); ?>
 								    <tr id="<?php echo $row['facil_id'];?>">    
 								    <td><?php echo $code; ?></td>
 								    <td><?php echo $row['facility_name'];?></td>
-								    <td><?php echo $row['districtname'];?></td>
+								    <td><?php echo $row['district'];?></td>
 								    <td><?php echo $row['device_name'];?></td>
-								    <td><?php if($row['cd4_enabled']==0)
-								    {
+								    <td><?php //if($row['cd4_enabled']==0)
+								  //   {
 
-								      echo "Non-Reporting";
-								      echo ' <a href="../cd4_management/activate_facility/' . $row['facility_code'] . '" title="Add"><span class="glyphicon glyphicon-plus"></span> </i></a>';
-
-
-								    }
-								    else
-								      {
-								        echo "Reporting";
-								        echo ' <a href="../cd4_management/deactivate_facility/' . $row['facility_code'] . '" title="Remove"><span class="glyphicon glyphicon-minus"></span> </i></a>';
-								      }?></td>
-
-								  <td><?php if($row['cd4_enabled']==0)
-								    {      
-								      echo 'N/A';
+								  //     echo "Non-Reporting";
+								  //     echo ' <a href="../cd4_management/activate_facility/' . $row['facility_code'] . '" title="Add"><span class="glyphicon glyphicon-plus"></span> </i></a>';
 
 
-								    }
-								    else
-								      {        
-								        echo ' <a href="../rtk_management/facility_profile/' . $code. '">View</a>';
-								      }?></td>
+								  //   }
+								  //   else
+								  //     {
+								  //       echo "Reporting";
+								  //       echo ' <a href="../cd4_management/deactivate_facility/' . $row['facility_code'] . '" title="Remove"><span class="glyphicon glyphicon-minus"></span> </i></a>';
+								  //     }?></td>
+
+								  <td><?php 
+								  // if($row['cd4_enabled']==0)
+								  //   {      
+								  //     echo 'N/A';
+
+
+								  //   }
+								  //   else
+								  //     {        
+								        echo '<a href="../rtk_management/facility_profile/' . $code. '">View</a>';
+								      // }
+								      ?></td>
 								  </tr>
 								<?php }?>
 							</tbody>

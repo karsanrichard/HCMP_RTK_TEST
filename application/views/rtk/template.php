@@ -56,7 +56,7 @@
                 <img style="display:inline-block;" src="<?php echo base_url(); ?>assets/img/coat_of_arms-resized1.png" class="img-responsive " alt="Responsive image">
                 <div id="" style="display:inline-block;">
                     <span style="font-size: 0.95em;font-weight: bold; ">Ministry of Health</span><br />
-                    <span style="font-size: 0.85em;">Health Commodities Management Platform (HCMP) - HIV Related Commodities</span>	
+                    <span style="font-size: 0.85em;">Health Commodities Management Platform (HCMP) <br/> HIV  Commodities</span>	
                 </div>
             </div>
             <div class="navbar-collapse collapse">

@@ -98,7 +98,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
-      <th align="center">Recommended Quantity to Allocate</th>
       <th align="center">Quantity Allocated by County</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
@@ -106,7 +105,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
-      <th align="center">Recommended Quantity to Allocate</th>
       <th align="center">Quantity Allocated by County</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>     
@@ -117,42 +115,19 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 
     <tbody>
       <?php
-      if(count($final_dets)>0){
+      if(count($allocation_details)>0){
         $count = 0;
-       foreach ($final_dets as $value) {
+       foreach ($allocation_details as $value) {
         //$zone = str_replace(' ', '-',$value['zone']);
         $facil = $value['code'];
 
-        $ending_bal_s =ceil($value['end_bal'][0]['closing_stock']); 
-        $ending_bal_c =ceil($value['end_bal'][1]['closing_stock']); 
-        $ending_bal_t =ceil($value['end_bal'][2]['closing_stock']);
-        $ending_bal_d =ceil($value['end_bal'][3]['closing_stock']);
+        $ending_bal_s =ceil($value['ending_bal_s']); 
+        $ending_bal_c =ceil($value['ending_bal_c']);
 
-        $days_out_of_stock_s =ceil($value['end_bal'][0]['days_out_of_stock']); 
-        $days_out_of_stock_c =ceil($value['end_bal'][1]['days_out_of_stock']); 
-        $days_out_of_stock_t =ceil($value['end_bal'][2]['days_out_of_stock']);
-        $days_out_of_stock_d =ceil($value['end_bal'][3]['days_out_of_stock']);
+        $amc_s =ceil($value['amc_s']); 
+        $amc_c =ceil($value['amc_c']); 
 
-        $q_requested_s =ceil($value['end_bal'][0]['q_requested']); 
-        $q_requested_c =ceil($value['end_bal'][1]['q_requested']); 
-        $q_requested_t =ceil($value['end_bal'][2]['q_requested']);
-        $q_requested_d =ceil($value['end_bal'][3]['q_requested']);
-
-        $amc_s =ceil($value['end_bal'][0]['amc']); 
-        $amc_c =ceil($value['end_bal'][1]['amc']); 
-        $amc_t =ceil($value['end_bal'][2]['amc']);
-        $amc_d =ceil($value['end_bal'][3]['amc']);
-
-        // $amc_s = str_replace(',', '',$my_amcs[$count][0]);
-        // $amc_c = str_replace(',', '',$my_amcs[$count][1]);
-        // $amc_t = str_replace(',', '',$my_amcs[$count][2]);
-        // $amc_d = str_replace(',', '',$my_amcs[$count][3]);
-
-
-        // $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
-        // $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
-        // $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);        
-        // $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);        
+          
 
         if($amc_s==''){
           $amc_s = 0;
@@ -176,77 +151,37 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           $amc_d_50 = ceil($amc_d/50);
         }
 
-        $mmos_s = number_format($ending_bal_s/$amc_s);
-        $mmos_c = number_format($ending_bal_c/$amc_c); 
-        $mmos_t = number_format($ending_bal_t/$amc_t) ;
-      
-        if ($mmos_s >6 ) {
+        $mmos_s = $value['mmos_s'];
+        $mmos_c = $value['mmos_c'];
+
+        if ($value['decision_s'] =='REDISTRIBUTE' ) {
           $style_s = "style='background-color:#ff7f50'"; //red
-          $decision_s = "REDISTRIBUTE";
         }
-        elseif ($mmos_s>=4 ){
+        elseif ($value['decision_s'] == "MONITOR"){
 
           $style_s = "style='background-color:#ffdb58'";//yellow
-          $decision_s = "MONITOR";
         }
-        elseif ($mmos_s<4 &&$amc_s>0){
+        elseif ($value['decision_s'] == "RESUPPLY" ){
 
           $style_s = "style='background-color:#5efb6e'";//green
-          $decision_s = "RESUPPLY";
         }else{
-          $style_s = "style='background-color:#fff'";//green
-          $decision_s = "No Action";
+          $style_s = "style='background-color:#fff'";
         }
 
-        if ($mmos_c >6 ) {
-          $style_c = "style='background-color:#ff7f50'";//red
-          $decision_c = "REDISTRIBUTE";
+        if ($value['decision_c'] =='REDISTRIBUTE' ) {
+          $style_c = "style='background-color:#ff7f50'"; //red
         }
-        elseif ($mmos_c>=3 && $mmos_c<6 ){
+        elseif ($value['decision_c'] == "MONITOR"){
 
           $style_c = "style='background-color:#ffdb58'";//yellow
-          $decision_c = "MONITOR";
         }
-        elseif ($mmos_c<3 && $amc_c>0){
+        elseif ($value['decision_c'] == "RESUPPLY" ){
 
           $style_c = "style='background-color:#5efb6e'";//green
-          $decision_c = "RESUPPLY";
         }else{
-          $style_c = "style='background-color:#fff'";//green
-          $decision_c = "No Action";
+          $style_c = "style='background-color:#fff'";
         }
 
-        if ($mmos_t >6 ) {
-          $style_t = "style='background-color:#ff7f50'";//red
-          $decision_t = "REDISTRIBUTE";
-        }
-        elseif ($mmos_t>=3 && $mmos_t<6 ){
-
-          $style_t = "style='background-color:#ffdb58'";//yellow
-          $decision_t = "MONITOR";
-        }
-        elseif ($mmos_t<3 ){
-
-          $style_t = "style='background-color:#5efb6e'";//green
-          $decision_t = "RESUPPLY";
-        }
-
-        $qta_s = ceil(($amc_s *4) - $ending_bal_s);
-        $qta_c = ceil(($amc_c *4) - $ending_bal_c);
-        $qta_t = ceil(($amc_t *4) - $ending_bal_t);
-
-        if ($qta_s <$ending_bal_s) {
-            
-            $qta_s = 0;
-        }
-        if ($qta_c <$ending_bal_c) {
-            
-            $qta_c = 0;
-        }
-        if ($qta_t <$ending_bal_t) {
-            
-            $qta_t = 0;
-        }
         
         ?> 
         <tr>  
@@ -272,26 +207,24 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         <input type="hidden" name="amc_c[<?php echo $count ?>]" value="<?php echo $amc_c;?>"> 
         <input type="hidden" name="decision_c[<?php echo $count ?>]" value="<?php echo $decision_c;?>"> 
 
-          <td align=""><?php echo $value['county'];?></td>
-          <td align=""><?php echo $value['district'];?></td>              
-          <td align=""><?php echo $value['code'];?></td>
-          <td align=""><?php echo $value['name'];?></td>  
+          <td align=""><?php echo $county_name;?></td>
+          <td align=""><?php echo $district_name;?></td>              
+          <td align=""><?php echo $value['facility_code'];?></td>
+          <td align=""><?php echo $value['facility_name'];?></td>  
 
           <td align="center"><?php echo $ending_bal_s;?></td>     
           <td align="center"><?php echo $amc_s;?></td> 
-          <td align="center"><?php echo $mmos_s;?></td> 
-          <td align="center"><?php echo $qta_s;?></td> 
-          <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $qta_s;?>'/></td> 
-          <td align="center"><input style="width:100px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" /></td> 
-          <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
+          <td align="center"><?php echo $mmos_s;?></td>
+          <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $value['allocate_s'];?>'/></td> 
+          <td align="center"><input style="width:100px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" value = '<?php echo $value['remark_s'];?>'/></td> 
+          <td align="center" <?php echo $style_s;?> > <?php echo $value['decision_s'];?></td> 
 
           <td align="center"><?php echo $ending_bal_c;?></td>     
           <td align="center"><?php echo $amc_c;?></td> 
           <td align="center"><?php echo $mmos_c;?></td> 
-          <td align="center"><?php echo $qta_c;?></td> 
-          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $qta_c;?>'/></td> 
-          <td align="center"><input style="width:100px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" /></td> 
-          <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 
+          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $value['allocate_c'];?>'/></td> 
+          <td align="center"><input style="width:100px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" value = '<?php echo $value['remark_c'];?>'/></td> 
+          <td align="center"<?php echo $style_c;?>><?php echo $value['decision_c'];?></td> 
 
                     
         </tr>
@@ -301,7 +234,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       }
 
       }else{ ?>
-      <tr>There are No Facilities which did not Report</tr>
+      <tr>There are No Facilities which did not Allocate</tr>
       <?php }
       ?>      
 
@@ -328,9 +261,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         <button type="button" class="btn btn-default" id="go_home">
             Back to Home
         </button>
-        <button type="button" class="btn btn-default" <a id="next_report_btn">
-            Next Report
-        </button>
+        
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -368,33 +299,12 @@ $(document).ready(function() {
     
   }
   function loadRemaining(){
-    var district_id = $('#district_id').val();
-      var site_url= "<?php echo base_url() . 'rtk_management/get_remaining_districts/'; ?>";
-      var url  = site_url+district_id;
-    $.ajax({
-        url: url,
-        dataType: 'json',
-        success: function(s){ 
-           var next_id = s[0]; 
-           // var next_id = 0; 
-           if (next_id==''){
-          var message = 'All Allocations have been Submitted.';          
-           $('#next_modal').modal('show');   
-           $('#report_status').html(message);
-           $('#next_report_btn').hide();
-           console.log(s);
-         }else{
+    
            var message = 'Report has been Submitted Successfully.';          
            $('#next_modal').modal('show');   
            $('#report_status').html(message);
            $('#next_report_btn').attr('value',next_id); 
-          }                                         
-
-        },
-        error: function(e){
-            console.log(e.responseText);
-        }
-    });
+          
 }
  
  function loadRemaining2(){
@@ -428,7 +338,7 @@ $(document).ready(function() {
         }
     });
 }
-    $('.screening_input').keyup(function() {
+$('.screening_input').keyup(function() {
           
          var sc = $(this).val();
 
@@ -460,7 +370,7 @@ $(document).ready(function() {
         var confirmatory_current_amount = $('#confirmatory_current_amount').val();
         var tiebreaker_current_amount = $('#tiebreaker_current_amount').val();
        
-        $('.screening_input').each(function() {          
+        $('.screening_input').each(function() {
           sum_screening += Number($(this).val());
          
         });
@@ -479,9 +389,9 @@ $(document).ready(function() {
            // alert(new_screening_amount);
 
         if (sum_screening>screening_current_amount) {
-         alert('The available amount of Screening is less the the amount you have allocated.Available Amount: '+screening_current_amount+' Hint: Please check the values you entered');
+         alert('The available amount of Screening is less the the amount you have allocated.</br>Available Amount: '+screening_current_amount+'<br/> Hint: Please check the values you entered');
         } else if (sum_confirm>confirmatory_current_amount) {
-          alert('The available amount of Confirmatory is less the the amount you have allocated. Available Amount: '+confirmatory_current_amount+'  Hint: Please check the values you entered');
+          alert('The available amount of Confirmatory is less the the amount you have allocated. <br/>Available Amount: '+confirmatory_current_amount+' <br/> Hint: Please check the values you entered');
         }
         // else if (sum_tiebreaker>tiebreaker_current_amount) {
         //   alert('The available amount of TieBreaker is less the the amount you have allocated. <br/>Available Amount: '+tiebreaker_current_amount+' <br/> Hint: Please check the values you entered');
@@ -492,7 +402,7 @@ $(document).ready(function() {
           $('#message').css('color','green'); 
         
           // save_allocation_report();
-          var url = "<?php echo base_url() . 'rtk_management/submit_district_allocation_report'; ?>";
+          var url = "<?php echo base_url() . 'rtk_management/edit_district_allocation_report'; ?>";
                     
           var data = $('#myform').serializeArray();
           data.push({name: 'new_screening_amount', value: new_screening_amount},{name: 'new_confirmatory_amount', value: new_confirmatory_amount}, {name: 'new_tiebreaker_amount', value: new_tiebreaker_amount});
@@ -502,14 +412,14 @@ $(document).ready(function() {
             data : data,
                 success : function (response) {                    
                                     
-                    if(response==1)
-                    {
+                    // if(response==1)
+                    // {
                         loadRemaining();
-                    }else{
-                        loadRemaining2();
-                        console.log(response);
+                //     }else{
+                //         loadRemaining2();
+                //         console.log(response);
 
-                    }
+                //     }
                         console.log(data);
                 }
             });
@@ -527,8 +437,8 @@ $('#next_report_btn').button().click(function(e)
 });
 $('#go_home').button().click(function(e)
 {    var countyid = $('#countyid');
-    var url = "<?php echo base_url() . 'rtk_management/cmlt_allocation_dashboard'; ?>"; 
-    var site_url_link = url;
+    var url = "<?php echo base_url() . 'rtk_management/cmlt_allocation_dashboard/'; ?>"; 
+    var site_url_link = url+countyid;
     window.location.href = site_url_link;
 });
 

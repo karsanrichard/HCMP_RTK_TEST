@@ -371,6 +371,14 @@ setInterval(blinker, 1000);
     }
     #dialog-form{
         margin-top: 30px;
+
+    }
+    .header_text{
+        color:#337ab7;
+        font-size: 16px
+    }
+     .header_values{
+        font-size: 16px
     }
 </style>
 
@@ -410,39 +418,39 @@ date_default_timezone_set('EUROPE/Moscow');
             <input type="hidden" name="district_name" colspan = "2" style = "color:#000; border:none" value="<?php echo $district ?>"></td>
             <input type="hidden" name="county" colspan = "3" style = "color:#000; border:none" value="<?php echo $county ?>"></td>
 
-           <tr><td style = "text-align:left" colspan = "3"><b>Name of Facility:</b></td>
-                    <td colspan = "4"><?php echo $facility_name ?></td>
-                    <td colspan = "3" style = "text-align:right"><b>MFL Code:</b></td>
-                    <td colspan = "6"><?php echo $facility_code ?></td>
+                <tr>
+                    <td colspan = "4" class="header_text"><b>Name of Facility:</b></td>
+                    <td colspan = "4" class="header_values"><?php echo $facility_name ?></td>
+                    <td colspan = "4" class="header_text" align="right" ><b>MFL Code:</b></td>
+                    <td colspan = "6" class="header_values"><?php echo $facility_code ?></td>
                    
  
                 </tr>
-                <tr ><td colspan = "3" style = "text-align:left"><b>County:</b></td>                        
-                    <td colspan = "4"><?php echo $county ?></td>
-                    <td colspan = "3" style = "text-align:left"><b>District:</b></td>
-                    <td colspan = "6"><?php echo $district ?></td>
+                <tr >
+                    <td colspan = "4" class="header_text"><b>County:</b></td>                        
+                    <td colspan = "4" class="header_values"><?php echo $county ?></td>
+                    <td colspan = "4" class="header_text" align="right"><b>Sub County:</b></td>
+                    <td colspan = "6" class="header_values"><?php echo $district ?></td>
                                        
                 </tr>
                 <tr>
-                <td colspan = "2" align="center"><b>Report for Month:</b></td> 
-                <td colspan = "2" align="right"><b>Beginning:</b></td> 
-                    <td colspan = "3"style="text-align:center;" ><?php echo $beg_date ?></td>
-                    <td colspan = "3" align="right"><b>Ending:</b></td>
-                    <td colspan = "6" style="text-align:center;"><?php echo $end_date ?></td>
+                    <td colspan = "4" class="header_text"><b>Report for Month Beginning:</b></td> 
+                    <td colspan = "4" class="header_values" style="text-align:center;" ><?php echo $beg_date ?></td>
+                    <td colspan = "4" class="header_text" align="right" ><b>Ending:</b></td>
+                    <td colspan = "6" class="header_values"style="text-align:center;"><?php echo $end_date ?></td>
                     
                 <tr>
-                        <td colspan = "16" style = "text-align:center;" id="calc">
+                        <td colspan = "18" style = "text-align:center;" id="calc">
                             <b>The Ending Balance is Computed as follows: </b><i>Beginning Balance + Quantity Received + Positive Adjustments - Quantity Used - Negative Adjustments - Losses</i> 
                             <b><br/>Note:</b>
                             The Quantity Used Should Not be Less than the Tests Done
                         </td>            
                     </tr>
-                <tr><td colspan = "16" height="60px"></td></tr>
+                <tr><td colspan = "18" height="60px"></td></tr>
                 <tr >       
                     <td rowspan = "2" colspan = "2"><b>Commodity Name</b></td>
                     <td rowspan = "2"><b>Unit of Issue (e.g. Test)</b></td>
                     <td rowspan = "2"><b>Beginning Balance</b></td>
-                    <td rowspan = "2"><b>Physical Count -Beginning Balance</b></td>
                     <td rowspan = "2"><b>Quantity Received This Month - from Central Warehouses (e.g. KEMSA)</b></td>
                     <td rowspan = "2"><b>Quantity Received from other sources (e.g. local suppliers)</b></td>
                     <td rowspan = "2"><b>Quantity Used</b></td>
@@ -466,7 +474,7 @@ date_default_timezone_set('EUROPE/Moscow');
                 //     echo "<pre>";
                 // print_r($lab_commodities_categories);die;
                     ?>
-                    <tr>
+                <tr>
                         <td colspan = "15" style = "text-align:left"><b><?php echo $lab_category->category_name; ?></b></td>            
                     </tr>                    
                     <?php foreach ($lab_category->category_lab_commodities as $lab_commodities) { ?>
@@ -477,7 +485,7 @@ date_default_timezone_set('EUROPE/Moscow');
                         <td class="commodity_names" id="commodity_name_<?php echo $checker;?>" colspan = "2" style = "text-align:left"></b><?php echo $lab_commodities['commodity_name']; ?></td>
                         <td style = "color:#000; border:none; text; text-align:center" id="commodity_unit_type_<?php echo $checker;?>"><?php //echo $lab_commodities['unit_of_issue'];  ?></td>
                         <td><input id="b_balance_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "b_balance[<?php echo $checker ?>]" class='bbal' size="10" type="text" value="0" style = "text-align:center"/></td>
-                        <td><input id="phisical_b_balance_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "phisical_b_balance[<?php echo $checker ?>]" class='pbbal' size="10" type="text" value="0" style = "text-align:center"/></td>
+                        
                         <td><input id="q_received_<?php echo $checker ?>" name = "q_received[<?php echo $checker ?>]" class='qty_rcvd' size="10" type="text" value="0" style = "text-align:center"/></td>
                          <td><input id="q_received_other<?php echo $checker ?>" name = "q_received_other[<?php echo $checker ?>]" class='qty_rcvd' size="10" type="text" value="0" style = "text-align:center"/></td>
                         <td><input id="q_used_<?php echo $checker ?>" name = "q_used[<?php echo $checker ?>]" class='qty_used' size="10" type="text" value="0" style = "text-align:center"/></td>
@@ -490,55 +498,55 @@ date_default_timezone_set('EUROPE/Moscow');
                         <td><input id="q_expiring_<?php echo $checker ?>" name = "q_expiring[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>
                         <td><input id="days_out_of_stock_<?php echo $checker ?>" name = "days_out_of_stock[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>  
                         <td><input id="q_requested_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>"name = "q_requested[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td> 
-                        <td><input readonly id="amc_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "am_c[<?php echo $checker ?>]" class='amc' size="10" type="text" value="0" style = "text-align:center"/></td>                 
+                        <td><input readonly id="amc_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "amc[<?php echo $checker ?>]" class='amc' size="10" type="text" value="0" style = "text-align:center"/></td>                 
                     </tr>
                     <?php $checker++;
                 }
             }
             ?>
             <tr>
-                <td colspan = "16" height="60px"><br/></td>
+                <td colspan = "18" height="60px"><br/></td>
             </tr>
             <tr>                    
-                <td colspan = "16" style = "text-align:left;background: #EEE;">Explain Losses and Adjustments</td>
+                <td colspan = "18" style = "text-align:left;background: #EEE;">Explain Losses and Adjustments</td>
             </tr>
             <tr>                        
-                <td colspan = "16"><input colspan = "16" id="explanation" name="explanation" size="210" type="text" value="" style=" width: 90%;"/></td>
+                <td colspan = "18"><input colspan = "16" id="explanation" name="explanation" size="210" type="text" value="" style=" width: 90%;"/></td>
             </tr>
             <tr></tr>
 
 
             <tr>
-                <td colspan = "4" style = "text-align:left"><b>Order for Extra LMIS tools:<br/> To be requested only when your data collection or reporting tools are nearly full. Indicate quantity required for each tool type.</b></td>
+                <td colspan = "6" style = "text-align:left"><b>Order for Extra LMIS tools:<br/> To be requested only when your data collection or reporting tools are nearly full. Indicate quantity required for each tool type.</b></td>
                 <td colspan = "4"><b>(1) Daily Activity Register for Laboratory Reagents and Consumables (MOH 642):</b></td>
                 <td><input class='user2'id="moh_642" name="moh_642" size="10" type="text"/></td>
-                <td colspan = "3"><b>(2) F-CDRR for Laboratory Commodities (MOH 643):</b></td>
+                <td colspan = "4"><b>(2) F-CDRR for Laboratory Commodities (MOH 643):</b></td>
                 <td colspan = "4"><input class='user2'id="moh_643" name="moh_643" size="10" type="text"/></td>
             </tr>   
 
 
-            <tr><td colspan = "3" style = "text-align:left">Compiled by:</td>
-                <td colspan = "3" style = "text-align:left">Tel:</td>
+            <tr><td colspan = "4" style = "text-align:left">Compiled by:</td>
+                <td colspan = "4" style = "text-align:left">Tel:</td>
                 <td colspan = "10" style = "text-align:left">Designation:</td>
                 
             </tr>
-            <tr><td colspan = "3"><input class='user2'id="compiled_by" name="compiled_by" size="10" type="text" />
+            <tr><td colspan = "4"><input class='user2'id="compiled_by" name="compiled_by" size="10" type="text" />
                 <span style="color: #f33;font-size: 10px;">* Required Field</span></td>                
-                <td colspan = "3"><input class='user2'id="compiled_tel" name="compiled_tel" size="10" type="text" /></td>               
+                <td colspan = "4"><input class='user2'id="compiled_tel" name="compiled_tel" size="10" type="text" /></td>               
                 <td colspan = "10"><input class='user2'id="compiled_des" name="compiled_des" size="10" type="text" /></td>
                 
             </tr>
 
             <tr></tr>
 
-            <tr><td colspan = "3" style = "text-align:left">Approved by:</td>
-                <td colspan = "3" style = "text-align:left">Tel:</td>
+            <tr><td colspan = "4" style = "text-align:left">Approved by:</td>
+                <td colspan = "4" style = "text-align:left">Tel:</td>
                 <td colspan = "10" style = "text-align:left">Designation:</td>
                 
             </tr>
-            <tr><td colspan = "3"><input class='user2'id="approved_by" name="approved_by" size="10" type="text" colspan = "4"/>
+            <tr><td colspan = "4"><input class='user2'id="approved_by" name="approved_by" size="10" type="text" colspan = "4"/>
                 <span style="color:#f33;font-size: 10px;">* Required Field</span></td>            
-                <td colspan = "3"><input class='user2'id="approved_tel" name="approved_tel" size="10" type="text" /></td>
+                <td colspan = "4"><input class='user2'id="approved_tel" name="approved_tel" size="10" type="text" /></td>
                 <td colspan = "10"><input class='user2'id="approved_des" name="approved_des" size="10" type="text" /></td>                
             </tr>
 
@@ -556,7 +564,7 @@ date_default_timezone_set('EUROPE/Moscow');
 
 
 <?php form_close(); ?>
-<div class="modal fade " tabindex="-1" role="dialog" id="fcdrr_changes_alert">
+<div class="modal fade " tabindex="-1" role="dialog" id="fcdrr_changes_alert_inactive">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -586,15 +594,16 @@ date_default_timezone_set('EUROPE/Moscow');
         clean: true,                
     });
     
-    $('#calc').css('color','blue');
+    $('#calc').css('color','#0a6115');
     $('#calc').css('text-align','center');
-    $('#calc').css('font-size','12px');
+    $('#calc').css('font-size','14px');
     $('#commodity_unit_type_0').append('Tests');
     $('#commodity_unit_type_1').append('Tests');
     $('#commodity_unit_type_2').append('Tests');
     $('#commodity_unit_type_3').append('Tests');
     $('#commodity_unit_type_4').append('Pieces');
     $('#commodity_unit_type_5').append('Pieces');
+    $('#commodity_unit_type_6').append('Pieces');
 
 </script>
 

@@ -126,7 +126,8 @@ public function cd4_manager_home() {
 
     //SCMLT FUNCTUONS
 
-    public function scmlt_home(){
+     public function scmlt_home(){
+        date_default_timezone_set("EUROPE/Moscow");
         $district = $this->session->userdata('district_id');                
         $facilities = Facilities::get_total_facilities_cd4_in_district($district);       
         $district_name = districts::get_district_name_($district);                    
@@ -135,93 +136,120 @@ public function cd4_manager_home() {
         $nonreported = 0;
         $date = date('d', time());
 
-        $msg = $this->session->flashdata('message');
-        if(isset($msg)){
-            $data['notif_message'] = $msg;
-        }
-        if(isset($popout)){
-            $data['popout'] = $popout;
-        }
+        // $msg = $this->session->flashdata('message');
+        // if(isset($msg)){
+        //     $data['notif_message'] = $msg;
+        // }
+        // if(isset($popout)){
+        //     $data['popout'] = $popout;
+        // }
+     
+
         
-        $sql = "select distinct rtk_settings.* 
-        from rtk_settings, facilities 
-        where facilities.zone = rtk_settings.zone 
-        and facilities.rtk_enabled = 1";
-        $res_ddl = $this->db->query($sql);
-        $deadline_date = null;
-        $settings = $res_ddl->result_array();
-        foreach ($settings as $key => $value) {
-            $deadline_date = $value['deadline'];
-            $five_day_alert = $value['5_day_alert'];
-            $report_day_alert = $value['report_day_alert'];
-            $overdue_alert = $value['overdue_alert'];
-        }
-        date_default_timezone_set("EUROPE/Moscow");
-
-
         foreach ($facilities as $facility_detail) {
 
            $lastmonth = date('F', strtotime("last day of previous month"));
             if($date>$deadline_date){
-                $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'></a></td>";
-
+               
                 $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></span></td>";
                 // echo $cd4_report_link;die;
             }else{
                 $cd4_report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <span><a href='" . site_url('cd4_management/get_cd4_report/' . $facility_detail['facility_code']) . "' class='link '> Report</a></span></td>";
             }
 
-            $report_link = "<td><span class='label label-danger'>  Pending for $lastmonth </span> <a href='" . site_url('rtk_management/get_report/' . $facility_detail['facility_code']) . "' class='link report'> Report</a></td>";
+            
+            $table_body .="<tr><td><a class='ajax_call_1' id='county_facility' name='" . base_url() . "rtk_management/get_rtk_facility_detail/$facility_detail[facility_code]' href='#'>" . $facility_detail["facility_code"] . "</td>";
+            $table_body .="<td>" . $facility_detail['facility_name'] . "</td><td>" . $district_name['district'] . "</td>";
+            $table_body .="";
 
+            $lab_count = lab_commodity_orders::get_recent_lab_orders($facility_detail['facility_code']);
+            
+            $lab_count = cd4_fcdrr::get_recent_cd4_fcdrr($facility_detail['facility_code']);
 
-        $table_body .="<tr><td><a class='ajax_call_1' id='county_facility' name='" . base_url() . "rtk_management/get_rtk_facility_detail/$facility_detail[facility_code]' href='#'>" . $facility_detail["facility_code"] . "</td>";
-        $table_body .="<td>" . $facility_detail['facility_name'] . "</td><td>" . $district_name['district'] . "</td>";
-        $table_body .="";
+            if ($lab_count > 0) {
+                $reported = $reported + 1;              
+                $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('cd4_management/fcdrrs') . " class='link'> View</a></td>";
+            } 
+            else {
+                $nonreported = $nonreported + 1;
+                $table_body .=$cd4_report_link;
+            }   
 
-        $lab_count = lab_commodity_orders::get_recent_lab_orders($facility_detail['facility_code']);
-        // if ($lab_count > 0) {
-        //     $reported = $reported + 1;              
-        //     $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
-        // } 
-        // else {
-        //     $nonreported = $nonreported + 1;
-        //     $table_body .=$report_link;
-        // }   
-
-
-
-        $lab_count = cd4_fcdrr::get_recent_cd4_fcdrr($facility_detail['facility_code']);
-        if ($lab_count > 0) {
-            $reported = $reported + 1;              
-            $table_body .="<td><span class='label label-success'>Submitted  for    $lastmonth </span><a href=" . site_url('cd4_management/fcdrrs') . " class='link'> View</a></td>";
-        } 
-        else {
-            $nonreported = $nonreported + 1;
-            $table_body .=$cd4_report_link;
-        }   
-
-
-            // $table_body .=$cd4_report_link;
             $table_body .="</tr>";
 
         // echo  $table_body;die;
         }   
+        $sql = "select distinct rtk_settings.* from rtk_settings, facilities where facilities.zone = rtk_settings.zone and facilities.rtk_enabled = 1";
+        $settings = $this->db->query($sql)->result_array();
 
-        $county = $this->session->userdata('county_name');
-        $countyid = $this->session->userdata('county_id');
-        $data['countyid'] = $countyid;
-        $data['county'] = $county;
-        $data['table_body'] = $table_body;
-        $data['content_view'] = "cd4/scmlt/dpp_home_with_table";
-        $data['title'] = "Home";
-        $data['link'] = "home";
+        $deadline_date = null;
+
+        foreach ($settings as $key => $value) {
+            $deadline_date = $value['deadline'];
+            $five_day_alert = $value['5_day_alert'];
+            $report_day_alert = $value['report_day_alert'];
+            $overdue_alert = $value['overdue_alert'];
+        }
         $total = $reported + $nonreported;
         $percentage_complete = ceil($reported / $total * 100);
         $percentage_complete = number_format($percentage_complete, 0);
+
+        $progress_class = " ";
+        if ($percentage_complete <= 100) {
+            $progress_class = 'success';
+            $alertype = 'success';
+        }
+        if ($percentage_complete < 75) {
+            $progress_class = 'warning';
+            $alertype = 'warning';
+        }
+        if ($percentage_complete < 50) {
+            $progress_class = 'info';
+            $alertype = 'info';
+        }
+        if ($percentage_complete < 25) {
+            $progress_class = 'danger';
+            $alertype = 'danger';
+        }
+       
+        $date = date('d', time());
+        
+        $remainingdays = $deadline_date - $date;
+     
+
+        if($date>0 && $date <=$deadline_date && $percentage_complete<100){
+            $alertmsg = 'Click on <u>Report</u> for all Facilities with the red label within the table below<br > '. $deadline_date;   
+
+        } else if($date>0 && $date <=$deadline_date && $percentage_complete==100){
+            $alertmsg = '<strong>Congratulations!</strong> <br/> You have reported for all facilities in your district. You can cross-check and edit your reports';     
+
+        } else if($date>0 && $date >$deadline_date && $percentage_complete==100){
+            $alertmsg = '<strong>Congratulations!</strong> <br/> You have reported for all facilities in your district.';     
+
+        } else if($date>0 && $date >$deadline_date && $percentage_complete < 100){
+            $alertmsg = 'Not all facilities were reported for on time';     
+
+        } 
+
+        $percentage_complete = ceil($reported / $total * 100);
+        $percentage_complete = number_format($percentage_complete, 0);
+        $total = $reported + $nonreported;
+
+        // $county = $this->session->userdata('county_name');
+        // $countyid = $this->session->userdata('county_id');
+        // $data['countyid'] = $countyid;
+        // $data['county'] = $county;
         $data['percentage_complete'] = $percentage_complete;
         $data['reported'] = $reported;
         $data['nonreported'] = $nonreported;
+        $data['remainingdays'] = $remainingdays;
         $data['facilities'] = Facilities::get_total_facilities_rtk_in_district($district);
+        $data['district_name'] = $district_name['district'];
+        $data['table_body'] = $table_body;
+        $data['content_view'] = "cd4/scmlt/dpp_home_with_table";
+        $data['title'] = "Home";
+        $data['link'] = "home";        
+       
         $this->load->view('rtk/template', $data);
 
 }
@@ -401,41 +429,57 @@ public function save_cd4_report_data() {
     // }
     // // $this->_update_reports_count('add',$county,$district_id,$partner);
     // $this->session->set_flashdata('message', 'The report has been saved');
-    redirect('cd4_management/facility_home');
+    // redirect('cd4_management/facility_home');
 
+  echo   $usertype_id = $this->session->userdata('user_type_id');
+
+    if ($usertype_id ==8 ||$usertype_id == 7) {
+    redirect("cd4_management/scmlt_home");
+        
+    }else  if ($usertype_id ==5){
+    // redirect("Home");
+    redirect("cd4_management/facility_profile/".$facility_code);
+
+    }
 }
 
 
     //Edit FCDRR
 public function edit_lab_order_details($order_id, $msg = NULL) {
-    $delivery = $this->uri->segment(3);
-    $district = $this->session->userdata('district_id');
-    $data['title'] = "Lab Commodity Order Details";    
+    
     ini_set('memory_limit', '-1');
+
+    $sql ='SELECT *, cd4_fcdrr.id as order_id FROM
+                counties,
+                facilities,
+                districts,
+                cd4_fcdrr,
+                cd4_fcdrr_commodities,
+                cd4_commodities
+            WHERE
+                cd4_fcdrr.facility_code = facilities.facility_code
+                    AND facilities.district = districts.id
+                    AND counties.id = districts.county
+                    AND cd4_fcdrr_commodities.commodity_id = cd4_commodities.id
+                    AND cd4_fcdrr_commodities.fcdrr_id = cd4_fcdrr.id
+                    AND cd4_fcdrr.id = ' . $order_id ;
+    $result = $this->db->query($sql)->result_array();
+// echo "<pre>"; print_r($result); die;
+
     $data['order_id'] = $order_id;
-    $data['content_view'] = "rtk/rtk/scmlt/fcdrr_edit";
-    $data['banner_text'] = "Lab Commodity Order Details";
-    $data['lab_categories'] = Lab_Commodity_Categories::get_all();
-    $data['detail_list'] = Lab_Commodity_Details::get_order($order_id);
-    $result = $this->db->query('SELECT * 
-        FROM lab_commodity_details, counties, facilities, districts, lab_commodity_orders, lab_commodity_categories, lab_commodities
-        WHERE lab_commodity_details.facility_code = facilities.facility_code
-        AND counties.id = districts.county
-        AND facilities.facility_code = lab_commodity_orders.facility_code
-        AND lab_commodity_details.commodity_id = lab_commodities.id
-        AND lab_commodity_categories.id = lab_commodities.category
-        AND facilities.district = districts.id
-        AND lab_commodity_details.order_id = lab_commodity_orders.id
-        AND lab_commodity_orders.id = ' . $order_id . '');
-    $data['all_details'] = $result->result_array();      
+    $data['all_details'] = $result;      
+    $data['title'] = "Lab Commodity Order Details"; 
+    $data['content_view'] = "cd4/scmlt/cd4_fcdrr_edit";
+    $data['banner_text'] = "CD4 Lab Commodity Order Details";
+      
     $this->load->view("rtk/template", $data);
 }
 
     //Update the FCDRR Online
 public function update_lab_commodity_orders() {
-    $rtk = new Rtk_Management();
-    $order_id = $_POST['order_id'];
+   $order_id = $_POST['order_id'];
     $detail_id = $_POST['detail_id'];
+   
     $district_id = $_POST['district'];
     $facility_code = $_POST['facility_code'];
     $drug_id = $_POST['commodity_id'];
@@ -454,80 +498,313 @@ public function update_lab_commodity_orders() {
     $commodity_count = count($drug_id);
     $detail_count = count($detail_id);
 
-    $vct = $_POST['vct'];
-    $pitc = $_POST['pitc'];
-    $pmtct = $_POST['pmtct'];
-    $b_screening = $_POST['blood_screening'];
-    $other = $_POST['other2'];
-    $specification = $_POST['specification'];
-    $rdt_under_tests = $_POST['rdt_under_tests'];
-    $rdt_under_pos = $_POST['rdt_under_positive'];
-    $rdt_btwn_tests = $_POST['rdt_to_tests'];
-    $rdt_btwn_pos = $_POST['rdt_to_positive'];
-    $rdt_over_tests = $_POST['rdt_over_tests'];
-    $rdt_over_pos = $_POST['rdt_over_positive'];
-    $micro_under_tests = $_POST['micro_under_tests'];
-    $micro_under_pos = $_POST['micro_under_positive'];
-    $micro_btwn_tests = $_POST['micro_to_tests'];
-    $micro_btwn_pos = $_POST['micro_to_positive'];
-    $micro_over_tests = $_POST['micro_over_tests'];
-    $micro_over_pos = $_POST['micro_over_positive'];
-    date_default_timezone_set('EUROPE/Moscow');
-    $beg_date = date('y-m-d', strtotime($_POST['begin_date']));
-    $end_date = date('y-m-d', strtotime($_POST['end_date']));
+    $calibur_pead   =   $_POST['calibur_pead'];
+    $calibur_adult  =   $_POST['calibur_adult'];
+    $caliburs       =   $calibur_pead + $calibur_adult;
+    $count_pead     =   $_POST['count_pead'];
+    $count_adult    =   $_POST['count_adult'];
+    $counts         =   $count_pead + $count_adult;
+    $partec_pead    =   $_POST['partec_pead'];
+    $partec_adult   =   $_POST['partec_adult'];
+    $cyflows        =   $partec_pead + $partec_adult;
+    $adults_bel_cl  =   $_POST['adults_bel_cl'];
+    $pead_bel_cl    =   $_POST['pead_bel_cl'];
+    $pima   =   $_POST['pima'];
+    $presto =   $_POST['presto'];
+    $total_tests    =   $caliburs+$counts+$cyflows+$pima+$presto;
+
+    $beg_date = $_POST['begin_date'];
+    $end_date = $_POST['end_date'];
     $explanation = $_POST['explanation'];
     $compiled_by = $_POST['compiled_by'];
-
     $moh_642 = $_POST['moh_642'];
     $moh_643 = $_POST['moh_643'];
 
-    $myobj = Doctrine::getTable('Lab_Commodity_Orders')->find($order_id);
 
-    $myobj->vct = $vct;
-    $myobj->pitc = $pitc;
-    $myobj->pmtct = $pmtct;
-    $myobj->b_screening = $b_screening;
-    $myobj->other = $other;
-    $myobj->specification = $specification;
-    $myobj->rdt_under_tests = $rdt_under_tests;
-    $myobj->rdt_under_pos = $rdt_under_pos;
-    $myobj->rdt_btwn_tests = $rdt_btwn_tests;
-    $myobj->rdt_btwn_pos = $rdt_btwn_pos;
-    $myobj->rdt_over_tests = $rdt_over_tests;
-    $myobj->rdt_over_pos = $rdt_over_pos;
-    $myobj->micro_under_tests = $micro_under_tests;
-    $myobj->micro_under_pos = $micro_under_pos;
-    $myobj->micro_btwn_tests = $micro_btwn_tests;
-    $myobj->micro_btwn_pos = $micro_btwn_pos;
-    $myobj->micro_over_tests = $micro_over_tests;
-    $myobj->micro_over_pos = $micro_over_pos;
-    $myobj->beg_date = $beg_date;
-    $myobj->end_date = $end_date;
-    $myobj->explanation = $explanation;
-    $myobj->compiled_by = $compiled_by;
-    $myobj->moh_642 = $moh_642;
-    $myobj->moh_643 = $moh_643;
-    $myobj->save();
-    $object_id = $myobj->get('id');
-    $this->logData('14', $object_id);
-    $q = "select id from lab_commodity_details where order_id = $order_id";
-    $res = $this->db->query($q);
-    $ids = $res->result_array();  
 
+    $user_id = $this->session->userdata('user_id');  
+  
+    $sql = "UPDATE `cd4_fcdrr` SET `calibur_adults`='$calibur_adult',`calibur_pead`='$calibur_pead',`caliburs`='$caliburs',`count_adults`='$count_adult',`count_pead`='$count_pead',`counts`='$counts',`cyflow_adults`='$partec_adult',`cyflow_pead`='$partec_pead',`cyflows`='$cyflows',`pima_tests`='$pima',`presto_tests`='$presto',`adults_bel_cl`='$adults_bel_cl',`pead_bel_cl`='$pead_bel_cl',
+    `explanation`=explanation,`moh_642`='$moh_642',`moh_643`='$moh_643',`compiled_by`='$compiled_by' WHERE id = $order_id";
+
+    $this->db->query($sql);
+
+    $sql2 = "select id from cd4_fcdrr_commodities where fcdrr_id = $order_id";
+    $result2 = $this->db->query($sql2)->result_array();
+    
     for ($i = 0; $i < $detail_count; $i++) {
 
-        $id = $ids[$i]['id'];           
-        $sql = "UPDATE `lab_commodity_details` SET `beginning_bal`=$b_balance[$i],
-        `q_received`='$q_received[$i]',`q_used`=$q_used[$i],`no_of_tests_done`=$tests_done[$i],`losses`=$losses[$i],
-        `positive_adj`=$pos_adj[$i],`negative_adj`=$neg_adj[$i],`closing_stock`=$physical_count[$i],
+        $id = $result2[$i]['id'];   
+        $sql3 = "UPDATE `cd4_fcdrr_commodities` SET `beginning_bal`=$b_balance[$i],
+        `q_received`='$q_received[$i]',`q_used`=$q_used[$i],`no_of_tests_done`=$tests_done[$i],`losses`=$losses[$i],`positive_adj`=$pos_adj[$i],`negative_adj`=$neg_adj[$i],`closing_stock`=$physical_count[$i],
         `q_expiring`=$q_expiring[$i],`days_out_of_stock`=$days_out_of_stock[$i],`q_requested`=$q_requested[$i] WHERE id= $id ";
-        $this->db->query($sql);
+        $this->db->query($sql3);
     }
 
-    redirect('rtk_management/scmlt_orders');
+    $usertype_id = $this->session->userdata('user_type_id');
+
+    if ($usertype_id ==8 ||$usertype_id == 7) {
+    redirect("cd4_management/scmlt_home");
+        
+    }else  if ($usertype_id ==5){
+    // redirect("Home");
+    redirect("cd4_management/facility_profile/".$facility_code);
+
+    }
 }
 
+public function cd4_reports_summary($year, $month, $county = null, $district=null) {
+   
+        $distname = districts::get_district_name($district);
+        $districtname = $distname[0]['district'];
+        $district_id = $district;
+        $returnable = array();
+        $nonreported;
+        $reported_percentage;
+        $late_percentage;
+        $conditions = '';
 
+        if (isset($district)) {
+           $conditions .= ' and districts.id = '.$district;
+        }
+        if (isset($county)) {
+           $conditions .= ' and counties.id = '.$county;
+        }
+
+        // Sets the timezone and date variables for last day of previous month and this month
+        date_default_timezone_set('EUROPE/moscow');
+        $month = $month + 1;
+        $prev_month = $month - 1;
+        $last_day_current_month = date('Y-m-d', mktime(0, 0, 0, $month, 0, $year));
+        $first_day_current_month = date('Y-m-', mktime(0, 0, 0, $month, 0, $year));
+        $first_day_current_month .= '01';
+        $lastday_thismonth = date('Y-m-d', strtotime("last day of this month"));
+        $month -= 1;        
+        $day15 = $year . '-' . $month . '-15';
+        // $day11 = $year . '-' . $month . '-11';
+        // $day12 = $year . '-' . $month . '-12';
+        $late_reporting = 0;
+        $text_month = date('F', strtotime($day10));
+
+        $reporting_month = date('F,Y', strtotime('first day of previous month'));
+
+        $q = "SELECT * 
+        FROM facilities, districts, counties
+        WHERE facilities.district = districts.id
+        AND districts.county = counties.id
+        $conditions
+        AND facilities.cd4_enabled =1
+        ORDER BY  `facilities`.`facility_name` ASC ";
+// echo "$q";
+        $q_res = $this->db->query($q);
+        $total_reporting_facilities = $q_res->num_rows();
+
+        $q1 = "SELECT DISTINCT cd4_fcdrr.facility_code, cd4_fcdrr.id,cd4_fcdrr.order_date
+        FROM cd4_fcdrr, districts, counties
+        WHERE districts.id = cd4_fcdrr.district_id
+        AND districts.county = counties.id
+        $conditions
+        AND cd4_fcdrr.order_date
+        BETWEEN '$first_day_current_month'
+        AND '$last_day_current_month'
+        group by cd4_fcdrr.facility_code";
+        
+        $q_res1 = $this->db->query($q1);
+        $new_q_res1 = $q_res1 ->result_array();
+        $total_reported_facilities = $q_res1->num_rows();
+        
+
+        foreach ($q_res1->result_array() as $vals) {
+            if ($vals['order_date'] >$day15 ) {
+                $late_reporting += 1;
+                //                echo "<pre>";var_dump($vals);echo "</pre>";
+            }
+        }
+
+        $nonreported = $total_reporting_facilities - $total_reported_facilities;
+        if ($total_reporting_facilities == 0) {
+            $non_reported_percentage = 0;
+        } else {
+            $non_reported_percentage = $nonreported / $total_reporting_facilities * 100;
+        }
+
+        // $non_reported_percentage = number_format($non_reported_percentage, 0);
+
+        if ($total_reporting_facilities == 0) {
+            $reported_percentage = 0;
+        } else {
+            $reported_percentage = $total_reported_facilities / $total_reporting_facilities * 100;
+        }
+
+        // $reported_percentage = number_format($reported_percentage, 0);
+
+        if ($total_reporting_facilities == 0) {
+            $late_percentage = 0;
+        } else {
+            $late_percentage = $late_reporting / $total_reporting_facilities * 100;
+        }
+
+
+        $late_percentage = number_format($late_percentage, 0);
+        if ($total_reported_facilities > $total_reporting_facilities) {
+            $reported_percentage = 100;
+            $nonreported = 0;
+            $total_reported_facilities = $total_reporting_facilities;
+        }
+        if ($late_reporting > $total_reporting_facilities) {
+            $late_reporting = $total_reporting_facilities;
+            $late_percentage = $reported_percentage;
+        }
+
+        $returnable = array('reporting_month'=>$reporting_month,'Month' => $text_month, 'Year' => $year, 'district' => $districtname, 'district_id' => $district_id,  'total_facilities' => $total_reporting_facilities, 'reported' => $total_reported_facilities, 'reported_percentage' => $reported_percentage, 'nonreported' => $nonreported, 'nonreported_percentage' => $non_reported_percentage, 'late_reports' => $late_reporting, 'late_reports_percentage' => $late_percentage);
+        // echo $nonreported;
+        // print_r($returnable);
+        return $returnable;
+    }
+public function cd4_facilities_not_reported($month = NULL,$year = NULL, $county = NULL, $district = NULL, $facility = NULL, $zone = NULL, $partner= NULL) {
+// echo "string";
+    if (!isset($month)) {
+        $month_text = date('mY', strtotime('-1 month'));
+        $month = date('m', strtotime("-1 month", time()));
+    }
+
+    if (!isset($year)) {
+        $year = substr($month_text, -4);
+    }
+
+    $firstdate = $year . '-' . $month . '-01';
+    $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    $lastdate = $year . '-' . $month . '-' . $num_days;
+
+    $conditions = '';
+    $conditions = (isset($zone)) ? "AND counties.zone = '$zone'" : '';
+    $conditions = (isset($county)) ? $conditions . " AND counties.id = $county" : $conditions . ' ';
+    $conditions = (isset($partner)) ? $conditions . " AND facilities.partner = $partner" : $conditions . ' ';
+    $conditions = (isset($district)) ? $conditions . " AND districts.id = $district" : $conditions . ' ';
+    $conditions = (isset($facility)) ? $conditions . " AND facilities.facility_code = $facility" : $conditions . ' ';
+
+    $sql = "SELECT 
+                distinct cd4_fcdrr.facility_code, facilities.facility_name, districts.district, counties.county, cd4_fcdrr.id as order_id
+            FROM
+                cd4_fcdrr,
+                counties,
+                districts,
+                facilities
+            WHERE
+                created_at BETWEEN '$firstdate' AND '$lastdate'
+                    AND facilities.district = districts.id
+                    AND districts.county = counties.id
+                    AND cd4_fcdrr.facility_code = facilities.facility_code
+            GROUP BY counties.id";
+
+
+    $sql2 = "SELECT 
+               facilities.facility_code
+            FROM
+                counties,
+                districts,
+                facilities
+            WHERE
+                facilities.district = districts.id
+                    AND districts.county = counties.id
+                    AND facilities.cd4_enabled = 1
+                    $conditions
+            GROUP BY counties.id ";
+           
+    $reported = $this->db->query($sql)->result_array();
+    $all = $this->db->query($sql2)->result_array();
+
+
+    $unreported = array();
+    $new_all = array();
+    $new_reported = array();
+
+    foreach ($all AS $key => $value) {
+        $new_all[] = $value['facility_code'];
+    }
+    foreach ($reported AS $key => $value) {
+        $new_reported[] = $value['facility_code'];
+    }
+    sort($new_all);
+    sort($new_reported);
+
+    $returnable = array_diff($new_all, $new_reported);
+
+
+    foreach ($returnable as $value) {
+        $sql3 = "select facilities.facility_code,facilities.facility_name, districts.district, counties.county,counties.zone
+        from facilities, districts, counties 
+        where facilities.district=districts.id 
+        and districts.county = counties.id
+        and cd4_enabled='1'
+        and facilities.facility_code = '$value'
+        $conditions";
+        $my_value = $this->db->query($sql3)->result_array();
+        array_push($unreported, $my_value);
+    }
+        // echo "$sql3";
+
+    $report_for = $month . "-" . $year;
+
+    foreach ($unreported AS $key => $value) {
+        $new_unreported[] = $value[0];
+    }
+
+    foreach ($new_unreported as $key => $value) {
+        $new_unreported[$key]['report_for'] = $report_for;
+    }
+    $array_all = array();
+
+    // array_push($array_all, $new_unreported);
+    // array_push($array_all, $reported);
+    $array_all = array('new_unreported' => $new_unreported, 'reported'=>$reported);
+// print_r($reported); 
+    return $array_all;
+}
+
+function update_county_percentages_month($month=null){
+   
+    if(isset($month)){           
+        $year = substr($month, -4);
+        $month = substr($month, 0,2);            
+        $monthyear = $month.$year; 
+    }
+   
+    $sql = "select id from counties";
+
+    $result = $this->db->query($sql)->result_array();
+     foreach ($result as $key => $value) {
+        $id = $value['id'];              
+    
+        $reports = $this->cd4_reports_summary($year,$month,$id);  
+
+        $cd4_reported = $reports['reported']; 
+        $cd4_total_facilities = $reports['total_facilities'];        
+        $cd4_percentage = ceil(($cd4_reported/$cd4_total_facilities)*100);
+        // echo "<pre>"; print_r($reports);
+
+        $q = "insert into cd4_county_percentage (county_id, cd4_facilities,cd4_reported,cd4_percentage,reported_month) values ($id,$cd4_total_facilities,$cd4_reported,$cd4_percentage,'$monthyear')";
+        
+        $this->db->query($q);
+    }
+
+    
+}
+
+function update_cd4_facilities(){
+    $sql = 'select * from cd4_facility_device';
+    $result = $this->db->query($sql)->result_array();
+
+    foreach ($result as $key => $value) {
+        if ($value['facility_code'] >0) {
+            # code...
+    
+        $sql2 = 'update facilities set cd4_enabled = 1 where facility_code= '.$value['facility_code'];
+        // $sql2 = 'update facilities set cd4_enabled = 0 ';
+      echo   $this->db->query($sql2);
+  }
+    }
+ }
 
         //Generate the FCDRR PDF
 
@@ -588,22 +865,23 @@ public function get_county_reporting_percentage($month=null,$countyid){
 
 
 public function facility_profile($mfl) {
-    $data = array();
-    $lastday = date('Y-m-d', strtotime("last day of previous month"));
-    $County = $this->session->userdata('county_name');    
-    $Countyid = $this->session->userdata('county_id');    
-    $districts = districts::getDistrict($Countyid);   
-    $sql = "select * from facilities where facility_code=$mfl"; 
-    $facility = $this->db->query($sql)->result_array();        
+    require_once('rtk_management.php');
+    $rtk = new Rtk_Management();    
+
+    $sql = "select * from facilities, cd4_facility_device where cd4_facility_device.facility_code =  facilities.facility_code and facilities.cd4_enabled = 1 and facilities.facility_code=$mfl"; 
+    $facility = $this->db->query($sql)->result_array();   
+
     $mfl =  $facility[0]['facility_code'];       
+if ($mfl == '') {
+    echo "Oops!! Your Facility has been Deactivated";
+}else{
     $data['reports'] = $this->_monthly_facility_reports($mfl);
-    // $data['reports']= str_replace('(', '-', $data['reports']);
-    // $data['reports'] = str_replace(')', '', $data['reports']);
-        // echo "<pre>"; print_r($data['reports']);die();
+    
+    // echo "<pre>"; print_r($data['reports']);die();
 
     $data['facility_county'] = $data['reports'][0]['county'];
     $data['facility_district'] = $data['reports'][0]['district'];
-    $data['district_id'] = $data['reports'][0]['district_id'];
+    $data['district_id'] = $facility[0]['district'];
 
     if($data['district_id']==null){
         $new_dist =  $facility[0]['district'];       
@@ -612,20 +890,45 @@ public function facility_profile($mfl) {
         $data['facilities_in_district'] = json_encode($this->_facilities_in_district($data['district_id']));
     }    
     $data['facilities_in_district'] = str_replace('"', "'", $data['facilities_in_district']);
+   
+    $data['rtk_orders'] = $rtk -> get_lab_orders( $data['district_id'],$mfl);
 
-    $data['county_id'] = $Countyid;
-    //$data['county_id'] = $data['reports'][0]['county_id'];
+    // print_r($data['rtk_orders']); die;
 
-    $data['districts'] = $districts;
-    $data['county'] = $County;
+    $data['rtk_report_count'] = lab_commodity_orders::get_recent_lab_orders($mfl);
+
+        if ($data['rtk_report_count'] > 0) {
+            // $reported = $reported + 1;              
+            
+            $data['rtk_button_text'] = 'RTK Report Submitted';
+        } else {
+            // $nonreported = $nonreported + 1;
+            $data['rtk_button_text'] = 'Submit New RTK Lab Commodity Report';
+            
+        }
+
+        $data['cd4_report_count'] = lab_commodity_orders::get_recent_cd4_lab_orders($mfl);
+
+        if ($data['cd4_report_count'] > 0) {
+            // $reported = $reported + 1;              
+            
+            $data['cd4_button_text'] = 'CD4 Report Submitted';
+        } else {
+            // $nonreported = $nonreported + 1;
+            $data['cd4_button_text'] = 'Submit New CD4 Lab Commodity Report';
+            
+        }
+    $data['districts'] = districts::getDistrict($Countyid);
+    $data['county'] = $this->session->userdata('county_name');
     $data['mfl'] = $mfl;
-    $data['countyid'] = $Countyid;
+   
     $data['title'] = $facility[0]['facility_name'] . '-' . $mfl;
     $data['facility_name'] = $facility[0]['facility_name'];
     $data['banner_text'] = 'Facility Profile: ' . $facility[0]['facility_name'] . '-' . $mfl;
     $data['content_view'] = "cd4/facility_profile_view";
 
     $this->load->view("rtk/template", $data);
+}
 }
 
 private function _monthly_facility_reports($mfl, $monthyear = null) {
@@ -641,7 +944,7 @@ private function _monthly_facility_reports($mfl, $monthyear = null) {
         AND  '$lastdate'";
     }
 
-    $sql = "select distinct cd4_fcdrr.order_date,cd4_fcdrr.compiled_by,cd4_fcdrr.id,
+    $sql = "select cd4_fcdrr.order_date,cd4_fcdrr.compiled_by,cd4_fcdrr.id as order_id,
     facilities.facility_name,districts.district,districts.id as district_id, counties.county,counties.id as county_id
     FROM cd4_fcdrr,facilities,districts,counties
     WHERE cd4_fcdrr.facility_code = facilities.facility_code
@@ -729,49 +1032,49 @@ public function cd4_reporting_table(){
 
 
 }
-public function cd4_facilities_not_reported($county = NULL, $year = NULL, $month = NULL) {
+// public function cd4_facilities_not_reported($county = NULL, $year = NULL, $month = NULL) {
 
-    $date = "$year-$month-1";
+//     $date = "$year-$month-1";
 
-    $sql =  "SELECT     `f`.*, 
-                        `cf`.`beg_date`,
-                        MONTHNAME(`cf`.`beg_date`) as 'report_for',
-                        `c`.`county` as county_name,
-                        `d`.`district` as district_name,
-                        u.fname,
-                        u.lname,
-                        u.telephone,
-                        u.email
+//     $sql =  "SELECT     `f`.*, 
+//                         `cf`.`beg_date`,
+//                         MONTHNAME(`cf`.`beg_date`) as 'report_for',
+//                         `c`.`county` as county_name,
+//                         `d`.`district` as district_name,
+//                         u.fname,
+//                         u.lname,
+//                         u.telephone,
+//                         u.email
 
-                FROM `facilities` `f`  
-                    LEFT JOIN `cd4_fcdrr` `cf` 
-                        ON  `cf`.`facility_code` = `f`.`facility_code`
-                        AND `cf`.`beg_date` = '$date'
-                    LEFT JOIN `user` u 
-                        ON u.facility = `f`.`facility_code`
-                        AND u.usertype_id = 5
-                    LEFT JOIN districts d
-                        on d.id = f.district
-                        LEFT JOIN counties c
-                        ON c.id=  d.county
+//                 FROM `facilities` `f`  
+//                     LEFT JOIN `cd4_fcdrr` `cf` 
+//                         ON  `cf`.`facility_code` = `f`.`facility_code`
+//                         AND `cf`.`beg_date` = '$date'
+//                     LEFT JOIN `user` u 
+//                         ON u.facility = `f`.`facility_code`
+//                         AND u.usertype_id = 5
+//                     LEFT JOIN districts d
+//                         on d.id = f.district
+//                         LEFT JOIN counties c
+//                         ON c.id=  d.county
 
-                    RIGHT JOIN `cd4_facility_device` `cfd`
-                    ON cfd.facility_code = f.facility_code
-                WHERE 
-                 c.id = '$county'
+//                     RIGHT JOIN `cd4_facility_device` `cfd`
+//                     ON cfd.facility_code = f.facility_code
+//                 WHERE 
+//                  c.id = '$county'
 
 
-                GROUP BY f.id
-                ";
-    // echo $sql;die;
+//                 GROUP BY f.id
+//                 ";
+//     // echo $sql;die;
 
-    $res = $this->db->query($sql)->result_array();
+//     $res = $this->db->query($sql)->result_array();
 
-    // print_r($res);
+//     // print_r($res);
 
-    return $res;
+//     return $res;
 
-}
+// }
 
 public function fcdrrs($msg = NULL) {
     $district = $this->session->userdata('district_id');        
@@ -779,11 +1082,7 @@ public function fcdrrs($msg = NULL) {
     $d_name = $district_name[0]['district'];
     $countyid = $this->session->userdata('county_id');
 
-    $data['countyid'] = $countyid;
-
-    $data['title'] = "Orders";
-    $data['content_view'] = "cd4/fcdrr_listing_v";
-    $data['banner_text'] = $d_name . "Orders";
+    
         //        $data['fcdrr_order_list'] = Lab_Commodity_Orders::get_district_orders($district);
     ini_set('memory_limit', '-1');
 
@@ -805,6 +1104,11 @@ $data['lab_order_list'] = $query->result_array();
 $data['all_orders'] = Lab_Commodity_Orders::get_district_orders($district);
 $myobj = Doctrine::getTable('districts')->find($district);
         //$data['district_incharge']=array($id=>$myobj->district);
+$data['countyid'] = $countyid;
+
+$data['title'] = "Orders";
+$data['content_view'] = "cd4/scmlt/fcdrr_listing_v";
+$data['banner_text'] = $d_name . "Orders";
 $data['myClass'] = $this;
 $data['d_name'] = $d_name;
 $data['msg'] = $msg;
@@ -815,19 +1119,15 @@ $this->load->view("rtk/template", $data);
 
     //VIew FCDRR Report
 public function fcdrr_details($order_id, $msg = NULL) {
-    $delivery = $this->uri->segment(3);
-    $district = $this->session->userdata('district_id');
-    $data['title'] = "Lab Commodity Order Details";       
-    $data['order_id'] = $order_id;
-    $data['content_view'] = "cd4/fcdrr_report";
-    $data['banner_text'] = "Lab Commodity Order Details";
+    // $delivery = $this->uri->segment(3);
+    // $district = $this->session->userdata('district_id');
+    
 
-    $data['lab_categories'] = Cd4_Lab_Commodity_Categories::get_all();
-    $data['detail_list'] = Cd4_Fcdrr_Commodities::get_order($order_id);
+    // $data['lab_categories'] = Cd4_Lab_Commodity_Categories::get_all();
+    // $data['detail_list'] = Cd4_Fcdrr_Commodities::get_order($order_id);
 
-    // print_r($data['detail_list']);die;
 
-    $result = $this->db->query('SELECT *,cd4_lab_commodity_categories.name AS category_name
+    $result = $this->db->query('SELECT *,cd4_lab_commodity_categories.name  AS category_name, counties.county as county_name, districts.district as district_name
         FROM cd4_fcdrr_commodities, counties, facilities, districts, cd4_fcdrr, cd4_lab_commodity_categories, cd4_commodities
         WHERE counties.id = districts.county
         AND facilities.facility_code = cd4_fcdrr.facility_code
@@ -836,7 +1136,13 @@ public function fcdrr_details($order_id, $msg = NULL) {
         AND facilities.district = districts.id
         AND cd4_fcdrr_commodities.fcdrr_id = cd4_fcdrr.id
         AND cd4_fcdrr.id = ' . $order_id . '');
-    $data['all_details'] = $result->result_array();
+     $data['all_details'] = $result->result_array();
+    // print_r($data['all_details']);die;
+
+    $data['title'] = "Lab Commodity Order Details";       
+    $data['order_id'] = $order_id;
+    $data['content_view'] = "cd4/fcdrr_report";
+    $data['banner_text'] = "Lab Commodity Order Details for";
     $this->load->view("rtk/template", $data);
 }
 

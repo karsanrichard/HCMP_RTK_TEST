@@ -89,43 +89,23 @@ table{
     font-size: 11px;
 }
 </style>
-<div style="height: 68px;
-display: block;
-margin-right: 35px;
-background: #fff;
-padding: 8px;
-width: 100%;
-border-left: solid 1px #ccc;
-border-right: solid 1px #ccc;
-border-top: solid 1px #ccc;
-border-bottom: solid 1px #ccc;">
-<div style="width:150px;color:#0000FF;float: left;margin-left:100px;"><!-- <b>DOWNLOAD REPORT</b>
-    <div  class ="converts"  style="width:40px; float: left;">
+
+<div style="width:100%;color:#0000FF;float: left;margin-left:100px;">
+
+    <!-- <div  class ="converts"  style="width:40px; float: left;">
         <a href="<?php echo site_url('rtk_management/get_lab_report/' . $this->uri->segment(3) . '/excel'); ?>">
             <img src="<?php echo site_url('assets/img/excel-icon.png'); ?>" style="margin-left:5px;width:100%;height:35px;" />
         </a>
-    </div>
-
-    <div  class ="converts" style="width:40px; float: left;">
-        <a href="<?php echo site_url('rtk_management/get_lab_report/' . $this->uri->segment(3) . '/pdf'); ?>"> 
-            <img src="<?php echo site_url('assets/img/pdf-icon.png'); ?>" style="margin-left:25px;width:100%;height:35px;" /></a>
-    </div>
- -->
-        </div>
-    </div>
-
-    <?php $attributes = array('name' => 'myform', 'id' => 'myform');
-    echo form_open('rtk_management/edit_lab_order_details/' . $orderid, $attributes);
-    ?>
-
+    </div -->
+<h1 style="color:green" align="center"><b>CD4 Commodity Orders for <?php echo $all_details[0]['facility_name']?></b></h1>
+   
+</div>
+   
     <div id="dialog-form" title="Lab Commodities Order Report">
-        <form>
-            <?php
-//        $d = new DateTime('2010-01-08');
-  //      $d->modify($order['order_date']);
-    //    $english_date = $d->format('D dS M Y');
-            ?>
-            <table id="user_order" width="90%" class="data-table">
+        
+
+           
+            <table id="user_order" width="90%" class="data-table" style="font-size: 14px;">
 
 
             <input  type="hidden" name="facility_name" colspan = "3" style = "color:#000; border:none" value="<?php echo $facility_name ?>"></td>
@@ -134,89 +114,79 @@ border-bottom: solid 1px #ccc;">
             <input type="hidden" name="county" colspan = "3" style = "color:#000; border:none" value="<?php echo $county ?>"></td>
 
             <tr>
-                <td colspan = "1" rowspan = "8" style="background: #fff;"></td>
-                <td style = "text-align:left"><b>Name of Facility:</b></td>
-                <td colspan = "2"><?php echo $facility_name ?></td>
+                
+                <td style = "text-align:right"><b>Name of Facility:</b></td>
+                <td colspan = "2"><?php echo $all_details[0]['facility_name'] ?></td>
                 <td rowspan = "8" style="background: #fff;"></td>
                 <td colspan = "4"><b></b></td>
-                <td rowspan = "8"></td>
-                <td colspan = "2" style="text-align:center"><b></b></td>
-                <td colspan = "2" rowspan = "8" style="background: #fff;"></td>
+                <td rowspan = "8" style="background: #fff;"></td>
+                <td colspan = "6" style="text-align:center"><b></b></td>
             </tr>
             <tr >
-                <td colspan = "2" style = "text-align:left"><b>MFL Code:</b></td>
-                <td><?php echo $facility_code ?></td>
+                <td colspan = "2" style = "text-align:right"><b>MFL Code:</b></td>
+                <td><?php echo $all_details[0]['facility_code'] ?></td>
                 <td colspan = "2" style="text-align:center"><b>CD4 Machine </b></td>
-                <td colspan = "2" style="text-align:center"><b>No. of Tests Done <br/>[Adults  | Pead] </b></td>
-                <td colspan = "2"><b>Tests</b></td>                         
+                <td colspan = "2" style="text-align:center"><b>No. of Tests Done <br/>[Adults &nbsp; &nbsp; |&nbsp; &nbsp; &nbsp; &nbsp; Pead] </b></td>
+                <td colspan = "6"><b>Tests</b></td>                         
             </tr>
             <tr>
-                <td colspan = "2" style = "text-align:left"><b>District:</b></td>
-                <td><?php echo $district ?></td>
-                <td colspan = "2"><b>Facs Calibur</b></td>
+                <td colspan = "2" style = "text-align:right"><b>District:</b></td>
+                <td><?php echo $all_details[0]['district_name'] ?></td>
+                <td colspan = "2" align="right"><b>Facs Calibur</b></td>
                 <td><?php echo $detail['calibur_pead']; ?></td>
                 <td><?php echo $detail['calibur_adults']; ?></td>
-                <td rowspan = "1">Total Tests Done</td>   
-                <td><?php echo $detail['total_tests']; ?></td>                    
+                <td colspan = "3">Total Tests Done</td>   
+                <td colspan="4"><?php echo $detail['total_tests']; ?></td>                    
 
             </tr>
             <tr>
-                <td colspan = "2" style = "text-align:left"><b>County:</b></td>                     
-                <td><?php echo $county ?></td>
-                <td colspan = "2"><b>Facs Count</b></td>
+                <td colspan = "2" style = "text-align:right"><b>County:</b></td>                     
+                <td><?php echo $all_details[0]['county_name'] ?></td>
+                <td colspan = "2" align="right"><b>Facs Count</b></td>
                 <td><?php echo $detail['count_adults']; ?></td>
                 <td><?php echo $detail['count_pead']; ?></td> 
-                <td rowspan = "1">Adults Below 500 CD4 count</td>   
-                <td><?php echo $detail['adults_bel_cl']; ?></td>         
+                <td colspan = "3">Adults Below 500 CD4 count</td>   
+                <td colspan="4"><?php echo $detail['adults_bel_cl']; ?></td>         
 
             </tr>
             <tr>
                 <td colspan = "2" style = "text-align:right"><b>Beginning:</b></td> 
                 <td><?php echo $beg_date ?></td>
-                <td colspan = "2"><b>Cyflow Partec</b></td>
+                <td colspan = "2" align="right"><b>Cyflow Partec</b></td>
                 <td><?php echo $detail['cyflow_pead']; ?></td>
                 <td><?php echo $detail['cyflow_adults']; ?></td>
-                <td rowspan = "1">Peads Below 500 CD4 count</td>   
-                <td><?php echo $detail['pead_bel_cl']; ?></td>  
+                <td colspan = "3">Peads Below 500 CD4 count</td>   
+                <td colspan="4"><?php echo $detail['pead_bel_cl']; ?></td>  
             </tr>
             <tr>
                 <td colspan = "2" style = "text-align:right"><b>Ending:</b></td>
                 <td><?php echo $end_date ?></td>
-                <td colspan = "2"><b>Alere PIMA</b></td>
+                <td colspan = "2" align="right"><b>Alere PIMA</b></td>
                 <td colspan = "2"><?php echo $detail['pima_tests']; ?> </td>  
-                <td colspan = "2" style="text-align:center"><b></b></td>                     
+                <td colspan = "8" style="text-align:center"><b></b></td>                     
             </tr>
             <tr >
                 <td colspan = "3"></td>
-                <td colspan = "2"><b>Facs Presto</b></td>
+                <td colspan = "2" align="right"><b>Facs Presto</b></td>
                 <td colspan = "2"><?php echo $detail['presto_tests']; ?> </td>  
-                <td colspan = "2" style="text-align:center"><b></b></td>
+                <td colspan = "8" style="text-align:center"><b></b></td>
                 
             </tr>
-
-
-
-
-
-
-
-
-
-                <tr></tr>
-                <tr></tr>
-                <tr></tr>
-                <tr > 				<th rowspan = "2" colspan = "2" style = "text-align:center;font-size:12"><b>Category Name</b></th>
-                    <th rowspan = "2" colspan = "2" style = "text-align:center;font-size:12"><b>Commodity Name</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Beginning Balance</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Quantity Received</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Quantity Used</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Number of Tests Done</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Losses</b></th>
-                    <th colspan = "2" style = "text-align:center;font-size:12"><b>Adjustments [indicate if (+) or (-)]</b></th>	
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>End of Month Physical Count</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Quantity Expiring in <u>less than</u> 6 Months</b></th>
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Days out of Stock</b></th>	
-                    <th rowspan = "2" style = "text-align:center;font-size:12"><b>Quantity Requested for&nbsp;Re-Supply</b></th>
+                <tr style="height:15px"><td colspan="16"></td></tr>
+                
+                <tr> 				
+                    <th rowspan = "2" colspan = "2" style = "text-align:center;font-size:14"><b>Category Name</b></th>
+                    <th rowspan = "2" colspan = "2" style = "text-align:center;font-size:14"><b>Commodity Name</b></th>
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Beginning Balance</b></th>
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Quantity Received</b></th>
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Quantity Used</b></th>
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Number of Tests Done</b></th>
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Losses</b></th>
+                    <th colspan = "2" style = "text-align:center;font-size:14"><b>Adjustments [indicate if (+) or (-)]</b></th>	
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>End of Month Physical Count</b></th>
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Quantity Expiring in <u>less than</u> 6 Months</b></th>
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Days out of Stock</b></th>	
+                    <th rowspan = "2" style = "text-align:center;font-size:14"><b>Quantity Requested for&nbsp;Re-Supply</b></th>
                 </tr>
                 <tr>
                     <th style = "text-align:center">Positive</th>

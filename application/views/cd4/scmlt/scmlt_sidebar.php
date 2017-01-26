@@ -11,16 +11,16 @@
         $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
     }
     
-    // if(count($res)>0){
+    if(count($res)>0){
         $style = 'display:block';
-    // }else{
-    //     $style = 'display:none';
-    // }
+    }else{
+        $style = 'display:none';
+    }
     
 ?>
 
 
-<div class="col-md-2" style="padding-right: 20px;margin-left:-5px; top: 30px;">
+<div class="col-md-2" style="padding-right: 20px;margin-left:-5px; top: 100px; position: fixed;">
     <span style="<?php echo $style ?>;font-size: 16px;" class="label label-info">Switch Sub-Counties</span>
     <br />
     <br />
@@ -48,7 +48,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
     <ul class="main_list" style="font-size:100%;border:ridge 1px #ccc">
-        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url('Home')?>">>> Home</a></li>        
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url('cd4_management/scmlt_home')?>">>> Home</a></li>        
         <!-- <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'cd4_management/scmlt_summary'?>">>> Summary</a></li> -->
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'cd4_management/fcdrrs'?>">>> Reports</a></li>       
     </ul>
@@ -75,11 +75,11 @@
     }
     .side_links:hover {
     background-color: #EAF5E6  ;
-    color: #184906;
+    color: #980b25 ;
     }
 
     .side_links_a{
-        color: #fff;
+        color:  #032e05 ;
     }
     .select_switch{
         max-width: 220px;

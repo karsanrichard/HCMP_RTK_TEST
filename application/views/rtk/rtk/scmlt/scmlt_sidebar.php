@@ -11,16 +11,17 @@
         $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
     }
     
-    // if(count($res)>0){
+    if(count($res)>0){
         $style = 'display:block';
-    // }else{
-    //     $style = 'display:none';
-    // }
+    }else{
+        $style = 'display:none';
+    }
     
 ?>
 
+<div class="col-md-2" style="padding-right: 20px;margin-left:-5px; top: 100px; position: fixed; width:18%">
 
-<div class="col-md-2" style="padding-right: 20px;margin-left:-5px; top: 30px;">
+
     <span style="<?php echo $style ?>;font-size: 16px;" class="label label-info">Switch Sub-Counties</span>
     <br />
     <br />
@@ -30,8 +31,8 @@
         <?php echo $option; ?>
     </select>
     
-    
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <br/>
+
     <select id="switch_month" class="form-control select_switch">       
         <?php 
 
@@ -45,17 +46,29 @@
         <option value="<?php echo $month_value ?>"><?php echo $month_text ?></option>;
         <?php } ?>
     </select>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+    <br/>
 
     <ul class="main_list" style="font-size:100%;border:ridge 1px #ccc">
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url('Home')?>">>> Home</a></li>        
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_summary'?>">>> Summary</a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_orders'?>">>> Reports</a></li>       
     </ul>
+
+    <?php if ($this->session->userdata('switched_from') == 'rtk_manager') { ?>
+    <br/>
+    <div class = "switch-bar">
+        <a class="btn btn-primary" id="switch_idenity" style=" margin-left: 2%; margin-bottom: 5%; width:80%; color:#032e05;" href="<?php echo base_url(); ?>rtk_management/switch_district/0/rtk_manager/0/home_controller/0/" >Switch back to RTK Manager</a>
+    </div><?php } ?>
+
+    <br/>
+
+    <div class = "switch-bar"> 
+        <a href="<?php echo base_url(); ?>cd4_management/scmlt_home" class="btn btn-primary" style="margin-left: 2%; margin-bottom: 5%; width:65%; color:#032e05;">CD4 Reports</a>
+    </div>
 </div>
 
-<style type="text/css">
-    
+<style type="text/css">    
 
     .main_list {
         list-style-type: none;
@@ -74,12 +87,13 @@
         font-size: 16px
     }
     .side_links:hover {
-    background-color: #EAF5E6  ;
-    color: #184906;
+        background-color: #EAF5E6  ;
+        color: #184906;
     }
 
     .side_links_a{
-        color: #fff;
+        color:  #032e05 ;
+        font-size: 90%;
     }
     .select_switch{
         max-width: 220px;
@@ -88,7 +102,17 @@
         font-size: 14px;
     }
 
+    .switch-bar{      
+       background: #36BB24; 
+       width: 100%;
+       padding: 7px 1px 0px 13px;
+       border-bottom: 1px solid #ccc;
+       border-bottom: 1px solid #ccc;
+       border-radius: 4px; 
+    }    
+
 </style>
+
 <script type="text/javascript">
 $(document).ready(function() {
     $('#switch_district').change(function() {

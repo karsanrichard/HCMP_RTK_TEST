@@ -114,10 +114,278 @@ WHERE
         $data['banner_text'] = 'Allocation Reports';
         $data['active_zone'] = "$zone";
         $data['content_view'] = 'rtk/rtk/clc/county_reports';
-        $data['title'] = 'Download Allocation Reports ';       
+        $data['title'] = 'County Reports ';       
         $this->load->view("rtk/template", $data);
     }
+function cd4_national_reports(){
+    $user_type = $this->session->userdata('user_type_id'); 
+    
+    require('cd4_management.php');
+    $cd4 = new cd4_management();
 
+    $fullmonth = date('mY', time());      
+    $month = substr($fullmonth, 0,2);
+    $year = substr($fullmonth, -4);
+
+    $reporting_details = $cd4->cd4_facilities_not_reported();
+    $data['non_reported_list'] = $reporting_details['new_unreported'];
+    $data['reported_list'] = $reporting_details['reported'];
+    // echo "<pre> "; print_r($data['trend_details']);
+    // die;
+
+    $data['banner_text'] = 'CD4 National Summary';
+    $data['content_view'] = 'rtk/rtk/admin/cd4_national_reports';
+    $data['title'] = 'National Reports';       
+    $this->load->view("rtk/template", $data);
+  }
+
+ 
+  function get_cd4_stock_card2($commodity, $fullmonth =null, $county=null){
+    if (!isset($fullmonth)) {
+       $fullmonth = date('mY');
+    }
+
+    if (!isset($commodity)) {
+       $commodity = 1;
+    }
+
+    $conditions ='';
+     if (isset($county)) {
+       $conditions = ' and counties.id = '.$county;
+    }
+
+    $month = substr($fullmonth, 0,2);
+    $year = substr($fullmonth, -4);
+
+    $firstdate = $year . '-' . $month . '-01';
+    $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    $lastdate = $year . '-' . $month . '-' . $num_days;
+
+    $sql = "SELECT 
+            EXTRACT(YEAR_MONTH FROM cd4_fcdrr_commodities.created_at) AS current_month,
+            cd4_fcdrr_commodities.commodity_id,
+            cd4_commodities.commodity_name,
+            cd4_lab_commodity_categories.name as type,
+            SUM(cd4_fcdrr_commodities.q_requested) AS q_requested,
+            SUM(cd4_fcdrr_commodities.beginning_bal) AS beginning_bal,
+            SUM(cd4_fcdrr_commodities.q_received) AS q_received,
+            SUM(cd4_fcdrr_commodities.q_used) AS q_used,
+            SUM(cd4_fcdrr_commodities.no_of_tests_done) AS no_of_tests_done,
+            SUM(cd4_fcdrr_commodities.positive_adj) AS positive_adj,
+            SUM(cd4_fcdrr_commodities.negative_adj) AS negative_adj,
+            SUM(cd4_fcdrr_commodities.losses) AS losses,
+            SUM(cd4_fcdrr_commodities.closing_stock) AS closing_stock
+        FROM
+            districts,
+            counties,
+            facilities,
+            cd4_fcdrr_commodities,
+            cd4_commodities, cd4_lab_commodity_categories
+        WHERE
+            facilities.district = districts.id
+                AND districts.county = counties.id
+                AND cd4_fcdrr_commodities.facility_code = facilities.facility_code
+                AND cd4_fcdrr_commodities.commodity_id = cd4_commodities.id
+                AND cd4_commodities.category = cd4_lab_commodity_categories.id
+                and cd4_lab_commodity_categories.id = '$commodity'
+                $conditions
+                and cd4_fcdrr_commodities.created_at between '$firstdate' AND '$lastdate'
+                group by cd4_commodities.id";
+    // echo $sql;
+    $result = $this->db->query($sql)->result_array();
+
+    foreach ($result as $key => $value) {
+       $commodity_name = $value['commodity_name'];
+       $beginning_bal = $value['beginning_bal'];
+       $q_received = $value['q_received'];
+       $q_used = $value['q_used'];
+       $no_of_tests_done = $value['no_of_tests_done'];
+       $positive_adj = $value['positive_adj'];
+       $negative_adj = $value['negative_adj'];
+       $losses = $value['losses'];
+       $q_requested = $value['q_requested'];
+       $closing_stock = $value['closing_stock'];
+
+       $output[] = array($commodity_name, $beginning_bal, $q_received, $q_used, $no_of_tests_done, $positive_adj, $negative_adj,$losses, $closing_stock,$q_requested);
+    }
+
+    echo json_encode($output);
+    // return $result;
+
+  }
+
+  
+function get_cd4_reporting_summary($fullmonth, $county = null){
+     require('cd4_management.php');
+    $cd4 = new cd4_management();
+
+    if (!isset($fullmonth)) {     
+    
+        $fullmonth = date('mY', time());              
+    }
+
+    $month = substr($fullmonth, 0,2);
+    $year = substr($fullmonth, -4);
+
+    $reporting_summary = $cd4->cd4_reports_summary($year,$month);
+
+    echo json_encode($reporting_summary);
+}
+function get_cd4_reporting_facility_details($fullmonth, $county=null){
+    require('cd4_management.php');
+    $cd4 = new cd4_management();
+
+    if (!isset($fullmonth)) {     
+    
+        $fullmonth = date('mY', time());              
+    }
+
+    $month = substr($fullmonth, 0,2);
+    $year = substr($fullmonth, -4);
+
+    $reporting_details = $cd4->cd4_facilities_not_reported($month, $year);
+    $reporting_list = $reporting_details['reported'];
+    $nonreporting_list = $reporting_details['new_unreported'];
+
+    foreach ($reporting_list as $key => $value) {     
+
+        $r_county = $value['county'];
+        $r_district = $value['district'];
+        $r_facilty_code = $value['facility_code'];
+        $r_facilty_name = $value['facility_name'];
+        $link = $value['order_id'];
+        // $link = '<a href="'.base_url().'cd4_management/fcdrr_details/'.$value['order_id'].'"> View FCDRR</a>';
+
+        $reported [] = array($r_county, $r_district, $r_facilty_code,$r_facilty_name, $link);
+
+        // echo $link;
+    }
+
+    foreach ($nonreporting_list as $key => $value) {
+         
+
+        $nr_county = $value['county'];
+        $nr_district = $value['district'];
+        $nr_facilty_code = $value['facility_code'];
+        $nr_facilty_name = $value['facility_name'];
+
+        $nonreported [] = array($nr_county, $nr_district, $nr_facilty_code,$nr_facilty_name);
+    }
+
+    $array_all = array('nonreported' => $nonreported, 'reported'=>$reported);
+    echo json_encode($array_all);
+}
+  function get_cd4_reporting_percentage2($county = null){
+
+    $sql = "select * from cd4_county_percentage";
+    $result = $this->db->query($sql)->result_array();
+
+    $months_texts = array();
+    $percentages = array();
+    $cd4_trend_details = array();
+
+    $conditions = '';
+
+    if (isset($county)) {
+        $conditions= ' and county_id = '.$county;
+    }
+
+    for ($i=11; $i >=0; $i--) { 
+            $month =  date("mY", strtotime( date( 'Y-m-01' )." -$i months"));
+            $j = $i+1;            
+            $month_text =  date("M Y", strtotime( date( 'Y-m-01' )." -$j months")); 
+            array_push($months_texts,$month_text);
+            $sql = "select sum(cd4_reported) as reported, sum(cd4_facilities) as total, reported_month from cd4_county_percentage 
+                where reported_month ='$month' $conditions";
+
+            $result = $this->db->query($sql)->result_array();            
+            
+            foreach ($result as $key => $value) {
+                $reported = $value['reported'];
+                $total = $value['total'];
+                $percentage = round(($reported/$total)*100);
+                if($percentage>100){
+                    $percentage = 100;
+                }
+                array_push($percentages, $percentage);
+
+            }
+        } 
+
+               
+    // $months_texts = str_replace('"',"'",json_encode($months_texts));        
+    // $percentages= str_replace('"',"'",json_encode($percentages)); 
+
+    $cd4_trend_details = array('months_texts'=>$months_texts,'percentages'=>$percentages);
+
+    echo json_encode($cd4_trend_details);
+    // echo $months_texts; 
+    // return $cd4_trend_details;
+  }
+  
+function national_reports(){
+    $user_type = $this->session->userdata('user_type_id'); 
+
+    require('rtk_management.php');
+    $rtk = new rtk_management();
+
+    $commodity_id = 4; // used in graph data
+        
+    $fullmonth = date('mY', time());
+      
+   //          // $month= '042016';
+    $month = substr($fullmonth, 0,2);
+    $year = substr($fullmonth, -4);
+    $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    $first_date = $year . '-' . $month . '-01';    
+    $last_date = $year . '-' . $month .'-'. $num_days;      
+
+    // $countysd = 1;
+     
+        // $data['county_summary'] = $rtk->_requested_vs_allocated($year, $month, $countysd); 
+        // $data['graphdata'] = $rtk->partner_commodity_percentages($user_id,$user_type, $commodity_id);
+        // echo "yes";
+        // print_r($data['county_summary']);die;
+        
+
+        $months_texts = array();
+        $percentages = array();
+
+        for ($i=11; $i >=0; $i--) { 
+            $month =  date("mY", strtotime( date( 'Y-m-01' )." -$i months"));
+            $j = $i+1;            
+            $month_text =  date("M Y", strtotime( date( 'Y-m-01' )." -$j months")); 
+            array_push($months_texts,$month_text);
+            $sql = "select sum(reported) as reported, sum(facilities) as total, month from rtk_county_percentage 
+                where month ='$month'";
+
+            $res_trend = $this->db->query($sql)->result_array();            
+            foreach ($res_trend as $key => $value) {
+                $reported = $value['reported'];
+                $total = $value['total'];
+                $percentage = round(($reported/$total)*100);
+                if($percentage>100){
+                    $percentage = 100;
+                }
+                array_push($percentages, $percentage);
+                $trend_details[$month] = array('reported'=>$reported,'total'=>$total,'percentage'=>$percentage);
+            }
+        }   
+
+
+        $data['trend_details'] = json_encode($trend_details);        
+        $data['months_texts'] = str_replace('"',"'",json_encode($months_texts));        
+        $data['percentages'] = str_replace('"',"'",json_encode($percentages)); 
+        $data['first_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -12 months")); 
+        $data['last_month'] = date("M Y", strtotime( date( 'Y-m-01' )." -1 months")); 
+       // print_r($data['percentages']);die;
+        
+        $data['banner_text'] = 'RTK National Summary';
+        $data['content_view'] = 'rtk/rtk/admin/national_reports';
+        $data['title'] = 'National Reports';       
+        $this->load->view("rtk/template", $data);
+    
+    }
     function get_county_reporting_trend($county_id, $district_id){
       $month = $this->session->userdata('Month');
 
@@ -219,7 +487,38 @@ WHERE
         $data['title'] = 'Download Allocation Reports ';       
         $this->load->view("rtk/template", $data);
     }
+function get_counties(){
+        $sql = 'select counties.id as county_id, counties.county from counties order by county asc';
+        $counties = $this->db->query($sql)->result_array();
 
+        $option_county .= '<option value = "">--Select County--</option>';
+        foreach ($counties as $key => $value) {
+            $option_county .= '<option value = "' . $value['county_id'] . '">' . $value['county'] . '</option>';
+        }    
+        $output = array('counties_list'=>$option_county);
+        echo json_encode($output);
+
+    }
+    function get_cd4_commodities(){
+        $sql = 'select * from cd4_lab_commodity_categories';
+        $comm = $this->db->query($sql)->result_array();
+        // $option_comm .= '<option value = "0">--Select Commodity--</option>';
+       foreach ($comm as $key => $value) {
+            $option_comm .= '<option value = "' . $value['id'] . '">' . $value['name'] . '</option>';
+        } 
+        $output = array('cd4_commodities'=>$option_comm);
+        echo json_encode($output);
+    }
+    function get_districts(){
+        $sql2 = 'select districts.id as district_id, districts.district from districts order by district asc';
+        $districts = $this->db->query($sql2)->result_array();
+        $option_district .= '<option value = "0">--Select Sub-County--</option>';
+       foreach ($districts as $key => $value) {
+            $option_district .= '<option value = "' . $value['district_id'] . '">' . $value['district'] . '</option>';
+        } 
+        $output = array('district_list'=>$option_district);
+        echo json_encode($output);
+    }
     function get_counties_districts($county){
      
         // $county = $this->session->userdata('county_id');   
@@ -1105,7 +1404,7 @@ WHERE
                 $objWriter->save('php://output');
 
     }
-    function get_fcdrr_details($type, $month, $county_id, $district_id, $commodity){
+   function get_fcdrr_details($type, $month, $county_id, $district_id, $commodity){
 
         $district_conditions = '';
         if($district_id > 0){
@@ -1115,6 +1414,11 @@ WHERE
         $commodity_conditions = '';
         if($commodity >0){
             $commodity_conditions = ' AND lab_commodity_details.commodity_id = '.$commodity;
+        }
+
+        $conditions='';
+        if ($county_id>0) {
+           $conditions = 'AND counties.id = '.$county_id;
         }
 
         $year = substr($month, -4);
@@ -1142,11 +1446,10 @@ WHERE
                         AND facilities.facility_code = lab_commodity_details.facility_code
                         AND facilities.district = districts.id
                         AND districts.county = counties.id
-                        AND counties.id = '$county_id' $district_conditions
-                ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id";
+                       $conditions $district_conditions
+                ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id ";
         $result = $this->db->query($sql)->result_array();
        // echo "$sql";die;
-       
         //convert the date into text        
 
         foreach ($result as $key => $details) {
@@ -1157,21 +1460,25 @@ WHERE
         $facility_name = $details['facility_name'];
         $commodity_name = $details['commodity_name'];
         $beginning_bal = $details['beginning_bal'];
+        $physicalbeginning_bal = $details['physical_beginning_bal'];
         $q_received = $details['q_received'];
         $q_used = $details['q_used'];
         $no_of_tests_done = $details['no_of_tests_done'];
+        $losses = $details['losses'];
         $positive_adj = $details['positive_adj'];
         $negative_adj = $details['negative_adj'];
         $closing_stock = $details['closing_stock'];
+        $physicalclosing_stock = $details['physical_closing_stock'];
         $days_out_of_stock = $details['days_out_of_stock'];
         $q_expiring = $details['q_expiring'];
+        $amc = $details['amc'];
        // $no_of_tests_done = 0;        
         
         //based on the results, put them in an array to be used in the excel file.
 
-        $fcdrr_details[] = array($county,$district,$facility_code,$facility_name,$commodity_name,$beginning_bal,$q_received,$q_used,$no_of_tests_done,$positive_adj,$negative_adj, $closing_stock,$days_out_of_stock, $q_expiring);
+         $fcdrr_details[] = array($county,$district,$facility_code,$facility_name,$commodity_name,$beginning_bal,$q_received,$q_used,$no_of_tests_done,$losses,$positive_adj,$negative_adj, $closing_stock,$days_out_of_stock,$q_expiring,$amc);
 }
-        // echo"<pre>";print_r($alocation_details);
+        // echo"<pre>";print_r($fcdrr_details); die();
     
          $this->excel->setActiveSheetIndex(0);
         //name the worksheet
@@ -1183,20 +1490,22 @@ WHERE
         $this->excel->getActiveSheet()->setCellValue('C4', 'MFL Code');
         $this->excel->getActiveSheet()->setCellValue('D4', 'Facility Name');
         $this->excel->getActiveSheet()->setCellValue('E4', 'Commodity Name');
-        $this->excel->getActiveSheet()->setCellValue('F4', 'Begining Balance');
+        $this->excel->getActiveSheet()->setCellValue('F4', 'System Begining Balance');
         $this->excel->getActiveSheet()->setCellValue('G4', 'Quantity Received');
         $this->excel->getActiveSheet()->setCellValue('H4', 'Quantity Used');
         $this->excel->getActiveSheet()->setCellValue('I4', 'Tests Done');
-        $this->excel->getActiveSheet()->setCellValue('J4', 'Positive Adjustments');
-        $this->excel->getActiveSheet()->setCellValue('K4', 'Negative Adjustments');
-        $this->excel->getActiveSheet()->setCellValue('L4', 'Ending Balance');
-        $this->excel->getActiveSheet()->setCellValue('M4', 'Days out of Stock');
-        $this->excel->getActiveSheet()->setCellValue('N4', 'Quantity Expiring');
+        $this->excel->getActiveSheet()->setCellValue('J4', 'Losses');
+        $this->excel->getActiveSheet()->setCellValue('K4', 'Positive Adjustments');
+        $this->excel->getActiveSheet()->setCellValue('L4', 'Negative Adjustments');
+        $this->excel->getActiveSheet()->setCellValue('N4', 'Computed Ending Balance');
+        $this->excel->getActiveSheet()->setCellValue('O4', 'Days out of Stock');
+        $this->excel->getActiveSheet()->setCellValue('P4', 'Quantity Expiring');
+        $this->excel->getActiveSheet()->setCellValue('Q4', 'Average Monthly Consumption');
 
         
 
         //merge cell A1 until C1
-        $this->excel->getActiveSheet()->mergeCells('A1:N1');
+        $this->excel->getActiveSheet()->mergeCells('A1:Q1');
         //set aligment to center for that merged cell (A1 to C1)
         $this->excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         $this->excel->getActiveSheet()->getStyle('E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -1204,12 +1513,12 @@ WHERE
         $this->excel->getActiveSheet()->getStyle('G4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         $this->excel->getActiveSheet()->getStyle('H4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         //make the font become bold
-        $this->excel->getActiveSheet()->getStyle('A4:N4')->getFont()->setBold(true);
+        $this->excel->getActiveSheet()->getStyle('A4:Q4')->getFont()->setBold(true);
         $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
         $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(16);
         $this->excel->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('#333');
 
-       for($col = ord('A'); $col <= ord('M'); $col++){
+       for($col = ord('A'); $col <= ord('Q'); $col++){
                 //set column dimension
                 $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(false);
                  //change the font size
@@ -1224,7 +1533,7 @@ WHERE
                 //Fill data 
                 $this->excel->getActiveSheet()->fromArray($exceldata, null, 'A5');
                  
-                $filename= $county.' County FCDRR Details ('.$month_text.').xlsx'; //save our workbook as this file name
+                $filename= 'RTK FCDRR Details ('.$month_text.').xlsx'; //save our workbook as this file name
                 header('Content-Type: application/vnd.ms-excel'); //mime type
                 header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
                 header('Cache-Control: max-age=0'); //no cache
@@ -1257,15 +1566,21 @@ WHERE
 
         if($type = 1){
             $type_text = 'closing_stock';
-            $type_title = 'Ending Balance';
+            $type_title = 'Computed Ending Balance';
         }else if($type = 2){            
             $type_text = 'q_used';
             $type_title = 'Quantity Used';
         }else if($type = 3){            
             $type_text = 'no_of_tests_done';
             $type_title = 'No of Tests done';
+        }else if($type = 4){            
+            $type_text = 'amc';
+            $type_title = 'Average Monthly Consumption';
         }
-
+        $conditions='';
+        if ($county_id>0) {
+           $conditions = 'AND counties.id = '.$county_id;
+        }
         $sql = "SELECT 
                     counties.county,
                     districts.district,
@@ -1285,9 +1600,10 @@ WHERE
                         AND facilities.facility_code = lab_commodity_details.facility_code
                         AND facilities.district = districts.id
                         AND districts.county = counties.id
-                        AND counties.id = '$county_id' $district_conditions
+                        $conditions $district_conditions
                 ORDER BY counties.county , districts.district , facilities.facility_code , lab_commodity_details.commodity_id";
         $result = $this->db->query($sql)->result_array();
+       
         //convert the date into text        
 
         foreach ($result as $key => $details) {

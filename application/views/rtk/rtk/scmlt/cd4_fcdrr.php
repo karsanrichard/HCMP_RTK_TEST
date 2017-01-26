@@ -359,7 +359,7 @@ $("#dialog").dialog({
 <?php
 
 $attributes = array('name' => 'myform', 'id' => 'myform');
-echo form_open('rtk_management/save_cd4_report_data', $attributes);
+echo form_open('cd4_management/save_cd4_report_data', $attributes);
 
 foreach ($facilities as $facility) {
     $id = $facility['id'];

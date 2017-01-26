@@ -29,7 +29,9 @@ include('rca_sidabar.php');
 					            $month = date('m', strtotime("-$i month")); 
 					            $year = date('Y', strtotime("-$i month")); 
 					            $month_value = $month.$year;
-					            $month_text =  date('F', strtotime("-$i month")); 
+					            // $month_text = $month_value;
+					            $month_text =  date('F', strtotime("-$i month"));
+					            // date('F', strtotime("-$i month")); 
 					            $month_text = $month_text." ".$year;
 					         ?>
 

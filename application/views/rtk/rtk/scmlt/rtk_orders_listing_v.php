@@ -105,85 +105,13 @@ div.container {
         <span class="lead" style="color: #ccc;">Switch back to RTK Manager</span>&nbsp;&nbsp;
         <a href="<?php echo base_url(); ?>rtk_management/switch_district/0/rtk_manager/0/home_controller/0//" class="btn btn-primary" id="switch_idenity" style="margin-top: -10px;">Go</a>
     </div>
-    <?php }?>
+    <?php }
 
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
-      <div class="leftpanel">
-        <div class="sidebar">
-            <?php
-            $option = '';
-            $date = date('d', time());
-            $id = $this->session->userdata('user_id');
-            $q = 'SELECT * from dmlt_districts,districts 
-            where dmlt_districts.district=districts.id
-            and dmlt_districts.dmlt=' . $id;
-            $res = $this->db->query($q);
-            foreach ($res->result_array() as $key => $value) {
-                $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
-            }
-            $sql = "select distinct rtk_settings.* 
-            from rtk_settings, facilities 
-            where facilities.zone = rtk_settings.zone 
-            and facilities.rtk_enabled = 1";
-            $res_ddl = $this->db->query($sql);
-            $deadline_date = null;
-            $settings = $res_ddl->result_array();
-            foreach ($settings as $key => $value) {
-                $deadline_date = $value['deadline'];
-                $five_day_alert = $value['5_day_alert'];
-                $report_day_alert = $value['report_day_alert'];
-                $overdue_alert = $value['overdue_alert'];
-            }
-            ?>
-            <span style="" class="label label-info">Switch Sub-Counties</span>
-            <br />
-            <br />
-            <select id="switch_district">
-                <option>-- Select Sub-County --</option>
-                <?php echo $option; ?>
-            </select>
-            <br />
-            <div class="panel-group " id="accordion" style="padding: 0;">
-                <div class="panel panel-default" id="home">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a href="<?php echo base_url('Home'); ?>" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-home">
-                            </span>Home</a>
-                        </h4>
-                    </div>
-                </div>
-                <div class="panel panel-default" id="stats">
-                    <div class="panel-heading">
-                        <h4 class="panel-title" id="dpp_stats">                        
-                            <a href="#" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-stats">
-                            </span>Statistics</a>
-                        </h4>
-                    </div>
-                </div>
-                <div class="panel panel-default active-panel" id="orders">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a href="<?php echo site_url('rtk_management/scmlt_orders'); ?>" href="#collapseTwo" id="stocking_levels"><span class="glyphicon glyphicon-shopping-cart">
-                            </span>Orders</a>
-                        </h4>
-                    </div>
-                </div>
-                <div class="panel panel-default" id="allocations">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a href="<?php echo site_url('rtk_management/scmlt_allocations'); ?>" href="#collapseThree" id="expiries"><span class="glyphicon glyphicon-transfer">
-                            </span>Allocation</a>
-                        </h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-<?php
+    
 $district = $this->session->userdata('district1');
 $district_name = Districts::get_district_name($district)->toArray();
 ?>
+<?php include ('scmlt_sidebar.php');?>
 
     <div class="dash_main" id="dash_main">        
         <div id="tablediv" style="margin-left:190px;">

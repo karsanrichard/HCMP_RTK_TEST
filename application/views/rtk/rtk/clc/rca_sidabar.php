@@ -58,8 +58,8 @@
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'allocation_management/county_reports' ?>"> RTK Reports</a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'cd4_management/county_cd4_reports' ?>"> CD4 Reports</a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/rca_districts'?>">Sub-Counties</a></li>
-        <!-- <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_stock'?>">Stock Card</a></li> -->
-        <!-- <li class = "side_links"><a href="<?php echo base_url().'rtk_management/rca_pending_facilities'?>">Non-Reported Facilities</a></li> -->
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_stock'?>">Stock Card</a></li> 
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/rca_pending_facilities'?>">Non-Reported Facilities</a></li> 
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_admin/users' ?>">Users</a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_admin/facilities' ?>">Facilities</a></li>
         
@@ -101,7 +101,7 @@
             }
 
         ?> -->
-        
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/cmlt_allocation_dashboard'?>">RTK Allocation </a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_trend' ?>">Trends</a></li>
     </ul>
 </div>
