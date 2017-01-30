@@ -71,15 +71,15 @@ class Cd4_Fcdrr extends Doctrine_Record {
 		// ORDER BY lab_commodity_orders.id");
 		// return $query;
 	}
-	public static function get_recent_lab_orders($facility_code){
-	// date_default_timezone_set('EUROPE/moscow');
-	// $lastday = date('Y-m', time());
-	// $lastday = $lastday.'-1';
+	public static function get_recent_cd4_fcdrr($facility_code){
+	date_default_timezone_set('EUROPE/moscow');
+	$lastday = date('Y-m', time());
+	$lastday = $lastday.'-1';
 
-	// $query = Doctrine_Query::create() -> select("facility_code, order_date") 
-	// -> from("Lab_Commodity_Orders")-> where(" order_date between '$lastday' AND NOW()")->andWhere("facility_code='$facility_code'");
-	// $stocktake = $query ->execute()->toArray();
-	// return $query->count();
+	$query = Doctrine_Query::create() -> select("facility_code, order_date") 
+	-> from("Cd4_Fcdrr")-> where(" order_date between '$lastday' AND NOW()")->andWhere("facility_code='$facility_code'");
+	$stocktake = $query ->execute()->toArray();
+	return $query->count();
 
 }
 
