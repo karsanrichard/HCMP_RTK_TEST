@@ -105,19 +105,98 @@ div.container {
         <span class="lead" style="color: #ccc;">Switch back to RTK Manager</span>&nbsp;&nbsp;
         <a href="<?php echo base_url(); ?>rtk_management/switch_district/0/rtk_manager/0/home_controller/0//" class="btn btn-primary" id="switch_idenity" style="margin-top: -10px;">Go</a>
     </div>
-    <?php }
+    <?php }?>
 
-    
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
+      <div class="leftpanel">
+        <div class="sidebar">
+            <?php
+            $option = '';
+            $date = date('d', time());
+            $id = $this->session->userdata('user_id');
+            $q = 'SELECT * from dmlt_districts,districts 
+            where dmlt_districts.district=districts.id
+            and dmlt_districts.dmlt=' . $id;
+            $res = $this->db->query($q);
+            foreach ($res->result_array() as $key => $value) {
+                $option .= '<option value = "' . $value['id'] . '">' . $value['district'] . '</option>';
+            }
+            $sql = "select distinct rtk_settings.* 
+            from rtk_settings, facilities 
+            where facilities.zone = rtk_settings.zone 
+            and facilities.rtk_enabled = 1";
+            $res_ddl = $this->db->query($sql);
+            $deadline_date = null;
+            $settings = $res_ddl->result_array();
+            foreach ($settings as $key => $value) {
+                $deadline_date = $value['deadline'];
+                $five_day_alert = $value['5_day_alert'];
+                $report_day_alert = $value['report_day_alert'];
+                $overdue_alert = $value['overdue_alert'];
+            }
+            ?>
+            <span style="" class="label label-info">Switch Facility</span>
+            <br />
+            <br />
+            <select id="switch_facility">
+                <option>-- Select Facility --</option>
+                <?php echo $option; ?>
+            </select>
+            <br />
+            <div class="panel-group " id="accordion" style="padding: 0;">
+                 <div class="panel panel-default" id="home">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a href="<?php echo base_url('Home'); ?>" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-home">
+                            </span>Home</a>
+                        </h4>
+                    </div>
+                </div>
+                <div class="panel panel-default" id="stats">
+                    <div class="panel-heading">
+                        <h4 class="panel-title" id="dpp_stats">                        
+                            <a href="#" href="#collapseOne" id="notifications"><span class="glyphicon glyphicon-stats">
+                            </span>Statistics</a>
+                        </h4>
+                    </div>
+                </div>
+                <!--<div class="panel panel-default active-panel" id="orders">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a href="<?php echo site_url('rtk_management/scmlt_orders'); ?>" href="#collapseTwo" id="stocking_levels"><span class="glyphicon glyphicon-shopping-cart">
+                            </span>Orders</a>
+                        </h4>
+                    </div>
+                </div>
+                <div class="panel panel-default" id="allocations">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a href="<?php echo site_url('rtk_management/scmlt_allocations'); ?>" href="#collapseThree" id="expiries"><span class="glyphicon glyphicon-transfer">
+                            </span>Allocation</a>
+                        </h4>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    </div>
+<?php
 $district = $this->session->userdata('district1');
 $district_name = Districts::get_district_name($district)->toArray();
+
+// $attributes = array('name' => 'myform', 'id' => 'myform');
+// echo form_open('rtk_management/scmlt_orders', $attributes);
 ?>
-<?php include ('scmlt_sidebar.php');?>
 
     <div class="dash_main" id="dash_main">        
         <div id="tablediv" style="margin-left:190px;">
-            <div id="notification" style="margin-left:280px;font-size:14px;font-weight:bold" >View all orders for <?php echo $d_name; ?> Sub-County Below</div>  
+            <div id="notification" style="margin-left:280px;font-size:14px;font-weight:bold" >View all orders for <?php echo $d_name; ?> Sub-County Below
+            <br/><br/>
+            <button type="button" class="btn btn-default" id="go_home"><a href = "<?php echo base_url('rtk_management/get_cd4_report'); ?>">Add Report</a></button>
+            </div>  
+           
             <?php if (count($lab_order_list) > 0) : ?>
-                <table width="100%" id="orders_table">
+                <table width="100%" id="orders_table" class="table table-striped table-bordered" >
                   <thead>
                     <tr>
                       <th>Reports for</th>
@@ -187,11 +266,11 @@ $district_name = Districts::get_district_name($district)->toArray();
         });
          $('#orders_table').dataTable({
             "sDom": "T lfrtip",
-            "aaSorting": [[0, 'desc']],
+            "aaSorting": [[4, 'desc']],
             "bPaginate": true,            
             "sScrollY": "377px",
             "sScrollX": "100%",
-            "sPaginationType": "bootstrap",
+            // "sPaginationType": "bootstrap",
             "oLanguage": {
                 "sLengthMenu": "_MENU_ Records per page",
                 "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
@@ -209,23 +288,31 @@ $district_name = Districts::get_district_name($district)->toArray();
                 "sSwfPath": "<?php echo base_url(); ?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
             }
         });
-        $("#orders_table").tablecloth({theme: "paper",
-          bordered: true,
-          condensed: true,
-          striped: true,
-          sortable: true,                   
-          customClass: "my-table"
-        });
-        $(".notif").delay(20000).slideUp(1000);
-        $("#tablediv").delay(15000).css( "height", '450px');
-        $(".dataTables_filter").delay(15000).css( "color", '#ccc');
+        // $("#orders_table").tablecloth({theme: "paper",
+        //   bordered: true,
+        //   condensed: true,
+        //   striped: true,
+        //   sortable: false,                   
+        //   customClass: "my-table"
+        // });
+        // $(".notif").delay(20000).slideUp(1000);
+        // $("#tablediv").delay(15000).css( "height", '450px');
+        // $(".dataTables_filter").delay(15000).css( "color", '#ccc');
 
-         $("#dpp_stats").click(function(event) {
-            $(".dataTables_wrapper").load("<?php echo base_url(); ?>rtk_management/summary_tab_display/" + <?php echo $countyid; ?> + "/<?php echo $year; ?>/<?php echo $month; ?>/");
-            $('#orders').removeClass('active-panel');
-            $('#stats').addClass('active-panel');
-        });;
-    
+        //  $("#dpp_stats").click(function(event) {
+        //     $(".dataTables_wrapper").load("<?php echo base_url(); ?>rtk_management/summary_tab_display/" + <?php echo $countyid; ?> + "/<?php echo $year; ?>/<?php echo $month; ?>/");
+        //     $('#orders').removeClass('active-panel');
+        //     $('#stats').addClass('active-panel');
+        // });;
+    $('#search').button().click(function(e) {               
+         
+            var facility = $('#facility_select').val();          
+            var month = $('#date_select').val();          
+            
+            var url = "<?php echo base_url() . 'rtk_management/scmlt_orders/'; ?>";
+          
+            window.location = url+ facility;
+});
 });
 </script>
 

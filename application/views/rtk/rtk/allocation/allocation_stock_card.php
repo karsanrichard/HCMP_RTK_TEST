@@ -63,7 +63,7 @@
     <table id="stock_card_table" class="data-table">
       <thead>
       <tr>
-          <th colspan="4" id="th-banner">HIV Rapid Test Kit Stock Status as at end of <?php echo "$month_text";?> for Zone C</th>
+          <th colspan="4" id="th-banner">HIV Rapid Test Kit Stock Status as at end of <?php echo "$month_text";?></th>
         </tr>
         <tr>
           <th>Commodity Name</th>
@@ -76,12 +76,18 @@
       <tbody style="border-top: solid 1px #828274;">
         
         <?php 
-          foreach ($stock_details as $key => $value) { ?>
+          foreach ($stock_details as $key => $value) { 
+            if ($value['amc'] =='') {
+             $amc = 0;
+            }else{
+              $amc = $value['amc'];
+            }
+            ?>
             <tr>
               <td><?php echo $value['commodity_name'];?></td>
-              <td><?php echo $value['amc'];?></td>
-              <td><?php echo $value['endbal'];?></td>
-              <td><?php echo $value['ratio'];?></td>
+              <td><?php echo $amc;?></td>
+              <td><?php echo $value['end_bal'];?></td>
+              <td><?php echo ceil($value['end_bal']/$amc);?></td>
             </tr>
         <?php }
         ?>

@@ -4,11 +4,6 @@
 <script src="<?php echo base_url(); ?>assets/tablecloth/assets/js/jquery.metadata.js"></script>
 <script src="<?php echo base_url(); ?>assets/tablecloth/assets/js/jquery.tablecloth.js"></script>
 
-<?php
-                // echo "<pre>";
-                // print_r($lab_categories);die;
-            ?>
-
 <style>
     @import "<?php echo base_url(); ?>assets/datatable/media2/css/jquery.dataTables.css";
 </style>
@@ -65,7 +60,24 @@
         
     });
 
+    /*Calculating the Value of the Number of tests done for Screening Determine*/
 
+    /*end of triggering of the calculation of Values of the Number of tests done for Screening Determine*/
+    $('#vct').change(function(){           
+        validate_tests('vct');        
+    })    
+    $('#pitc').change(function(){        
+        validate_tests('pitc');       
+    })
+    $('#pmtct').change(function(){        
+        validate_tests('pmtct');        
+    })
+    $('#blood_screening').change(function(){        
+        validate_tests('blood_screening');        
+    })
+    $('#other2').change(function(){        
+       validate_tests('other2');        
+   }) 
 
     /* end of triggering of the calculation of Values for Screening Determine */   
     /* Start of Validation for Tests for Screening Determine */
@@ -181,25 +193,6 @@ function compute_tests_done(){
     //     num = parseInt(number);        
     //     validate_inputs('b_balance_',num);
     // })   
-    // 
-    
-    function compute_total_tests_done(){
-        var tot =   parseInt($('#calibur_pead').val()) + 
-                    parseInt($('#calibur_adult').val()) + 
-                    parseInt($('#count_pead').val()) + 
-                    parseInt($('#count_adult').val()) + 
-                    parseInt($('#partec_pead').val()) + 
-                    parseInt($('#partec_adult').val()) + 
-                    parseInt($('#pima').val()) + 
-                    parseInt($('#presto').val());
-
-        $('#total_tests').val(tot);
-    }
-
-    $('#calibur_pead').change(function() {
-        // alert();
-        compute_total_tests_done();
-    }) 
 
 
 
@@ -359,7 +352,7 @@ $("#dialog").dialog({
 <?php
 
 $attributes = array('name' => 'myform', 'id' => 'myform');
-echo form_open('cd4_management/save_cd4_report_data', $attributes);
+echo form_open('rtk_management/save_lab_report_data', $attributes);
 
 foreach ($facilities as $facility) {
     $id = $facility['id'];
@@ -389,76 +382,86 @@ $count = count($res);
             <input type="hidden" name="district_name" colspan = "2" style = "color:#000; border:none" value="<?php echo $district ?>"></td>
             <input type="hidden" name="county" colspan = "3" style = "color:#000; border:none" value="<?php echo $county ?>"></td>
 
-            <tr>
-                <td colspan = "1" rowspan = "8" style="background: #fff;"></td>
-                <td style = "text-align:left"><b>Name of Facility:</b></td>
+            <tr><td style = "text-align:left"><b>Name of Facility:</b></td>
                 <td colspan = "2"><?php echo $facility_name ?></td>
                 <td rowspan = "8" style="background: #fff;"></td>
-                <td colspan = "4"><b></b></td>
-                <td rowspan = "8"></td>
-                <td colspan = "2" style="text-align:center"><b></b></td>
-                <td colspan = "2" rowspan = "8" style="background: #fff;"></td>
+                <td colspan = "3"><b>Applicable to HIV Test Kits Only</b></td>
+                <td colspan = "2"></td>
+                <td colspan = "4" style="text-align:center"><b>Applicable to Malaria Testing Only</b></td>
+                <td colspan = "1" rowspan = "8" style="background: #fff;"></td>
             </tr>
-            <tr >
-                <td colspan = "2" style = "text-align:left"><b>MFL Code:</b></td>
+            <tr ><td colspan = "2" style = "text-align:left"><b>MFL Code:</b></td>
                 <td><?php echo $facility_code ?></td>
-                <td colspan = "2" style="text-align:center"><b>CD4 Machine </b></td>
-                <td colspan = "2" style="text-align:center"><b>No. of Tests Done</b></td>
-                <td colspan = "2"><b>Tests</b></td>                         
+                <td colspan = "2" style="text-align:center"><b>Type of Service</b></td>
+                <td colspan = "1" style="text-align:center"><b>No. of Tests Done</b></td>
+                <td colspan = "2"></td>
+                <td colspan = "1"><b>Test</b></td>
+                <td colspan = "1"><b>Category</b></td>
+                <td colspan = "1"><b>No. of Tests Performed</b></td>
+                <td colspan = "1"><b>No. Positive</b></td>                          
             </tr>
-            <tr>
-                <td colspan = "2" style = "text-align:left"><b>District:</b></td>
+            <tr><td colspan = "2" style = "text-align:left"><b>District:</b></td>
                 <td><?php echo $district ?></td>
-                <td colspan = "2"><b>Facs Calibur</b></td>
-                <td><input class='user2'class='user2' id="calibur_pead" name="calibur_pead" colspan = "2" style = "color:#000" placeholder="peads"></td>
-                <td><input class='user2'class='user2' id="calibur_adult" name="calibur_adult" colspan = "2" style = "color:#000" placeholder="adults"></td>
-                <td rowspan = "1">Total Tests Done</td>   
-                <td><input class='user2'class='user2' id="total_tests" name="total_tests" colspan = "2" style = "color:#000" value=0></td>                    
+                <td colspan = "2"><b>VCT</b></td>
+                <td><input class='user2'class='user2' id="vct" name="vct" colspan = "2" style = "color:#000" value=0></td>
+                <td colspan = "2"></td>
+                <td rowspan = "3">RDT</td>
+                <td style = "text-align:left">Patients&nbsp;<u>under</u> 5&nbsp;years</td>
+                <td><input class='user2'id="rdt_under_tests" name="rdt_under_tests" size="10" type="text"/></td>
+                <td><input class='user2'id="rdt_under_positive" name="rdt_under_positive" size="10" type="text"/></td>                          
 
             </tr>
-            <tr>
-                <td colspan = "2" style = "text-align:left"><b>County:</b></td>                     
+            <tr><td colspan = "2" style = "text-align:left"><b>County:</b></td>                     
                 <td><?php echo $county ?></td>
-                <td colspan = "2"><b>Facs Count</b></td>
-                <td><input class='user2'class='user2' id="count_pead" name="count_pead" colspan = "2" style = "color:#000" placeholder="peads"></td>
-                <td><input class='user2'class='user2' id="count_adult" name="count_adult" colspan = "2" style = "color:#000" placeholder="adults"></td> 
-                <td rowspan = "1">Adults Below 500 CD4 count</td>   
-                <td><input class='user2'class='user2' id="adults_bel_cl" name="adults_bel_cl" colspan = "2" style = "color:#000" value=0></td>         
+                <td colspan = "2"><b>PITC</b></td>
+                <td><input class='user2'class='user2' id="pitc" name="pitc" colspan = "2" style = "color:#000" value=0></td>
+                <td colspan = "2"></td>
+                <td style = "text-align:left">Patients&nbsp;aged 5-14&nbsp;yrs</td>
+                <td><input class='user2'id="rdt_to_tests" name="rdt_to_tests" size="10" type="text"/></td>
+                <td><input class='user2'id="rdt_to_positive" name="rdt_to_positive" size="10" type="text"/></td>                        </tr>
+                <tr><td colspan = "2" style = "text-align:right"><b>Beginning:</b></td> 
+                    <td><input class='my_date'id="begin_date" name="begin_date" colspan = "2" size="10" type="text"/></td>
+                    <td colspan = "2"><b>PMTCT</b></td>
+                    <td><input class='user2'class='user2' id="pmtct" name="pmtct" colspan = "2" style = "color:#000" value=0></td>
+                    <td colspan = "2"></td>
+                    <td style = "text-align:left">Patients&nbsp;<u>over</u> 14&nbsp;years</td>
+                    <td><input class='user2'id="rdt_over_tests" name="rdt_over_tests" size="10" type="text"/></td>
+                    <td><input class='user2'id="rdt_over_positive" name="rdt_over_positive" size="10" type="text"/></td>
 
-            </tr>
-            <tr>
-                <td colspan = "2" style = "text-align:right"><b>Beginning:</b></td> 
-                <td><input class='my_date'id="begin_date" name="begin_date" colspan = "2" size="10" type="text"/></td>
-                <td colspan = "2"><b>Cyflow Partec</b></td>
-                <td><input class='user2'class='user2' id="partec_pead" name="partec_pead" colspan = "2" style = "color:#000" placeholder="peads"></td>
-                <td><input class='user2'class='user2' id="partec_adult" name="partec_adult" colspan = "2" style = "color:#000" placeholder="adults"></td>
-                <td rowspan = "1">Peads Below 500 CD4 count</td>   
-                <td><input class='user2'class='user2' id="pead_bel_cl" name="pead_bel_cl" colspan = "2" style = "color:#000" value=0></td>  
-            </tr>
-            <tr>
-                <td colspan = "2" style = "text-align:right"><b>Ending:</b></td>
-                <td><input class='my_date'id="end_date" name="end_date" colspan = "2" size="10" type="text"/></td>
-                <td colspan = "2"><b>Alere PIMA</b></td>
-                <td colspan = "2"><input id="pima" name="pima" colspan = "4" style = "color:#000; width: 100% !important;" placeholder="pima totals" size="20"> </td>  
-                <td colspan = "2" style="text-align:center"><b></b></td>                     
-            </tr>
-            <tr >
-                <td colspan = "3"></td>
-                <td colspan = "2"><b>Facs Presto</b></td>
-                <td colspan = "2"><input  id="presto" name="presto" colspan = "4" style = "color:#000; width: 100%;" placeholder="presto totals" size="20"> </td>  
-                <td colspan = "2" style="text-align:center"><b></b></td>
-                
-            </tr>
-            <tr><td colspan = "3"></td>
-             
-            </tr>
-            <tr>
-                <td colspan = "14" style = "text-align:center;" id="calc">
-                    <b>The Ending Balance is Computed as follows: </b><i>Beginning Balance + Quantity Received + Positive Adjustments - Quantity Used - Negative Adjustments - Losses</i> 
-                    <b><br/>Note:</b>
-                    The Quantity Used Should Not be Less than the Tests Done
-                </td>            
-            </tr>
+                </tr>
+                <tr><td colspan = "2" style = "text-align:right"><b>Ending:</b></td>
+                    <td><input class='my_date'id="end_date" name="end_date" colspan = "2" size="10" type="text"/></td>
+                    <td colspan = "2"><b>Blood&nbsp;Screening</b></td>
+                    <td><input class='user2'class='user2' id="blood_screening" name="blood_screening" colspan = "2" style = "color:#000" value=0></td>
+                    <td colspan = "2"></td>
+                    <td rowspan = "3">Microscopy</td>
+                    <td style = "text-align:left">Patients&nbsp;<u>under</u> 5&nbsp;years</td>
+                    <td><input class='user2'id="micro_under_tests" name="micro_under_tests" size="10" type="text"/></td>
+                    <td><input class='user2'id="micro_under_positive" name="micro_under_positive" size="10" type="text"/></td>                          
+                </tr>
+                <tr ><td colspan = "3"></td>
+                    <td colspan = "2"><b>Other&nbsp;(Please&nbsp;Specify)</b></td>
+                    <td><input class='user2'class='user2' id="other2" name="other2" colspan = "2" style = "color:#000" value=0></td>    
+                    <td colspan = "2"></td>
+                    <td style = "text-align:left">Patients&nbsp;aged 5-14&nbsp;yrs</td>
+                    <td><input class='user2'id="micro_to_tests" name="micro_to_tests" size="10" type="text"/></td>
+                    <td><input class='user2'id="micro_to_positive" name="micro_to_positive" size="10" type="text"/></td>
+                </tr>
+                <tr><td colspan = "3"></td>
+                    <td colspan = "2"><b>Specify&nbsp;Here:</b></td>
+                    <td><input class='user2'class='user2' id="specification" name="specification" colspan = "2" style = "color:#000"></td>  
+                    <td colspan = "2"></td>
+                    <td style = "text-align:left">Patients&nbsp;<u>over</u> 14&nbsp;years</td>
+                    <td><input class='user2'id="micro_over_tests" name="micro_over_tests" size="10" type="text"/></td>
+                    <td><input class='user2'id="micro_over_positive" name="micro_over_positive" size="10" type="text"/></td>
+                </tr>
+                <tr>
+                        <td colspan = "14" style = "text-align:center;" id="calc">
+                            <b>The Ending Balance is Computed as follows: </b><i>Beginning Balance + Quantity Received + Positive Adjustments - Quantity Used - Negative Adjustments - Losses</i> 
+                            <b><br/>Note:</b>
+                            The Quantity Used Should Not be Less than the Tests Done
+                        </td>            
+                    </tr>
                 <tr><td colspan = "14"></td></tr>
                 <tr >       
                     <td rowspan = "2" colspan = "2"><b>Commodity Name</b></td>
@@ -485,9 +488,9 @@ $count = count($res);
                 // print_r($lab_commodities_categories);die;
                     ?>
                     <tr>
-                        <td colspan = "14" style = "text-align:left"><b><?php echo $lab_category->name; ?></b></td>            
+                        <td colspan = "14" style = "text-align:left"><b><?php echo $lab_category->category_name; ?></b></td>            
                     </tr>                    
-                    <?php foreach ($lab_category->commodities as $lab_commodities) { ?>
+                    <?php foreach ($lab_category->category_lab_commodities as $lab_commodities) { ?>
                     <tr commodity_id="<?php echo $checker ?>"><input type="hidden" id="commodity_id_<?php echo $checker ?>" name="commodity_id[<?php echo $checker ?>]" value="<?php echo $lab_commodities['id']; ?>" >
                         <input type="hidden" id="facilityCode" name="facilityCode">
                         <input type="hidden" id="district" name="district" value="<?php echo $district_id; ?>">
@@ -497,7 +500,7 @@ $count = count($res);
                         <td><input id="b_balance_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>" name = "b_balance[<?php echo $checker ?>]" class='bbal' size="10" type="text" value="0" style = "text-align:center"/></td>
                         <td><input id="q_received_<?php echo $checker ?>" name = "q_received[<?php echo $checker ?>]" class='qty_rcvd' size="10" type="text" value="0" style = "text-align:center"/></td>
                         <td><input id="q_used_<?php echo $checker ?>" name = "q_used[<?php echo $checker ?>]" class='qty_used' size="10" type="text" value="0" style = "text-align:center"/></td>
-                        <td><input id="tests_done_<?php echo $cfhecker ?>" name = "tests_done[<?php echo $checker ?>]" class='tests_done' size="10" value="0" type="text" style = "text-align:center"/></td>
+                        <td><input id="tests_done_<?php echo $checker ?>" name = "tests_done[<?php echo $checker ?>]" class='tests_done' size="10" value="0" type="text" style = "text-align:center"/></td>
                         <td><input id="losses_<?php echo $checker ?>" name = "losses[<?php echo $checker ?>]" class='losses' size="10" type="text" value="0" style = "text-align:center" /></td>
                         <td><input id="pos_adj_<?php echo $checker ?>" name = "pos_adj[<?php echo $checker ?>]" class='pos_adj' size="10" type="text" value="0" style = "text-align:center"/></td>  
                         <td><input id="neg_adj_<?php echo $checker ?>" name = "neg_adj[<?php echo $checker ?>]" class='neg_adj' size="10" type="text" value="0" style = "text-align:center"/></td>
@@ -507,11 +510,7 @@ $count = count($res);
                         <td><input id="q_requested_<?php echo $checker ?>" data-uiid="<?php echo $checker ?>"name = "q_requested[<?php echo $checker ?>]" class='user2' size="10" type="text" style = "text-align:center"/></td>                  
                     </tr>
                     <?php $checker++;
-                } 
-
-            ?>
-
-            <?php
+                }
             }
             ?>
             <tr>
@@ -526,7 +525,7 @@ $count = count($res);
             <tr></tr>
 
 
-         <!--    <tr>
+            <tr>
                 <td colspan = "3" style = "text-align:left"><b>Order for Extra LMIS tools:<br/> To be requested only when your data collection or reporting tools are nearly full. Indicate quantity required for each tool type.</b></td>
                 <td><input class='user2'id="order_extra" name="order_extra" size="10" type="text"/></td>
                 <td colspan = "4"><b>(1) Daily Activity Register for Laboratory Reagents and Consumables (MOH 642):</b></td>
@@ -534,7 +533,7 @@ $count = count($res);
                 <td colspan = "3"><b>(2) F-CDRR for Laboratory Commodities (MOH 643):</b></td>
                 <td colspan = "2"><input class='user2'id="moh_643" name="moh_643" size="10" type="text"/></td>
             </tr>   
- -->
+
 
             <tr>                    <td colspan = "3" style = "text-align:left">Compiled by:</td>
                 <td colspan = "2" style = "text-align:left">Tel:</td>

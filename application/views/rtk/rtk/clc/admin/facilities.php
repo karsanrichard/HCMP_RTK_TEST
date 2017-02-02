@@ -149,7 +149,7 @@ function update_rtk(val){
     <th>Owner</th>
     
     <th>Sub-County</th>
-    <th>Reporting Status</th>
+    <th>RTK Reporting Status</th>
     <th>Action</th>
    </thead>
   <tbody>

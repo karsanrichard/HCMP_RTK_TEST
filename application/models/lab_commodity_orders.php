@@ -83,7 +83,17 @@ class Lab_Commodity_Orders extends Doctrine_Record {
 	return $query->count();
 
 }
+public static function get_recent_cd4_lab_orders($facility_code){
+	date_default_timezone_set('EUROPE/moscow');
+	$lastday = date('Y-m', time());
+	$lastday = $lastday.'-1';
 
+	$query = Doctrine_Query::create() -> select("facility_code, order_date") 
+	-> from("Cd4_Fcdrr")-> where(" order_date between '$lastday' AND NOW()")->andWhere("facility_code='$facility_code'");
+	$stocktake = $query ->execute()->toArray();
+	return $query->count();
+
+}
 public static function update_lab_commodity_orders($data_array){
 $q = Doctrine_Query::create()
      ->update('lab_commodity_orders o')

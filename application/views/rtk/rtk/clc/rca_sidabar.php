@@ -1,3 +1,29 @@
+<?php
+    // $month = $this->session->userdata('Month');
+    // if ($month==''){
+    //    $month = date('mY', strtotime('-1 month'));
+    // }
+    // $year= substr($month, -4);
+    // $month= substr_replace($month,"", -4);
+    // $monthyear = $year . '-' . $month . '-1';        
+    // $englishdate1 = date('F, Y', strtotime('next month'));
+    // $englishdate = date('F, Y', strtotime($monthyear));
+    
+    $option = '';
+    $id = $this->session->userdata('user_id');
+    $q = 'SELECT counties.id AS countyid, counties.county
+            FROM rca_county, counties
+            WHERE rca_county.county = counties.id
+            AND rca_county.rca =' . $id;
+    $res = $this->db->query($q)->result_array();
+    
+    foreach ($res as $key => $value) {
+        $option .= '<option value = "' . $value['countyid'] . '">' . $value['county'] . '</option>';
+    }
+
+    $current_month = date('mY', strtotime('-1 month'));    
+
+?>
 <div class="col-md-2" style="border-right: solid 1px #ccc;padding-right: 20px;margin-left:-5px">
    
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -27,16 +53,17 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-    <ul class="nav nav-pills nav-stacked" style="font-size:100%;border:ridge 1px #ccc">
-        <li class = "side_links active"><a href="<?php echo base_url().'rtk_management/county_home'?>">Summary</a></li>        
-        <li class = "side_links"><a href="<?php echo base_url().'rtk_management/rca_districts'?>">Sub-Counties</a></li>
-        <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_stock'?>">Stock Card</a></li>
-        <li class = "side_links"><a href="<?php echo base_url().'rtk_management/rca_pending_facilities'?>">Non-Reported Facilities</a></li>
-        <li class = "side_links"><a href="<?php echo base_url().'allocation_management/county_allocation_reports' ?>">Reports</a></li>
-        <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_admin/users' ?>">Users</a></li>
-        <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_admin/facilities' ?>">Facilities</a></li>
+    <ul class="main_list" style="font-size:100%;border:ridge 1px #ccc">
+        <li class = "side_links "><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_home'?>">Summary</a></li>        
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'allocation_management/county_reports' ?>"> RTK Reports</a></li>
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'cd4_management/county_cd4_reports' ?>"> CD4 Reports</a></li>
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/rca_districts'?>">Sub-Counties</a></li>
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_stock'?>">Stock Card</a></li> 
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/rca_pending_facilities'?>">Non-Reported Facilities</a></li> 
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_admin/users' ?>">Users</a></li>
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_admin/facilities' ?>">Facilities</a></li>
         
-        <?php
+        <!-- <?php
         $county_id = $this->session->userdata('county_id');
 
         $sql ="select * from counties where id = '$county_id'";
@@ -73,9 +100,9 @@
 
             }
 
-        ?>
-        
-        <li class = "side_links"><a href="<?php echo base_url().'rtk_management/county_trend' ?>">Trends</a></li>
+        ?> -->
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/cmlt_allocation_dashboard'?>">RTK Allocation </a></li>
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_trend' ?>">Trends</a></li>
     </ul>
 </div>
 
@@ -88,18 +115,39 @@
         padding: 0;
         border: 1px ridge #000;
         width: 100%;
-        background-color: #f1f1f1;
+        background-color: #428bca;
+        border-radius: 5px;
     }
     .side_links{
-        display: block;
+         display: block;
         color: #000;
         padding: 8px 0 8px 16px;
         text-decoration: none;
         font-size: 16px
     }
     .side_links:hover {
-    background-color: #66CC99  ;
-    color: green;
-}
-
+    background-color:  #d3ecfd   ;
+    color: #428bca;
+    }
+    .side_links_a{
+        color:  #2c306f;
+    }
 </style>
+<script type="text/javascript">
+$(function() {   
+    $('#switch_month').change(function() {
+            var value = $('#switch_month').val();
+            var path = "<?php echo base_url() . 'rtk_management/switch_district/0/rtk_county_admin/'; ?>" + value + "/";
+             // alert (path);
+window.location.href = path;
+});
+
+        $('#switch_county').change(function() {
+            var value = $('#switch_county').val();
+            var path = "<?php echo base_url() . 'rtk_management/switch_district/0/rtk_county_admin/0/home_controller/'; ?>" + value + "";
+//              alert (path);
+window.location.href = path;
+});
+    });
+
+</script>
