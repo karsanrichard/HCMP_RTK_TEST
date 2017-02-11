@@ -5,7 +5,7 @@
 	  <input type="text" name="voqualkit" class="input-sm" size="5"  value="<?php echo $vopeningqualkit;?>" style="color:#999999; font-weight:bold"/>
 	</div></td>
 	<td><div align="center">
-	  <input type="text"  name="vrecqualkit" class="input-sm" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo $vqualkitreceived;?>"/>
+	  <input type="text"  name="vrecqualkit" class="input-sm" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo $av_qualkitreceived;?>"/>
 	</div></td>
 <td><div align="center">
   <input type="text" name="vqualkitlotno" class="input-sm" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $vqualkitlotno;?>"/>
@@ -13,7 +13,7 @@
 	<td><div align="center"><input type="hidden"  name="vuqualkit" size="5"  value="<?php echo ceil($vuqualkit);?>"  style="color:#999999; font-weight:bold"/>
 	  <input type="text"  name="vuqualkit2" class="input-sm" size="5"  value="<?php echo ceil($vuqualkit);?>"  style="color:#999999; font-weight:bold"/>
 	</div></td><td><div align="center"><input type="text" class="input-sm"  name="vwqualkit" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwqualkit;?>" /></div></td>
-	<td><div align="center"><input type="text" class="input-sm"  name="vpqualkit" size="5" style="color:#999999; font-weight:bold" value="<?php echo $vlqualkitreceived;?>"  /></div></td>
+	<td><div align="center"><input type="text" class="input-sm"  name="vpqualkit" size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_posqualkit;?>"  /></div></td>
 	<td><div align="center"><input type="text" class="input-sm" name="viqualkit" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $viqualkit;?>"  /></div></td>
 	<td><div align="center">
 	  <input type="text" class="input-sm" name="vequalkit" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vequalkit;?>" />
@@ -33,7 +33,7 @@
 	  <input type="text" class="input-sm"   name="vocontrol" size="5"  value="<?php echo $vopeningcontrol;?>" style="color:#999999; font-weight:bold"/>
 	</div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vreccontrol" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vcontrolreceived);?>"/>
+	  <input type="text" class="input-sm"  name="vreccontrol" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_controlreceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF"><div align="center">
   <input type="text" class="input-sm" name="vcontrollotno" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $vcontrollotno;?>"/>
@@ -41,7 +41,7 @@
 	<td><div align="center"><input type="hidden" name="vucontrol" size="5" value="<?php echo ceil($vucontrol);?>"  style="color:#999999; font-weight:bold"  />
 	  <input type="text" class="input-sm" name="vucontrol2" size="5" value="<?php echo ceil($vucontrol);?>"  style="color:#999999; font-weight:bold"  />
 	</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vwcontrol" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwcontrol;?>" /></div></td>
-	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpcontrol" size="5" style="color:#999999; font-weight:bold" value="<?php echo $vlcontrolreceived;?>"  /></div></td>
+	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpcontrol" size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_poscontrol;?>"  /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vicontrol" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vicontrol;?>" /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="vecontrol" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vecontrol;?>"  /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="o_rvcontrol" size="5"    style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vrcontrol;?>" /></div></td>
@@ -55,7 +55,7 @@
 	  <input type="text" class="input-sm" name="vobuffer" size="5"  value="<?php echo $vopeningbuffer;?>" style="color:#999999; font-weight:bold"/>
 	</div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecbuffer" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vbufferreceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecbuffer" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_bufferreceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF"><div align="center">
   <input type="text" class="input-sm" name="vbufferlotno" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $vbufferlotno;?>"/>
@@ -63,7 +63,7 @@
 	<td style="background-color:#FFFFFF"><div align="center"><input type="hidden" name="vubuffer" size="5"  value="<?php echo ceil($vubuffer);?>"  style="color:#999999; font-weight:bold"/>
 	  <input type="text" class="input-sm" name="vubuffer2" size="5"  value="<?php echo ceil($vubuffer);?>"  style="color:#999999; font-weight:bold"/>
 	</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vwbuffer" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwbuffer;?>"  /></div></td>
-	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpbuffer" size="5" style="color:#999999; font-weight:bold" value="<?php echo $vlbufferreceived;?>"  /></div></td>
+	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpbuffer" size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_posbuffer;?>"  /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vibuffer" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vibuffer;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vebuffer" size="5" style="color:#999999; font-weight:bold"   value="<?php echo $vebuffer;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="o_rvbuffer"    size="5" style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vrbuffer;?>"  /></div></td>
@@ -77,7 +77,7 @@
 	  <input type="text" class="input-sm" name="vopreparation" size="5"  value="<?php echo $vopeningpreparation;?>" style="color:#999999; font-weight:bold"/>
 	</div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecpreparation" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vpreparationreceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecpreparation" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_preparationreceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF"><div align="center">
   <input type="text" class="input-sm" name="vpreparationlotno" size="10" style = "font-weight:bold; color:#999999" value="<?php echo $vpreparationlotno;?>"/>
@@ -85,7 +85,7 @@
 	<td><div align="center"><input type="hidden"  name="vupreparation" size="5"  value="<?php echo ceil($vupreparation);?>"  style="color:#999999; font-weight:bold" />
 	  <input type="text" class="input-sm"  name="vupreparation2" size="5"  value="<?php echo ceil($vupreparation);?>"  style="color:#999999; font-weight:bold" />
 	</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vwpreparation" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwpreparation;?>" /></div></td>
-	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vppreparation" size="5" style="color:#999999; font-weight:bold" value="<?php echo $vlpreparationreceived;?>"  /></div></td>
+	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vppreparation" size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_pospreparation;?>"  /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vipreparation" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vipreparation;?>"  /></div></td>
 	<td><div align="center"><input type="text" class="input-sm" name="vepreparation" size="5" style="color:#999999; font-weight:bold"   value="<?php echo $vepreparation;?>" /></div></td>
 	<td><div align="center"><input type="text" class="input-sm" name="o_rvpreparation" size="5"    style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vrpreparation;?>" /></div></td>
@@ -100,12 +100,12 @@
 	  <input type="text" class="input-sm" name="voadhesive" size="5"  value="<?php echo $vopeningadhesive;?>" style="color:#999999; font-weight:bold"/>
 	  </div></td>
 	  <td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecadhesive" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vadhesivereceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecadhesive" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_adhesivereceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td><td style="background-color:#FFFFFF"><div align="center"><input type="hidden" name="vuadhesive" size="5" value="<?php echo ceil($vuadhesive);?>"  style="color:#999999; font-weight:bold" />
 	      <input type="text" class="input-sm" name="vuadhesive2" size="5" value="<?php echo ceil($vuadhesive);?>"  style="color:#999999; font-weight:bold" />
 	  </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vwadhesive" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwadhesive;?>" /></div></td>
-	   <td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpadhesive" size="5" style="color:#999999; font-weight:bold" value="<?php echo $vladhesivereceived;?>"  /></div></td>
+	   <td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpadhesive" size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_posadhesive;?>"  /></div></td>
 	  <td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="viadhesive" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $viadhesive;?>" /></div></td>
 	  <td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="veadhesive" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $veadhesive;?>" /></div></td>
 	  <td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="o_rvadhesive" size="5"    style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vradhesive;?>" /></div></td>
@@ -119,14 +119,14 @@
 	  <input type="text" class="input-sm" name="vodeepplate" size="5"  value="<?php echo $vopeningdeepplate;?>" style="color:#999999; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecdeepplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vdeepplatereceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecdeepplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_adeepplatereceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td><div align="center">
 	  <input type="hidden"  name="vudeepplate" size="5" value="<?php echo ceil($vudeepplate);?>"  style="color:#999999; font-weight:bold"  />
 	  <input type="text" class="input-sm"  name="vudeepplate2" size="5" value="<?php echo ceil($vudeepplate);?>"  style="color:#999999; font-weight:bold"  />
 	</div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vwdeepplate"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwdeepplate;?>" /></div></td>
-	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpdeepplate"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $vldeepplatereceived;?>" /></div></td>
+	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpdeepplate"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_posdeepplate;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="videepplate"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $videepplate;?>"  /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="vedeepplate" size="5" style="color:#999999; font-weight:bold"   value="<?php echo $vedeepplate;?>" /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="o_rvdeepplate" size="5"  style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vrdeepplate;?>" /></div></td>
@@ -140,13 +140,13 @@
 	  <input type="text" class="input-sm" name="vomixtube" size="5"  value="<?php echo $vopeningmixtube;?>" style="color:#999999; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecmixtube" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vmixtubereceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecmixtube" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_mixtubereceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td style="background-color:#FFFFFF"><div align="center"><input type="hidden"  name="vumixtube" size="5" value="<?php echo ceil($vumixtube);?>"  style="color:#999999; font-weight:bold"  />
         <input type="text" class="input-sm"  name="vumixtube2" size="5" value="<?php echo ceil($vumixtube);?>"  style="color:#999999; font-weight:bold"  />
     </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vwmixtube" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwmixtube;?>"  /></div></td>
-	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpmixtube" size="5" style="color:#999999; font-weight:bold" value="<?php echo $vlmixtubereceived;?>"  /></div></td>
+	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpmixtube" size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_posmixtube;?>"  /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vimixtube" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vimixtube;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vemixtube" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vemixtube;?>"  /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="o_rvmixtube" size="5"    style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vrmixtube;?>"  /></div></td>
@@ -160,13 +160,13 @@
 	  <input type="text" class="input-sm" name="voreactionvessels" size="5"  value="<?php echo $vopeningreactionvessels;?>" style="color:#999999; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecreactionvessels" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vreactionvesselsreceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecreactionvessels" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_reactionvesselsreceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td><div align="center"><input type="hidden"  name="vureactionvessels" size="5" value="<?php echo ceil($vureactionvessels);?>"  style="color:#999999; font-weight:bold" />
         <input type="text" class="input-sm"  name="vureactionvessels2" size="5" value="<?php echo ceil($vureactionvessels);?>"  style="color:#999999; font-weight:bold" />
     </div></td><td><div align="center"><input type="text" class="input-sm" name="vwreactionvessels"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwreactionvessels;?>" /></div></td>
-	<td><div align="center"><input type="text" class="input-sm"  name="vpreactionvessels"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $vlreactionvesselsreceived;?>" /></div></td>
+	<td><div align="center"><input type="text" class="input-sm"  name="vpreactionvessels"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_posreactionvessels;?>" /></div></td>
 	<td><div align="center"><input type="text" class="input-sm" name="vireactionvessels"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vireactionvessels;?>" /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="vereactionvessels" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vereactionvessels;?>"  /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="o_rvreactionvessels" size="5"  style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vrreactionvessels;?>" /></div></td>
@@ -180,13 +180,13 @@
 	  <input type="text" class="input-sm" name="voreagent" size="5"  value="<?php echo $vopeningreagent;?>" style="color:#999999; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecreagent" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vreagentreceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecreagent" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_reagentreceived);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td style="background-color:#FFFFFF"><div align="center"><input type="hidden" name="vureagent" size="5" value="<?php echo ceil($vureagent);?>"  style="color:#999999; font-weight:bold"  />
         <input type="text" class="input-sm" name="vureagent2" size="5" value="<?php echo ceil($vureagent);?>"  style="color:#999999; font-weight:bold"  />
     </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vwreagent"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vwreagent;?>" /></div></td>
-	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpreagent"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $vlreagentreceived;?>" /></div></td>
+	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vpreagent"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_posreagent;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vireagent"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vireagent;?>"  /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vereagent" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vereagent;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="o_rvreagent" size="5" style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vrreagent;?>" /></div></td>
@@ -200,7 +200,7 @@
 	  <input type="text" class="input-sm" name="voreactionplate" size="5"  value="<?php echo $vopeningreactionplate;?>" style="color:#999999; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrecreactionplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vreactionplatereceived);?>"/>
+	  <input type="text" class="input-sm"  name="vrecreactionplate" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_posreactionplate);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td><div align="center"><input type="hidden" name="vureactionplate" size="5" value="<?php echo ceil($vureactionplate);?>"  style="color:#999999; font-weight:bold" />
@@ -220,13 +220,13 @@
 	  <input type="text" class="input-sm" name="vo1000disposable" size="5"  value="<?php echo $vopening1000disposable;?>" style="color:#999999; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrec1000disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vdisposable1000received);?>"/>
+	  <input type="text" class="input-sm"  name="vrec1000disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_disposable1000received);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td style="background-color:#FFFFFF"><div align="center"><input type="hidden" name="vu1000disposable" size="5" value="<?php echo ceil($vu1000disposable);?>"  style="color:#999999; font-weight:bold" />
         <input type="text" class="input-sm" name="vu1000disposable2" size="5" value="<?php echo ceil($vu1000disposable);?>"  style="color:#999999; font-weight:bold" />
     </div></td><td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vw1000disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vw1000disposable;?>" /></div></td>
-	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vp1000disposable"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $vldisposable1000received;?>" /></div></td>
+	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm"  name="vp1000disposable"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_pos1000disposable;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="vi1000disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vi1000disposable;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="ve1000disposable" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ve1000disposable;?>" /></div></td>
 	<td style="background-color:#FFFFFF"><div align="center"><input type="text" class="input-sm" name="o_rv1000disposable" size="5"    style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vr1000disposable;?>" /></div></td>
@@ -240,13 +240,13 @@
 	  <input type="text" class="input-sm" name="vo200disposable" size="5"  value="<?php echo $vopening200disposable;?>" style="color:#999999; font-weight:bold"/>
     </div></td>
 	<td style="background-color:#FFFFFF"><div align="center">
-	  <input type="text" class="input-sm"  name="vrec200disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($vdisposable200received);?>"/>
+	  <input type="text" class="input-sm"  name="vrec200disposable" size="5" style = "font-weight:bold; color:#999999" onkeyup="" value="<?php echo ceil($av_disposable200received);?>"/>
 	</div></td>
 <td style="background-color:#FFFFFF">-</td>
 <td><div align="center"><input type="hidden"  name="vu200disposable" size="5" value="<?php echo ceil($vu200disposable);?>"  style="color:#999999; font-weight:bold" />
         <input type="text" class="input-sm"  name="vu200disposable2" size="5" value="<?php echo ceil($vu200disposable);?>"  style="color:#999999; font-weight:bold" />
     </div></td><td><div align="center"><input type="text" class="input-sm" name="vw200disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vw200disposable;?>" /></div></td>
-	<td><div align="center"><input type="text" class="input-sm"  name="vp200disposable"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $vldisposable200received;?>" /></div></td>
+	<td><div align="center"><input type="text" class="input-sm"  name="vp200disposable"  size="5" style="color:#999999; font-weight:bold" value="<?php echo $av_pos200disposable;?>" /></div></td>
 	<td><div align="center"><input type="text" class="input-sm" name="vi200disposable"  size="5" style="color:#999999; font-weight:bold"  value="<?php echo $vi200disposable;?>" /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="ve200disposable" size="5" style="color:#999999; font-weight:bold"  value="<?php echo $ve200disposable;?>"  /></div></td>
 	<td><div align="center"><input type="text" class="input-sm"  name="o_rv200disposable" size="5"     style = "background:#FFFFFF;font-weight:bold"   value="<?php echo $vr200disposable;?>" /></div></td>

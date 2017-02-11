@@ -5,7 +5,7 @@
     border-bottom: 8px solid #428bca;
     border-radius: 0px 6px 6px 10px;
     min-width: 20%;
-    width: auto;
+    width: 30%;
     height: auto;
     margin-top: 20px;
     color: #428bca;
@@ -42,29 +42,43 @@
 
 <?php include('rca_sidabar.php');?>
 
-<div id="container" style="min-width: 310px; height: auto; margin: 0 auto">        
+<div id="container" style="min-width: 310px; height: auto; margin-left: 20%  ">        
 
-<!-- <div style="font-size: 20px; margin-top:2%;float-left:4%;">Drawing Rights: 200,000 per year (October 2015 to September 2016)<br/> Balance: 192,000 </div> -->
+<div style="font-size: 20px; margin-top:2%;float-left:4%;">Drawing Rights per Year<br/> Screening: <?php echo $county_details[0]['screening_drawing_rights']; ?> Balance: <?php echo $county_details[0]['screening_current_amount']; ?><br>
+Confirmatory: <?php echo $county_details[0]['confimatory_drawing_rights']; ?> Balance: <?php echo $county_details[0]['confirmatory_current_amount']; ?>
+
+<button id ="edit_dr" class="btn btn-primary" style="float:right; margin-left:3%">Edit Drawing Rights</button>
+<button id ="open_report" class="btn btn-primary" style="float:right; ">View Allocated Facilities</button>
+</div>
 <div class="row" style="width:100%; margin-top:2%;margin-left:4%;">
 <?php
+
+// echo "<pre>";
+//         print_r($district_details);
+//         print_r($district_array);die;
+
   foreach ($district_details as $key => $value) {
     $district_id = $value['id'];
     $district_name = $value['district'];
+ 
+    if (in_array($district_id, $district_array)) {
 
-    if (in_array($district_id, $allocated)) {
-      $done = '<p style = "color:green;"> Allocated</p>';
+      $done = '<p style = "color:red;"> Do Allocation</p>';
+      $edit_link = '';
+      $link = '<a href='. base_url().'rtk_management/district_allocation_table/'.$district_id.'>';
 
     }else{
-      $done = '<p style = "color:red;"> Do Allocation</p>';
-      
+      $done = '<p style = "color:green;"> Allocated</p>';
+      $link = '<a href="">'; 
+      $edit_link = '<a href = '. base_url().'rtk_management/edit_county_allocation_report/'.$district_id.'>(Edit)</a>';
 
     }
 
 ?>
-  <div id="rtk" class="dash span">
-    <a href="<?php echo base_url().'rtk_management/district_allocation_table/'.$district_id?>">
+  <div id="rtk" class="dash span3" style="width:35%;float:left; border-spacing: 10px;"">
+    <?php echo $link;?>
       <div class="details"><?php echo $district_name;?> Sub - County</div><br/>
-      <div class="facils">Total Facilities Allocated: <?php echo $done; ?></div>      
+      <div class="facils"> <?php echo $done.' '.$edit_link; ?></div>      
       <div class="facils">Total Facilities Reported in <?php echo $facilities_data[$district_id]['reporting_month']; ?>: <?php echo $facilities_data[$district_id]['reported_facilities']; ?>/<?php echo $facilities_data[$district_id]['total_facilities']; ?></div>      
     </a>
   </div>
@@ -81,60 +95,46 @@
 <script>
 $(document).ready(function() {
  
-  $('#pending_facilities').dataTable({
-     "sDom": "T lfrtip",
-     "aaSorting": [],
-     "bJQueryUI": false,
-      "bPaginate": true,
-      "oLanguage": {
-        "sLengthMenu": "_MENU_ Records per page",
-        "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
-      },
-      "oTableTools": {
-      "aButtons": [      
-      "copy",
-      "print",
-      {
-        "sExtends": "collection",
-        "sButtonText": 'Save',
-        "aButtons": ["csv", "xls", "pdf"]
-      }
-      ],  
-      "sSwfPath": "<?php echo base_url();?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
-    }
-  });
-  $("#pending_facilities").tablecloth({theme: "paper",         
-    bordered: true,
-    condensed: true,
-    striped: true,
-    sortable: true,
-    clean: true,
-    cleanElements: "th td",
-    customClass: "data-table"
+  // $('#pending_facilities').dataTable({
+  //    "sDom": "T lfrtip",
+  //    "aaSorting": [],
+  //    "bJQueryUI": false,
+  //     "bPaginate": true,
+  //     "oLanguage": {
+  //       "sLengthMenu": "_MENU_ Records per page",
+  //       "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
+  //     },
+  //     "oTableTools": {
+  //     "aButtons": [      
+  //     "copy",
+  //     "print",
+  //     {
+  //       "sExtends": "collection",
+  //       "sButtonText": 'Save',
+  //       "aButtons": ["csv", "xls", "pdf"]
+  //     }
+  //     ],  
+  //     "sSwfPath": "<?php echo base_url();?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
+  //   }
+  // });
+  // $("#pending_facilities").tablecloth({theme: "paper",         
+  //   bordered: true,
+  //   condensed: true,
+  //   striped: true,
+  //   sortable: true,
+  //   clean: true,
+  //   cleanElements: "th td",
+  //   customClass: "data-table"
+  // });
+
+  
+  $('#open_report').click(function(){
+    window.location.href = "<?php echo base_url().'rtk_management/cmlt_allocation_report'?>";
   });
 
-  $("#pending_facilities tfoot th").each(function(i) {
-    var select = $('<select><option value=""></option></select>')
-    .appendTo($(this).empty())
-    .on('change', function() {
-      table.column(i)
-      .search('^' + $(this).val() + '$', true, false)
-      .draw();
-    });
-
-    table.column(i).data().unique().sort().each(function(d, j) {
-      select.append('<option value="' + d + '">' + d + '</option>')
-    });
+  $('#edit_dr').click(function(){
+    window.location.href = "<?php echo base_url().'rtk_management/edit_drawing_rights'?>";
   });
- 
- $('#confirm').click(function(){
-  var r = confirm("Are you sure you want to do this allocation?");
-    if (r == true) {
-      window.location.href = "cmlt_allocation_details_json";
-    } else {
-    }
- }) 
-
 });
 </script>
 

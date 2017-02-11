@@ -51,9 +51,9 @@ class Cd4_Fcdrr_Commodities extends Doctrine_Record {
 	}
 	//get the order details associated with a given order number
   public static function get_order($delivery){
-  		$query=Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT cat.category_name, com.commodity_name, l.`order_id`, l.`facility_code`, l.`unit_of_issue`, l.`beginning_bal`, l.`q_received`, l.`q_used`, l.`no_of_tests_done`, l.`losses`, l.`positive_adj`, l.`negative_adj`, l.`closing_stock`, l.`q_expiring`, l.`days_out_of_stock`, l.`q_requested`
+  		$query=Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT cat.category_name, com.commodity_name, l.`fcdrr_id`, l.`facility_code`, l.`unit_of_issue`, l.`beginning_bal`, l.`q_received`, l.`q_used`, l.`no_of_tests_done`, l.`losses`, l.`positive_adj`, l.`negative_adj`, l.`closing_stock`, l.`q_expiring`, l.`days_out_of_stock`, l.`q_requested`
 		FROM cd4_fcdrr_commodities l, lab_commodity_categories cat, lab_commodities com
-		WHERE order_id=$delivery
+		WHERE fcdrr_id=$delivery
 		AND com.id=l.`commodity_id`
 		AND cat.id=com.category
 		ORDER BY commodity_id ASC");

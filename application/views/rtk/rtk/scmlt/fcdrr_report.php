@@ -109,6 +109,13 @@ foreach ($all_details as $detail) {
 table{
     font-size: 11px;
 }
+.header_text{
+        color:#337ab7;
+        font-size: 16px
+    }
+     .header_values{
+        font-size: 16px
+    }
 </style>
 <div style="height: 68px;
 display: block;
@@ -146,7 +153,7 @@ border-bottom: solid 1px #ccc;">
     //    $english_date = $d->format('D dS M Y');
             ?>
             <table id="user_order" width="90%" class="data-table">		
-                <tr><td style = "text-align:left"><b>Name of Facility:</b></td>
+               <!--  <tr><td style = "text-align:left"><b>Name of Facility:</b></td>
                     <td colspan = "2"><?php echo $facility_name ?></td>
                     <td colspan = "3" rowspan = "8" style ="background: #fff;"></td>
                     <td colspan = "3"><b>Applicable to HIV Test Kits Only</b></td>
@@ -209,12 +216,38 @@ border-bottom: solid 1px #ccc;">
                 <tr><td colspan = "3"></td>
                     <td colspan = "2"><b>Specify&nbsp;Here:</b></td>
                     <td style="text-align:center;"><?php echo $specification ?></td>
-                    <td style = "text-align:left">Patients&nbsp;<u>over</u> 14&nbsp;years</td>
+                    <td style = "text-align:le8ft">Patients&nbsp;<u>over</u> 14&nbsp;years</td>
                     <td style="text-align:center;"><?php echo $micro_over_tests ?></td>
                     <td style="text-align:center;"><?php echo $micro_over_pos ?></td>
-                </tr>
+                </tr> -->
 
-                <tr></tr>
+                <tr>
+                     <tr>
+                    <td colspan = "4" class="header_text"><b>Name of Facility:</b></td>
+                    <td colspan = "4" class="header_values"><?php echo $facility_name ?></td>
+                    <td colspan = "4" class="header_text" align="right" ><b>MFL Code:</b></td>
+                    <td colspan = "6" class="header_values"><?php echo $facility_code ?></td>
+                   
+ 
+                </tr>
+                <tr >
+                    <td colspan = "4" class="header_text"><b>County:</b></td>                        
+                    <td colspan = "4" class="header_values"><?php echo $county ?></td>
+                    <td colspan = "4" class="header_text" align="right"><b>Sub County:</b></td>
+                    <td colspan = "6" class="header_values"><?php echo $district ?></td>
+                                       
+                </tr>
+                <tr>
+                    <td colspan = "4" class="header_text"><b>Report for Month Beginning:</b></td> 
+                    <td colspan = "4" class="header_values" style="text-align:center;" ><?php echo $beg_date ?></td>
+                    <td colspan = "4" class="header_text" align="right" ><b>Ending:</b></td>
+                    <td colspan = "6" class="header_values"style="text-align:center;"><?php echo $end_date ?></td>
+                    
+                <tr>
+                 <tr>
+                <td colspan = "18" height="60px"><br/></td>
+            </tr>
+                </tr>
                 <tr > 				<th rowspan = "2" colspan = "2" style = "text-align:center;font-size:12"><b>Category Name</b></th>
                     <th rowspan = "2" colspan = "2" style = "text-align:center;font-size:12"><b>Commodity Name</b></th>
                     <th rowspan = "2" style = "text-align:center;font-size:12"><b>Beginning Balance</b></th>

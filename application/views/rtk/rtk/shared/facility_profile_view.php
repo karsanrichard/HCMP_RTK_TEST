@@ -78,36 +78,98 @@ $(function(){
 
 
 
-<div class="row">
-    <div class="span4">
-
-        <ul class="nav nav-tabs nav-stacked">
-            <!--            <li><a href="<?php echo base_url() . 'rtk_management/county_profile/' . $county_id; ?>"><?php echo $facility_county; ?></a></li>-->
-            <li><a href="<?php echo base_url() . 'rtk_management/district_profile/' . $district_id; ?>"><?php echo $facility_district; ?></a></li>
-            <li class="active"><a href="#"><?php echo $banner_text; ?></a></li>
-            <li class="active"><a href="#" data-target="#Edit_Facility" data-toggle="modal">Edit Facility</a></li>
-            <li><a>
-                <input class="form-control" id="typeahead" type="text" data-items="5" value="" placeholder="Search Facility">
-            </a></li>
-
-        </ul>
-    </div>
-    <div class="span12">
+<div class="" style="width:100%">
+    <div class="" >
+        <h1 align="center"> <b><?php echo $banner_text; ?></b></h1>
+             
+        <button class="btn btn-primary" style="align:right" data-target="#Edit_Facility" data-toggle="modal">Edit Facility</button>
+     
+    </div>   
+    
+    <div class="accordion-group" style="width: 49%;float: left; margin-left: 3px; ">
         <div class="accordion" id="accordion2">
-
+            <h3>RTK Reports</h3>
+            <label style="color: green"> <i>Click to View the Consumption Summary</i></label>
             <?php 
-            $count = count($reports);
+            $count = count($reports['rtk_facility_arr']);
             if($count>=1){
-                foreach ($reports as $key => $value) {
-                // print_r($reports); ?>
-
+                foreach ($reports['rtk_facility_arr'] as $key => $value) { ?>
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#report-<?php echo $value['id']; ?>">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#rtk_report-<?php echo $value['id']; ?>">
                             <?php echo $value['facility_name'] . ' ( ' . $value['district'] . ', ' . $value['county'] . ')'; ?> Summary Report for <?php echo date('F, Y', strtotime('-1 Month',strtotime($value['order_date'])) ); ?> Compiled by <?php echo($value['compiled_by']); ?>
                         </a>
                     </div>
-                    <div id="report-<?php echo $value['id']; ?>" class="accordion-body collapse" style="height: 0px;">
+                    <div id="rtk_report-<?php echo $value['id']; ?>" class="accordion-body collapse" style="height: 0px;">
+                        <div class="accordion-inner">
+                            <table class="table" style="font-size:12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Kit</th>
+                                        <th>Beginning Balance</th>
+                                        <th>Received Quantity</th>
+                                        <th>Used Total</th>
+                                        <th>Total Tests</th>
+                                        <th>Positive Adjustments</th>
+                                        <th>Negative Adjustments</th>
+                                        <th>Losses</th>
+                                        <th>Closing Balance</th>
+                                        <th>Requested</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                    $a = 0;
+                                    foreach ($value[$a] as  $values) {
+                                       
+                                        ?>
+                                       <tr>
+                                        <td><?php echo $values['commodity_name'];?></td>                                                               
+                                        <td><?php echo $values['beginning_bal']; ?></td>
+                                        <td><?php echo $values['q_received']; ?></td>
+                                        <td><?php echo $values['q_used']; ?></td>
+                                        <td><?php echo $values['no_of_tests_done']; ?></td>
+                                        <td><?php echo $values['positive_adj']; ?></td>
+                                        <td><?php echo $values['negative_adj']; ?></td>
+                                        <td><?php echo $values['losses']; ?></td>
+                                        <td><?php echo $values['closing_stock']; ?></td>
+                                        <td><?php echo $values['q_requested']; ?></td>
+                                    </tr> 
+                                    <?php $a++; }
+                                ?>
+                                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <?php } 
+                
+                }else{
+                    echo "There is no Data to Display. There are no records found for that facility";
+                }         
+
+
+            ?>
+
+        </div>
+    </div>
+    <div class="accordion-group" style="width: 49%;float: left; margin-left: 3px; ">
+        <div class="accordion" id="accordion3">
+            <h3>CD4 Reports</h3>
+            <label style="color: green"> <i>Click to View the Consumption Summary</i></label>
+
+            <?php 
+            $count = count($reports['cd4_facility_arr']);
+            if($count>=1){
+                foreach ($reports['cd4_facility_arr'] as $key => $value) { ?>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#cd4_report-<?php echo $value['order_id']; ?>">
+                            <?php echo $value['facility_name'] . ' ( ' . $value['district'] . ', ' . $value['county'] . ')'; ?> Summary Report for <?php echo date('F, Y', strtotime('-1 Month',strtotime($value['order_date'])) ); ?> Compiled by <?php echo($value['compiled_by']); ?>
+                        </a>
+                    </div>
+                    <div id="cd4_report-<?php echo $value['order_id']; ?>" class="accordion-body collapse" style="height: 0px;">
                         <div class="accordion-inner">
                             <table class="table" style="font-size:12px;">
                                 <thead>
@@ -162,6 +224,7 @@ $(function(){
         </div>
     </div>
 </div>
+
 
 
 <!--Update the Facility -->

@@ -58,7 +58,7 @@ class Home extends MY_Controller
 			$view = 'shared_files/template/dashboard_template_v';	
 			break;
 			case 'facility_admin':
-			case 'facility':
+			// case 'facility':
 			$view = 'shared_files/template/template';
 		    $data['content_view'] = "facility/facility_home_v";	
 			$data['facility_dashboard_notifications']=$this->get_facility_dashboard_notifications_graph_data();
@@ -72,6 +72,7 @@ class Home extends MY_Controller
 			break;
 			case 'scmlt':
 			case 'rtk_county_admin':
+			case 'facility':
 			case 'allocation_committee':
 			case 'rtk_partner_admin':
 			case 'rtk_manager':
