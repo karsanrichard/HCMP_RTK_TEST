@@ -14,6 +14,11 @@ class Rtk_Management extends Home_controller {
         $this->load->database();
         ini_set('memory_limit', '-1');
         ini_set('max_input_vars', 3000);
+
+        // error_reporting(E_ALL);
+        // ini_set('display_errors', TRUE);
+        // ini_set('display_startup_errors', TRUE);
+
         $this->load->library('Excel');
     }
 
@@ -134,7 +139,8 @@ class Rtk_Management extends Home_controller {
     $data['content_view'] = "rtk/rtk/scmlt/dpp_home_with_table";
     $data['title'] = "Home";
     $data['link'] = "home";    
-  
+    
+    // echo "<pre>";print_r($data);exit;
     $this->load->view('rtk/template', $data);
 
 }
@@ -1682,6 +1688,7 @@ public function rtk_manager_home() {
                 $percentage = intval($value['percentage']);
                 }
         }        
+        // echo "This". print_r($result);exit;
         array_push($thismonth_arr1, $percentage);
     }     
 
@@ -3545,6 +3552,7 @@ public function send_allocation_county($county_id){
 public function cmlt_allocation_details($county= 1 ){
 
     $county = (int) $this->session->userdata("county_id");
+    // echo "<pre>";print_r($this->session->all_userdata());exit;
 
         ini_set('max_execution_time',-1);
         $sql = "SELECT 
@@ -3561,6 +3569,94 @@ public function cmlt_allocation_details($county= 1 ){
                 WHERE
                         facilities.rtk_enabled = 1
                         AND counties.id = '$county'
+                ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
+
+        $result = $this->db->query($sql)->result_array();
+
+        // echo "<pre>";print_r($result);exit;
+        $final_dets = array();
+
+        foreach ($result as $key => $id_details) {
+
+            $fcode = $id_details['facility_code'];
+            $county = $id_details['county'];
+            $district = $id_details['district'];
+            $facilityname = $id_details['facility_name'];
+
+
+
+            $sql2 = "SELECT 
+                        facility_amc.amc as amc
+                    FROM
+                        facilities,
+                        facility_amc
+                    WHERE
+                        facilities.facility_code = facility_amc.facility_code
+                            AND facilities.facility_code = '$fcode'
+                            AND facility_amc.commodity_id between 4 and 6            
+                    ORDER BY facility_amc.commodity_id ASC";
+
+            $result2 = $this->db->query($sql2)->result_array();
+           
+            $sql3 = "SELECT 
+                        closing_stock,
+                        days_out_of_stock,
+                        q_requested
+                    FROM
+                        lab_commodity_details AS a
+                    WHERE
+                        facility_code = $fcode
+                        AND commodity_id between 4 and 6
+                            AND created_at in (SELECT 
+                                MAX(created_at)
+                            FROM
+                                lab_commodity_details AS b
+                            WHERE
+                                a.facility_code = b.facility_code)";
+
+            $result3 = $this->db->query($sql3)->result_array();
+            
+            $final_dets[$fcode]['name'] = $facilityname;
+            $final_dets[$fcode]['district'] = $district;
+            $final_dets[$fcode]['county'] = $county;
+            $final_dets[$fcode]['amcs'] = $result2;
+            $final_dets[$fcode]['code'] = $fcode;
+            $final_dets[$fcode]['end_bal'] = $result3;
+        }
+
+        // echo "$sql3";die;
+        // echo "<pre>";
+        // print_r($result3);die;
+
+        $data['title'] = "";
+        $data['banner_text'] = $result[0]['county'];
+        $data['content_view'] = 'rtk/allocation_committee/cmlt_allocation';        
+        $data['final_dets'] = $final_dets;
+        $this->load->view('rtk/template', $data); 
+    }
+
+public function scmlt_allocation_details($county= 1 ){
+    //karsan
+
+    $county = (int) $this->session->userdata("county_id");
+    $district = (int) $this->session->userdata("district_id");
+    // echo "<pre>";print_r($this->session->all_userdata());exit;
+
+        ini_set('max_execution_time',-1);
+        $sql = "SELECT 
+                    facilities.facility_code,
+                    facilities.facility_name,
+                    districts.district,
+                    counties.county
+                FROM
+                    facilities
+                    inner JOIN   districts
+                        ON    facilities.district = districts.id
+                    inner JOIN counties
+                        ON  districts.county = counties.id
+                WHERE
+                        facilities.rtk_enabled = 1
+                        AND districts.id = '$district'
                 ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
 
         $result = $this->db->query($sql)->result_array();
@@ -3626,6 +3722,334 @@ public function cmlt_allocation_details($county= 1 ){
         $this->load->view('rtk/template', $data); 
     }
 
+public function allocation_csv_interface($success=NULL)
+{
+    // error_reporting(E_ALL);
+    // echo $success;exit;
+    $success = (isset($success) && $success>0)? $success:NULL;
+
+    $county = (int) $this->session->userdata("county_id");
+    $months = array("January","February","March","April","May","June","July","August","September","October","November","December");
+    $month_data = array();
+
+    $month_4 = date('F Y', strtotime('-4 month'));
+    $month_3 = date('F Y', strtotime('-3 month'));
+    $month_2 = date('F Y', strtotime('-2 month'));
+    $month_1 = date('F Y', strtotime('-1 month'));
+    $month_0 = date('F Y', strtotime('-0 month'));
+
+    $allowed_months = array($month_4,$month_3,$month_2,$month_1,$month_0);
+
+    // echo "<pre>";print_r($months);exit;
+    $data['title'] = "Allocation CSV";
+    $data['banner_text'] = '';
+    $data['success'] = $success;
+    $data['months'] = $allowed_months;
+    $data['content_view'] = 'rtk/allocation_committee/allocation_csv';        
+    // $data['final_dets'] = $final_dets;
+    $this->load->view('rtk/template', $data); 
+}
+
+public function allocation_csv($value='')
+{
+    // error_reporting(1);
+
+    $data = $this->input->post();
+    $selected_month = $data['month'];
+
+    $month = date('F',strtotime($selected_month));
+    $year = date('Y',strtotime($selected_month));
+    // echo "<pre>";print_r($year);exit;
+
+    if (isset($_FILES['file']) && $_FILES['file']['size'] > 0) {
+            $ext = pathinfo($_FILES["file"]['name'], PATHINFO_EXTENSION);
+            // echo "THIS ".$ext;exit;
+            //echo $_FILES["file"]["tmp_name"];exit;
+            if ($ext == 'xls') {
+                $excel2 = PHPExcel_IOFactory::createReader('Excel5');
+            } else if ($ext == 'xlsx') {
+                $excel2 = PHPExcel_IOFactory::createReader('Excel2007');
+            } else if ($ext == 'csv') {
+                $excel2 = PHPExcel_IOFactory::createReader('CSV');
+            } else {
+                    die('Invalid file format given' . $_FILES['file']);
+            }
+
+             $excel2 = $objPHPExcel = $excel2 -> load($_FILES["file"]["tmp_name"]);
+            // Empty Sheet
+
+            $sheet = $objPHPExcel -> getSheet(0);
+            $highestRow = $sheet -> getHighestRow();
+
+            $highestColumn = $sheet -> getHighestColumn();
+
+            // echo $highestColumn.' '.$highestRow;exit;
+            $rowData_temp = array();
+
+            for ($row = 2; $row <= $highestRow; $row++) {
+                //  Read a row of data into an array
+                $rowData_temp = $objPHPExcel -> getActiveSheet() -> rangeToArray('A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE);
+                $rowData_final[] = array_pop($rowData_temp);
+            }
+            
+            // echo "<pre>";print_r($rowData_final);exit;
+            
+            $rowData_final_count = count($rowData_final);
+            $blank_cells = 0;
+
+            foreach ($rowData_final as $row_data => $data) {
+                // echo "<pre>";print_r($data);
+                $screening = $confirmatory = array();
+                $facility_code = $data[2];
+
+                
+                if ($facility_code>0 && $facility_code!='') {
+                    $q = "select district from facilities where facility_code = $facility_code";
+                    $district_id = $this->db->query($q)->result_array();
+
+                    // echo "<pre> ".;print_r($district_id);exit;
+
+                    if($district_id !='' && $district_id>0 && !empty($district_id)):
+                        $district_id = $district_id[0]['district'];
+                        
+                        $screening['district_id'] = $district_id;
+                        $screening['facility_code'] = $facility_code;
+                        $screening['screening_beg_bal'] = $data[4];
+                        $screening['screening_days_out_of_stock'] = $data[5];
+                        $screening['screening_end_month_phyc_count'] = $data[6];
+                        $screening['screening_losses'] = $data[7];
+                        $screening['screening_neg_adj'] = $data[8];
+                        $screening['screening_no_of_tests'] = $data[9];
+                        $screening['screening_pos_adj'] = $data[10];
+                        $screening['screening_qtt_received_other'] = $data[11];
+                        $screening['screening_qtt_received'] = $data[12];
+                        $screening['screening_qtt_requested'] = $data[13];
+                        $screening['screening_qtt_used'] = $data[14];
+                        $screening['screening_qtt_expiring_6_months'] = $data[15];
+
+                        $screening_data[] = $screening;
+
+                        $confirmatory['district_id'] = $district_id;
+                        $confirmatory['facility_code'] = $facility_code;
+                        $confirmatory['confirmatory_beg_bal'] = $data[16];
+                        $confirmatory['confirmatory_days_out_of_stock'] = $data[17];
+                        $confirmatory['confirmatory_end_month_phyc_count'] = $data[18];
+                        $confirmatory['confirmatory_neg_adj'] = $data[19];
+                        $confirmatory['confirmatory_losses'] = $data[20];
+                        $confirmatory['confirmatory_no_of_tests'] = $data[21];
+                        $confirmatory['confirmatory_pos_adj'] = $data[22];
+                        $confirmatory['confirmatory_qtt_received_other'] = $data[23];
+                        $confirmatory['confirmatory_qtt_received'] = $data[24];
+                        $confirmatory['confirmatory_qtt_requested'] = $data[25];
+                        $confirmatory['confirmatory_qtt_used'] = $data[26];
+                        $confirmatory['confirmatory_qtt_expiring_6_months'] = $data[27];
+
+                        $confirmatory_data[] = $confirmatory;
+                    endif;
+                }else{
+                    $blank_cells = $blank_cells + 1;
+                }
+            }
+
+            $screening_count = count($screening_data);
+            $confirmatory_count = count($confirmatory_data);
+
+            // echo "<pre>";print_r($screening_data);exit;
+            $screening_data_array = array();
+            $confirmatory_data_array = array();
+            $user_id = $this->session->userdata('user_id');
+            $explanation = "Upload via excel";
+            // echo "<pre>";print_r($user_id);exit;
+
+            foreach ($screening_data as $data => $value) {
+                //4 Screening
+                //5 Confirmatory
+                $facility_code = $value['facility_code'];
+                $q = "select district from facilities where facility_code = $facility_code";
+                $district_id = $this->db->query($q)->result_array();
+
+                $new_order_id = $this->labs_order_check($facility_code,$month,$year);
+                // echo "<pre> Screening: ";print_r($new_order_id);
+
+                // echo "<pre>";print_r($value);exit;
+                $screening_insert_data = array(
+                    'order_id' => $new_order_id,
+                    'facility_code' => $facility_code,
+                    'commodity_id' => 4,
+                    'unit_of_issue' => 1,
+                    'beginning_bal' => $value['screening_beg_bal'],
+                    'physical_beginning_bal' => 0,
+                    'q_received' => $value['screening_qtt_received'],
+                    'q_recieved_others' => $value['screening_qtt_received_other'],
+                    'q_used' => $value['screening_qtt_used'],
+                    'newqused' => 0,
+                    'no_of_tests_done' => $value['screening_no_of_tests'],
+                    'losses' => $value['screening_losses'],
+                    'positive_adj' => $value['screening_pos_adj'],
+                    'negative_adj' => $value['screening_neg_adj'],
+                    //inquire
+                    'physical_closing_stock' => $value['screening_end_month_phyc_count'],
+                    'closing_stock' => $value['screening_end_month_phyc_count'],
+                    'newclosingstock' => 0,
+
+                    'q_expiring' => $value['screening_qtt_expiring_6_months'],
+                    'days_out_of_stock' => $value['screening_days_out_of_stock'],
+                    'q_requested' => $value['screening_qtt_requested'],
+                    'amc' => 0,
+                    'allocated' => 0,
+                    'allocated_date' => 0,
+                    );
+                array_push($screening_data_array, $screening_insert_data);
+            }
+
+            foreach ($confirmatory_data as $data => $value) {
+                //4 Screening
+                //5 Confirmatory
+                $facility_code = $value['facility_code'];
+
+                $new_order_id = $this->labs_order_check($facility_code,$month,$year);
+                // echo "<pre> Confirmatory: ";print_r($new_order_id);exit;
+
+                // echo "<pre>";print_r($new_order_id);exit;
+                $confirmatory_insert_data = array(
+                    'order_id' => $new_order_id,
+                    'facility_code' => $facility_code,
+                    'commodity_id' => 5,
+                    'unit_of_issue' => 1,
+                    'beginning_bal' => $value['screening_beg_bal'],
+                    'physical_beginning_bal' => 0,
+                    'q_received' => $value['screening_qtt_received'],
+                    'q_recieved_others' => $value['screening_qtt_received_other'],
+                    'q_used' => $value['screening_qtt_used'],
+                    'newqused' => 0,
+                    'no_of_tests_done' => $value['screening_no_of_tests'],
+                    'losses' => $value['screening_losses'],
+                    'positive_adj' => $value['screening_pos_adj'],
+                    'negative_adj' => $value['screening_neg_adj'],
+                    'physical_closing_stock' => $value['screening_end_month_phyc_count'],
+                    'closing_stock' => $value['screening_end_month_phyc_count'],
+                    'newclosingstock' => 0,
+                    'q_expiring' => $value['screening_qtt_expiring_6_months'],
+                    'days_out_of_stock' => $value['screening_days_out_of_stock'],
+                    'q_requested' => $value['screening_qtt_requested'],
+                    'amc' => 0,
+                    'allocated' => 0,
+                    'allocated_date' => 0,
+                    );
+                array_push($confirmatory_data_array, $screening_insert_data);
+            }
+
+            // echo "<pre>";print_r($screening_data_array);exit;
+
+            //INSERT FOR SCREENING DATA
+            $result = $this -> db -> insert_batch('lab_commodity_details', $screening_data_array);
+
+            //INSERT FOR CONFIRMATORY DATA
+            $result = $this -> db -> insert_batch('lab_commodity_details', $confirmatory_data_array);
+
+            // echo "<pre>";print_r($result);echo"</pre>"; exit;
+            
+         }//end of file input if
+         else{
+            echo "NO FILE";
+         }
+
+        redirect('rtk_management/allocation_csv_interface/1');
+}
+
+public function labs_order_check($facility_code=NULL,$month=NULL,$year=NULL)
+{
+    // echo $facility_code.' '.$month.' '.$year;exit;
+
+    $q = "SELECT * FROM rtk.lab_commodity_orders WHERE facility_code='$facility_code' AND report_for='$month' AND created_at > NOW() - INTERVAL 1 MONTH";
+    $check = $this->db->query($q)->result_array();
+    $count_check = count($check);
+    // echo "<pre>";print_r($check);exit;
+
+    if($count_check == 0):
+        // echo "LAUNCHED";exit;
+        $start_date = date('Y-m-d', strtotime("first day of previous month"));
+        $start_date_given = date('Y-m-d', strtotime('first day of this month',$month));
+        $month_no = date('m',strtotime($month));
+        $last_day_month = date('t',strtotime($month));
+
+        $start_month_day = $year.'-'.$month_no.'-01';
+        $end_month_day = $year.'-'.$month_no.'-'.$last_day_month;
+
+        // echo $end_month;exit;
+        $end_date = date('Y-m-d', strtotime("last day of previous month"));
+        $end_date_given = date('Y-m-d', strtotime($month));
+        $order_date = date('Y-m-d');
+
+        $q = "select district from facilities where facility_code = $facility_code";
+        $district = $this->db->query($q)->result_array();
+        $district_id = $district[0]['district'];
+
+        // echo "<pre>"; print_r($district_id);exit;
+
+        $explanation = "Upload via excel";
+
+        $current_month = substr($end_date, 5,2);
+        // echo $current_month;exit;
+        $last_month = $current_month - 1;
+        // echo $last_month;exit;
+
+        $three_months_ago = $current_month - 2;
+        $year = substr($end_date, 0,4);
+        
+        $firstdate = $year.'-'.$current_month.'-01';
+        $lastdate = $year.'-'.$current_month.'-31';
+
+        $user_id = $this->session->userdata('user_id');
+
+        // echo $lastdate;exit;
+
+        $order_data = array(
+            'facility_code' => $facility_code, 
+            'district_id' => $district_id,
+            'compiled_by' => $user_id, 
+            'order_date' => $order_date, 
+            'vct' => 0, 
+            'pitc' => 0, 
+            'pmtct' => 0, 
+            'b_screening' => 0, 
+            'other' => 0, 
+            'specification' => 0, 
+            'rdt_under_tests' => 0, 
+            'rdt_under_pos' => 0, 
+            'rdt_btwn_tests' => 0, 
+            'rdt_btwn_pos' => 0, 
+            'rdt_over_tests' => 0, 
+            'rdt_over_pos' => 0, 
+            'micro_under_tests' => 0, 
+            'micro_under_pos' => 0, 
+            'micro_btwn_tests' => 0, 
+            'micro_btwn_pos' => 0, 
+            'micro_over_tests' => 0, 
+            'micro_over_pos' => 0, 
+            'beg_date' => $start_month_day, 
+            'end_date' => $end_month_day, 
+            'explanation' => $explanation, 
+            'moh_642' => 0, 
+            'moh_643' => 0, 
+            'report_for' => $month, 
+            'user_id' =>$user_id);
+
+
+        $u = new Lab_Commodity_Orders();
+        $u->fromArray($order_data);
+        $u->save();
+        $order_id = $object_id = $u->get('id');
+    else:
+        $lastId = Lab_Commodity_Orders::get_new_order($facility_code);
+        $new_order_id = $lastId->maxId;
+
+        $order_id = $new_order_id;
+    endif;
+
+    // echo "<pre>";print_r($object_id);exit;
+    return $order_id;
+}
 public function cmlt_allocation_details_json($county ){    
     ini_set('max_execution_time',-1);
 
