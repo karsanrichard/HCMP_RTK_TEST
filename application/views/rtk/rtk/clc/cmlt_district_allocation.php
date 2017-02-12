@@ -92,7 +92,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
       <th align="center">Recommended Quantity to Allocate</th>
-      <th align="center">Quantity Allocated by County</th>
+      <th align="center">Quantity Allocated by SubCounty</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
 
@@ -100,7 +100,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
       <th align="center">Recommended Quantity to Allocate</th>
-      <th align="center">Quantity Allocated by County</th>
+      <th align="center">Quantity Allocated by SubCounty</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
 
@@ -108,7 +108,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">AMC</th> 
       <th align="center">Months of Stock</th>
       <th align="center">Recommended Quantity to Allocate</th>
-      <th align="center">Quantity Allocated by County</th> 
+      <th align="center">Quantity Allocated by SubCounty</th> 
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
 
@@ -142,6 +142,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $q_requested_c =ceil($value['end_bal'][1]['q_requested']); 
         $q_requested_t =ceil($value['end_bal'][2]['q_requested']);
         $q_requested_d =ceil($value['end_bal'][3]['q_requested']);
+
         $amc_s = str_replace(',', '',$my_amcs[$count][0]);
         $amc_c = str_replace(',', '',$my_amcs[$count][1]);
         $amc_t = str_replace(',', '',$my_amcs[$count][2]);
@@ -149,7 +150,12 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
         $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
         $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);        
-        $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);        
+        $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);  
+
+        // echo "<pre>First ";print_r($my_amcs[$count][0]);
+        // echo "<pre>";print_r($amc[$count][0]);
+        // exit;      
+
         if($amc_s==''){
           $amc_s = 0;
         }
@@ -232,7 +238,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $ending_bal_s;?></td>     
           <td align="center"><?php echo $amc_s;?></td> 
           <td align="center"><?php echo $mmos_s;?></td> 
-          <td align="center"><?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*4)-$ending_bal_s);}?></td> 
+          <td align="center"><?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*6)-$ending_bal_s);}?></td> 
           <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*4)-$ending_bal_s);}?>'/></td> 
           <td align="center"><input style="width:40px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" /></td> 
           <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
@@ -423,7 +429,7 @@ $(document).ready(function() {
           $('#message').html('The Allocation Report is Being Saved. Please Wait');                                         
           $('#message').css('font-size','13px');                                         
           $('#message').css('color','green'); 
-          save_allocation_report();
+          // save_allocation_report();
           var url = "<?php echo base_url() . 'rtk_management/submit_district_allocation_report'; ?>";
                     
           var data = $('#myform').serializeArray();

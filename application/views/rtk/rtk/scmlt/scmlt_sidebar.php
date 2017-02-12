@@ -53,11 +53,9 @@
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url('Home')?>">>> Home</a></li>        
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_summary'?>">>> Summary</a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_orders'?>">>> Reports</a></li>     
-       <!--  <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_allocation_details'?>">>> Allocation</a></li>       
-        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/allocation_csv_interface'?>">>> Upload Allocation CSV</a></li>  
-        <li> -->
-            <!-- <a href="" class="allocation-excel"><h5>Allocation via excel</h5></a> -->
-        </li>
+        <li class = "side_links"><a class = "side_links_a" href="#">>> Allocation</a></li>    
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/scmlt_allocation_table/'.$district_id?>">-Click to allocate</a></li>       
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/allocation_csv_interface'?>">    -Click to upload FCDRR</a></li>  
     </ul>
 
     <?php if ($this->session->userdata('switched_from') == 'rtk_manager') { ?>

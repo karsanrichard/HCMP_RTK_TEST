@@ -15,9 +15,9 @@ class Rtk_Management extends Home_controller {
         ini_set('memory_limit', '-1');
         ini_set('max_input_vars', 3000);
 
-            // error_reporting(E_ALL);
-            // ini_set('display_errors', TRUE);
-            // ini_set('display_startup_errors', TRUE);
+        // error_reporting(E_ALL);
+        // ini_set('display_errors', TRUE);
+        // ini_set('display_startup_errors', TRUE);
 
         $this->load->library('Excel');
     }
@@ -37,6 +37,8 @@ class Rtk_Management extends Home_controller {
         $reported = 0;
         $nonreported = 0;
         $date = date('d', time());
+
+        // echo "<pre>";print_r($facilities);exit;
 
         $msg = $this->session->flashdata('message');
         if(isset($msg)){
@@ -73,6 +75,8 @@ class Rtk_Management extends Home_controller {
             $table_body .="<td>";
 
             $lab_count = lab_commodity_orders::get_recent_lab_orders($facility_detail['facility_code']);
+
+            // echo "<pre>";print($lab_count);
             if ($lab_count > 0) {
                 $reported = $reported + 1;              
                 $table_body .="<span class='label label-success'>Submitted for $lastmonth </span> <a href=" . site_url('rtk_management/rtk_orders') . " class='link'> View</a></td>";
@@ -136,11 +140,12 @@ class Rtk_Management extends Home_controller {
         $data['alertype'] = $alertype;
         $data['alertmsg'] = $alertmsg;
         $data['table_body'] = $table_body;
+        $data['district_id'] = $district;
         $data['content_view'] = "rtk/rtk/scmlt/dpp_home_with_table";
         $data['title'] = "Home";
         $data['link'] = "home";    
 
-                // echo "<pre>";print_r($data);exit;
+        // echo "<pre>";print_r($data);exit;
         $this->load->view('rtk/template', $data);
 
     }
@@ -3064,7 +3069,113 @@ public function district_allocation_table(){        //karsan slow
         a.facility_code = b.facility_code)";
 
         $result3 = $this->db->query($sql3)->result_array();
-        echo "<pre>"; print_r($result3); die;
+        // echo "<pre>"; print_r($result3); die;
+
+        $final_dets[$fcode]['name'] = $facilityname;
+        $final_dets[$fcode]['district'] = $district;
+        $final_dets[$fcode]['district_id'] = $districtid;
+        $final_dets[$fcode]['county'] = $county;
+        $final_dets[$fcode]['county_id'] = $countyid;
+        // $final_dets[$fcode]['screening_current_amount'] = $screening_current_amount;
+        // $final_dets[$fcode]['confirmatory_current_amount'] = $confirmatory_current_amount;
+        // $final_dets[$fcode]['tiebreaker_current_amount'] = $tiebreaker_current_amount;
+        // $final_dets[$fcode]['amcs'] = $result2;
+        $final_dets[$fcode]['code'] = $fcode;
+        $final_dets[$fcode]['end_bal'] = $result3;
+    }
+
+        // echo "$sql3";die;
+    // echo "<pre>";print_r($result);exit;
+    $data['title'] = "Sub-County Allocation";
+    $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result[0]['county'].' ---- '.$result[0]['district'].'</h2>';
+    $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation';        
+    $data['final_dets'] = $final_dets;
+    $data['county_name'] = $result4[0]['county'];
+    $data['countyid'] = $result4[0]['id'];
+    $data['districtid'] = $district_id;
+    $data['district_name'] = $result['district'];
+    $data['screening_current_amount'] = $result4[0]['screening_current_amount'];
+    $data['confirmatory_current_amount'] = $result4[0]['confirmatory_current_amount'];
+    $data['tiebreaker_current_amount'] = $result4[0]['tiebreaker_current_amount'];
+
+    // echo "<pre>";print_r($data);exit;
+    $this->load->view('rtk/template', $data); 
+}
+
+public function scmlt_allocation_table($district_id = NULL){        //karsan slow
+    $county = (int) $this->session->userdata("county_id");
+    $district_id = (int) $this->session->userdata("district_id");
+
+    // echo "<pre>";print_r($district_id);exit;
+    $district_id = $this->uri->segment(3);
+
+    $sql4 = "select * from counties where id = '$county'";
+    $result4 = $this->db->query($sql4)->result_array();
+
+    $sql = "SELECT 
+    facilities.facility_code,
+    facilities.facility_name,
+    districts.district,
+    districts.id as districtid,
+    counties.county,
+    counties.id as countyid,
+    counties.screening_current_amount,
+    counties.confirmatory_current_amount,
+    counties.tiebreaker_current_amount
+    FROM
+    facilities
+    inner JOIN   districts
+    ON    facilities.district = districts.id
+    inner JOIN counties
+    ON  districts.county = counties.id
+    WHERE
+    facilities.rtk_enabled = 1
+    AND districts.id = '$district_id'
+    ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
+    $result = $this->db->query($sql)->result_array();
+    $final_dets = array();
+    // echo "<pre>"; print_r($result4);die;
+
+    foreach ($result as $key => $id_details) {
+
+        $fcode = $id_details['facility_code'];
+        $county = $id_details['county'];
+        $district = $id_details['district'];
+        $districtid = $id_details['districtid'];
+        $countyid = $id_details['countyid'];
+        $facilityname = $id_details['facility_name'];
+
+        // $sql2 = "SELECT 
+        //             facility_amc.amc as amc
+        //         FROM
+        //             facilities,
+        //             facility_amc
+        //         WHERE
+        //             facilities.facility_code = facility_amc.facility_code
+        //                 AND facilities.facility_code = '$fcode'
+        //                 AND facility_amc.commodity_id between 4 and 22            
+        //         ORDER BY facility_amc.commodity_id ASC";
+
+        // $result2 = $this->db->query($sql2)->result_array();
+        // echo "$sql2"; die;
+        $sql3 = "SELECT amc,
+        closing_stock,
+        days_out_of_stock,
+        q_requested
+        FROM
+        lab_commodity_details AS a
+        WHERE
+        facility_code = $fcode
+        AND commodity_id between 4 and 6
+        AND created_at in (SELECT 
+        MAX(created_at)
+        FROM
+        lab_commodity_details AS b
+        WHERE
+        a.facility_code = b.facility_code)";
+
+        $result3 = $this->db->query($sql3)->result_array();
+        // echo "<pre>"; print_r($result3); die;
 
         $final_dets[$fcode]['name'] = $facilityname;
         $final_dets[$fcode]['district'] = $district;
@@ -3116,7 +3227,7 @@ function get_remaining_districts($district_id){
 }
 
 function submit_district_allocation_report(){
-
+    // echo "<pre>";print_r($this->input->post());exit;
 
     $district_id = $_POST['district_id'];
 
@@ -3125,7 +3236,7 @@ function submit_district_allocation_report(){
     $sql = "select distinct district_id, month from allocation_details where district_id = '$district_id' and  month = '$month'";
     $result = $this->db->query($sql)->result_array();
     $count_submitted = count($result);
-
+    // echo "<pre>";print_r($count_submitted);exit;
     if($count_submitted==0) {
         $county_id = $_POST['county_id'];
         $facility_name = $_POST['facility_name'];
@@ -3149,14 +3260,20 @@ function submit_district_allocation_report(){
         $new_tiebreaker_amount = $_POST['new_tiebreaker_amount'];
 
         $commodity_count = count($drug_id);
+        // echo $commodity_count;exit;
 
         $user_id = $this->session->userdata('user_id');        
 
         $allocation_date = date('Y-m-d');
+        $new_data = array();
 
         for ($i = 0; $i < $commodity_count; $i++) {            
 
-            $mydata = array('county_id'=>$county_id, 'district_id'=>$district_id,'facility_code' => $facility_code[$i], 'facility_name' => $facility_name[$i], 'amc_s' => $amc_s[$i],
+            $mydata = array('county_id'=>$county_id, 
+                'district_id'=>$district_id,
+                'facility_code' => $facility_code[$i], 
+                'facility_name' => $facility_name[$i], 
+                'amc_s' => $amc_s[$i],
                 'ending_bal_s' => $ending_bal_s[$i],
                 'allocate_s' => $q_allocate_s[$i],                    
                 'mmos_s' => $mmos_s[$i],
@@ -3172,9 +3289,11 @@ function submit_district_allocation_report(){
 
                 'month'=>$allocation_date, 
                 'user_id'=>$user_id);
-            $this->db->insert('allocation_details', $mydata); 
-        // print_r($mydata) ;                
+            array_push($new_data,$mydata);
         }
+        // echo "<pre>";print_r($new_data);exit;
+        $res = $this->db->insert_batch('allocation_details',$new_data);
+        // echo "<pre>";print_r($res);exit;
 
         $sql2 = "update counties set screening_current_amount = '$new_screening_amount', confirmatory_current_amount = '$new_confirmatory_amount' where id = '$county_id'";   
         $this->db->query($sql2);
@@ -3752,7 +3871,7 @@ public function scmlt_allocation_details_json($county ){
         // echo "$sql";die();
     $result = $this->db->query($sql)->result_array();
 
-    echo "<pre>";print_r($result);exit;
+    // echo "<pre>";print_r($result);exit;
     $final_dets = array();
 
     foreach ($result as $key => $id_details) { 
@@ -3801,6 +3920,8 @@ public function scmlt_allocation_details_json($county ){
         $final_dets[$fcode]['code'] = $fcode;
         $final_dets[$fcode]['end_bal'] = $result3;
     }
+
+    // echo "<pre>";print_r($final_dets);exit;
     if(count($final_dets)>0){
         foreach ($final_dets as $value) {
         //$zone = str_replace(' ', '-',$value['zone']);
@@ -3853,7 +3974,7 @@ public function scmlt_allocation_details_json($county ){
             $facility_name = $value['name'];   
 
             $sql_dets = 'INSERT INTO `allocation_details`
-            (`county`, `district`, `mfl`, `facility_name`,`zone`,
+            (`county`, `district`, `facility_code`, `facility_name`,`zone`,
             `end_bal_s3`, `end_bal_s6`, `amc_s3`, `amc_s6`, `mmos_s3`, `mmos_s6`, `allocate_s3`,`allocate_s6`, 
             `end_bal_c3`, `end_bal_c6`, `amc_c3`, `amc_c6`, `mmos_c3`, `mmos_c6`, `allocate_c3`, `allocate_c6`,
             `end_bal_t3`, `end_bal_t6`, `amc_t3`, `amc_t6`, `mmos_t3`, `mmos_t6`, `allocate_t3`, `allocate_t6`)

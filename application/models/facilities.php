@@ -320,13 +320,13 @@ return $q;
 }
 
 
-public static function get_total_facilities_in_district($county_id){
+public static function get_total_facilities_in_district($district_id){
 	
 		$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
 SELECT COUNT( f.facility_code ) as total_facilities
 FROM facilities f, districts d
 WHERE f.`district` = d.id
-AND d.id =  '$county_id'
+AND d.id =  '$district_id'
 ");
 return $q;
 }
@@ -572,6 +572,17 @@ public static function get_total_facilities_rtk_in_district($district_id){
 		FROM facilities f, districts d
 		WHERE rtk_enabled =1
 		AND d.id='$district_id'
+		AND f.`district` = '$district_id'");
+		
+return $q;
+}
+
+public static function get_facilities_in_district($district_id){
+	
+		$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
+		SELECT  f.facility_code , f.owner as facility_owner,f.facility_name
+		FROM facilities f, districts d
+		WHERE d.id='$district_id'
 		AND f.`district` = '$district_id'");
 		
 return $q;
