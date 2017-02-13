@@ -4030,6 +4030,9 @@ public function allocation_csv($value='')
 
     $data = $this->input->post();
     $selected_month = $data['month'];
+    // echo "<pre>";print_r($data);exit;
+    $user_id = $this->session->userdata('user_id');
+
 
     $month = date('F',strtotime($selected_month));
     $year = date('Y',strtotime($selected_month));
@@ -4066,14 +4069,14 @@ public function allocation_csv($value='')
             $rowData_final[] = array_pop($rowData_temp);
         }
 
-// echo "<pre>";print_r($rowData_final);exit;
+    // echo "<pre>";print_r($rowData_final);exit;
 
         $rowData_final_count = count($rowData_final);
         $blank_cells = 0;
 
+        $screening = $confirmatory = $allocation_data_array = array();
         foreach ($rowData_final as $row_data => $data) {
-// echo "<pre>";print_r($data);
-            $screening = $confirmatory = array();
+            // echo "<pre>";print_r($data);
             $facility_code = $data[2];
 
 
@@ -4081,10 +4084,16 @@ public function allocation_csv($value='')
                 $q = "select district from facilities where facility_code = $facility_code";
                 $district_id = $this->db->query($q)->result_array();
 
-// echo "<pre> ".;print_r($district_id);exit;
+                // echo "<pre> ";print_r($district_id);exit;
 
                 if($district_id !='' && $district_id>0 && !empty($district_id)):
-                    $district_id = $district_id[0]['district'];
+                $district_id = $district_id[0]['district'];
+                
+                $c = "select county from districts where id = $district_id";
+                $county_id = $this->db->query($c)->result_array();
+                $county_id = $county_id[0]['county'];
+                
+                // echo "<pre> ";print_r($county_id);exit;
 
                 $screening['district_id'] = $district_id;
                 $screening['facility_code'] = $facility_code;
@@ -4119,7 +4128,78 @@ public function allocation_csv($value='')
                 $confirmatory['confirmatory_qtt_expiring_6_months'] = $data[27];
 
                 $confirmatory_data[] = $confirmatory;
-                endif;
+
+
+            //Assumed that the end month physical stock count is the ending balance of the commodity
+            $ending_bal_s =ceil(($data[6])/50); 
+            $ending_bal_c =ceil(($data[18])/30); 
+            // $ending_bal_t =ceil(($value['end_bal'][2]['closing_stock'])/20);
+
+            // $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
+            // $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
+            // $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);
+
+            $amc_s ='';
+            $amc_c = '';
+            $amc_t = '';
+
+
+            if($amc_s==''){
+                $amc_s = 0;
+            }
+
+            if($amc_c==''){
+                $amc_c = 0;
+            }
+
+            if($amc_t==''){
+                $amc_t = 0;
+            }
+
+            $mmos_s = ceil(($amc_s * 6)/50);
+            $mmos_c = ceil(($amc_c * 6)/30);
+            $mmos_t = ceil(($amc_t * 6)/20);
+
+            if($mmos_s < $ending_bal_s){
+                $qty_to_alloc_s = 0;
+            }else{
+                $qty_to_alloc_s = $mmos_s - $ending_bal_s;
+            }
+
+            if($mmos_c < $ending_bal_c){
+                $qty_to_alloc_c = 0;
+            }else{
+                $qty_to_alloc_c = $mmos_c - $ending_bal_c;
+            }
+
+            if($mmos_t < $ending_bal_t){
+                $qty_to_alloc_t = 0;
+            }else{
+                $qty_to_alloc_t = $mmos_t - $ending_bal_t;
+            }
+
+            $county = $county_id;
+            $district = $district_id;            
+            $facility_name = '';   
+            // echo "<pre>";print_r($screening_data_array);exit;
+            $allocation_details['county_id'] = $county_id;
+            $allocation_details['district_id'] = $district_id;
+            $allocation_details['facility_code'] = $facility_code;
+            $allocation_details['ending_bal_s'] = $ending_bal_s;
+            $allocation_details['amc_s'] = $amc_s;
+            $allocation_details['mmos_s'] = $mmos_s;
+            $allocation_details['allocate_s'] = $qty_to_alloc_s;
+
+            $allocation_details['ending_bal_c'] = $ending_bal_c;
+            $allocation_details['amc_c'] = $amc_c;
+            $allocation_details['mmos_c'] = $mmos_c;
+            $allocation_details['allocate_c'] = $qty_to_alloc_c;
+            $allocation_details['month'] = date('Y-m-d');
+            $allocation_details['user_id'] = $user_id;
+
+            array_push($allocation_data_array, $allocation_details);
+            endif;
+
             }else{
                 $blank_cells = $blank_cells + 1;
             }
@@ -4128,24 +4208,23 @@ public function allocation_csv($value='')
         $screening_count = count($screening_data);
         $confirmatory_count = count($confirmatory_data);
 
-// echo "<pre>";print_r($screening_data);exit;
+        // echo "<pre>";print_r($allocation_data_array);exit;
         $screening_data_array = array();
         $confirmatory_data_array = array();
-        $user_id = $this->session->userdata('user_id');
         $explanation = "Upload via excel";
-// echo "<pre>";print_r($user_id);exit;
+        // echo "<pre>";print_r($user_id);exit;
 
         foreach ($screening_data as $data => $value) {
-//4 Screening
-//5 Confirmatory
+            //4 Screening
+            //5 Confirmatory
             $facility_code = $value['facility_code'];
             $q = "select district from facilities where facility_code = $facility_code";
             $district_id = $this->db->query($q)->result_array();
 
             $new_order_id = $this->labs_order_check($facility_code,$month,$year);
-// echo "<pre> Screening: ";print_r($new_order_id);
+            // echo "<pre> Screening: ";print_r($new_order_id);
 
-// echo "<pre>";print_r($value);exit;
+            // echo "<pre>";print_r($value);exit;
             $screening_insert_data = array(
                 'order_id' => $new_order_id,
                 'facility_code' => $facility_code,
@@ -4161,7 +4240,6 @@ public function allocation_csv($value='')
                 'losses' => $value['screening_losses'],
                 'positive_adj' => $value['screening_pos_adj'],
                 'negative_adj' => $value['screening_neg_adj'],
-//inquire
                 'physical_closing_stock' => $value['screening_end_month_phyc_count'],
                 'closing_stock' => $value['screening_end_month_phyc_count'],
                 'newclosingstock' => 0,
@@ -4177,14 +4255,14 @@ public function allocation_csv($value='')
         }
 
         foreach ($confirmatory_data as $data => $value) {
-//4 Screening
-//5 Confirmatory
+            //4 Screening
+            //5 Confirmatory
             $facility_code = $value['facility_code'];
 
             $new_order_id = $this->labs_order_check($facility_code,$month,$year);
-// echo "<pre> Confirmatory: ";print_r($new_order_id);exit;
+            // echo "<pre> Confirmatory: ";print_r($new_order_id);exit;
 
-// echo "<pre>";print_r($new_order_id);exit;
+            // echo "<pre>";print_r($new_order_id);exit;
             $confirmatory_insert_data = array(
                 'order_id' => $new_order_id,
                 'facility_code' => $facility_code,
@@ -4213,15 +4291,16 @@ public function allocation_csv($value='')
             array_push($confirmatory_data_array, $screening_insert_data);
         }
 
-// echo "<pre>";print_r($screening_data_array);exit;
+        //INSERT FOR SCREENING DATA
+        $result_scr = $this -> db -> insert_batch('lab_commodity_details', $screening_data_array);
 
-//INSERT FOR SCREENING DATA
-        $result = $this -> db -> insert_batch('lab_commodity_details', $screening_data_array);
+        //INSERT FOR CONFIRMATORY DATA
+        $result_conf = $this -> db -> insert_batch('lab_commodity_details', $confirmatory_data_array);
 
-//INSERT FOR CONFIRMATORY DATA
-        $result = $this -> db -> insert_batch('lab_commodity_details', $confirmatory_data_array);
+        //INSERT FOR ALLOCATION DETAILS
+        $result_alloc = $this -> db -> insert_batch('allocation_details', $allocation_data_array);
 
-// echo "<pre>";print_r($result);echo"</pre>"; exit;
+    // echo "<pre>";print_r($result_alloc);echo"</pre>"; exit;
 
 }        //end of file input if
 else{
