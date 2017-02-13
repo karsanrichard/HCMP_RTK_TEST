@@ -297,11 +297,8 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         <span id="report_status"></span>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" id="go_home">
-            Back to Home
-        </button>
-        <button type="button" class="btn btn-default" id="next_report_btn">
-            Next Report
+        <button type="button" class="btn btn-default" id="dismiss_modal">
+            Accept
         </button>
       </div>
     </div><!-- /.modal-content -->
@@ -439,12 +436,14 @@ $(document).ready(function() {
             type : 'POST',
             data : data,
                 success : function (response) {                    
-                                    
+                      // console.log(response);return;
                     if(response==1)
                     {
-                        loadRemaining();
+                        var message = 'All Allocations have been Submitted.';          
+                        $('#next_modal').modal('show');   
+                        $('#report_status').html(message);
                     }else{
-                        loadRemaining2();
+                        // loadRemaining2();
                         console.log(response);
                     }
                         console.log(data);
@@ -461,11 +460,9 @@ $('#next_report_btn').button().click(function(e)
     var site_url_link = url+next_id;
     window.location.href = site_url_link;
 });
-$('#go_home').button().click(function(e)
-{    var countyid = $('#countyid');
-    var url = "<?php echo base_url() . 'rtk_management/cmlt_allocation_dashboard/'; ?>"; 
-    var site_url_link = url+countyid;
-    window.location.href = site_url_link;
+$('#dismiss_modal').button().click(function(e)
+{    
+  $('#next_modal').modal('hide');   
 });
 });
 </script>

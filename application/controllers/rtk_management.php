@@ -149,6 +149,7 @@ class Rtk_Management extends Home_controller {
         $this->load->view('rtk/template', $data);
 
     }
+    
     public function scmlt_orders($msg = NULL) {
         $district = $this->session->userdata('district_id');        
         $district_name = Districts::get_district_name($district)->toArray();        
@@ -3194,7 +3195,7 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
     // echo "<pre>";print_r($result);exit;
     $data['title'] = "Sub-County Allocation";
     $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result[0]['county'].' ---- '.$result[0]['district'].'</h2>';
-    $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation';        
+    $data['content_view'] = 'rtk/rtk/clc/scmlt_district_allocation';        
     $data['final_dets'] = $final_dets;
     $data['county_name'] = $result4[0]['county'];
     $data['countyid'] = $result4[0]['id'];
@@ -3206,6 +3207,25 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
 
     // echo "<pre>";print_r($data);exit;
     $this->load->view('rtk/template', $data); 
+}
+
+public function calculate_amc($facility_code)
+{
+    $query = "SELECT 
+            commodity_id, amc, created_at
+            FROM
+                rtk.lab_commodity_details
+            WHERE
+                facility_code = '$facility_code'
+                    AND created_at > (NOW() - INTERVAL 3 MONTH)";
+    $result = $this->db->query($query)->result_array();
+
+    $final_amc_s = $final_amc_c = array();
+
+    foreach ($result as $key => $value) {
+        
+    }
+    echo "<pre>";print_r($result);exit;
 }
 
 function get_remaining_districts($district_id){
@@ -3279,14 +3299,12 @@ function submit_district_allocation_report(){
                 'mmos_s' => $mmos_s[$i],
                 'remark_s' => $remark_s[$i],
                 'decision_s' => $decision_s[$i],
-
                 'amc_c' => $amc_c[$i],
                 'ending_bal_c' => $ending_bal_c[$i],
                 'allocate_c' => $q_allocate_c[$i],
                 'mmos_c' => $mmos_c[$i],
                 'remark_c' => $remark_c[$i],
                 'decision_c' => $decision_c[$i],
-
                 'month'=>$allocation_date, 
                 'user_id'=>$user_id);
             array_push($new_data,$mydata);
@@ -3299,7 +3317,7 @@ function submit_district_allocation_report(){
         $this->db->query($sql2);
 
         echo "1";
-        echo $sql2;
+        // echo $sql2;
         // print_r($mydata) ;
 
     }else{
@@ -4308,6 +4326,14 @@ else{
 }
 
 redirect('rtk_management/allocation_csv_interface/1');
+}
+
+public function get_facility_amc($facility_code)
+{
+    $amc_s ='';
+    $amc_c = '';
+    $amc_t = '';
+
 }
 
 public function labs_order_check($facility_code=NULL,$month=NULL,$year=NULL)
