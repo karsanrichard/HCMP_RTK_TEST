@@ -1589,9 +1589,9 @@ public function get_lab_report($order_no, $report_type) {
                 $district_summary2 = $this->rtk_summary_district($district, $year_previous_2, $previous_month_2);
 
 
-                $sql_c = "SELECT commodity_name FROM hcmp_rtk.lab_commodities where category='1' and id='$commodity_id'";
+                $sql_c = "SELECT commodity_name FROM lab_commodities where category='1' and id='$commodity_id'";
                 $result_c = $this->db->query($sql_c)->result_array();   
-                $sql_all_c = "SELECT * FROM hcmp_rtk.lab_commodities where category='1'";
+                $sql_all_c = "SELECT * FROM lab_commodities where category='1'";
                 $result_all_c = $this->db->query($sql_all_c)->result_array();   
                 $county_id = districts::get_county_id($district);
                 $county_name = counties::get_county_name($county_id['county']);
@@ -3218,7 +3218,7 @@ public function calculate_amc($facility_code)
     $query = "SELECT 
             commodity_id, AVG(amc) AS amc, created_at, days_out_of_stock
             FROM
-                rtk.lab_commodity_details
+                lab_commodity_details
             WHERE
                 facility_code = '$facility_code'
             AND created_at > (NOW() -INTERVAL 4 MONTH)
@@ -4345,7 +4345,7 @@ public function labs_order_check($facility_code=NULL,$month=NULL,$year=NULL)
 {
         // echo $facility_code.' '.$month.' '.$year;exit;
 
-    $q = "SELECT * FROM rtk.lab_commodity_orders WHERE facility_code='$facility_code' AND report_for='$month' AND created_at > NOW() - INTERVAL 1 MONTH";
+    $q = "SELECT * FROM lab_commodity_orders WHERE facility_code='$facility_code' AND report_for='$month' AND created_at > NOW() - INTERVAL 1 MONTH";
     $check = $this->db->query($q)->result_array();
     $count_check = count($check);
         // echo "<pre>";print_r($check);exit;
@@ -9455,7 +9455,7 @@ public function national_reporting_rates() {
 
                             }
 
-                            $sql_u = "SELECT email FROM hcmp_rtk.user where usertype_id = 13 and county_id='$county_id'";
+                            $sql_u = "SELECT email FROM user where usertype_id = 13 and county_id='$county_id'";
                             $emails_county = $this->db->query($sql_u)->result_array();
                             $email_address ="";
                             foreach ($emails_county as $key => $value) {
@@ -9920,7 +9920,7 @@ public function national_reporting_rates() {
                                                                                                                     $partner_dets = $this->db->query($p)->result_array();
                                                                                                                     $partner_name = $partner_dets[0]['name'];
 
-                                                                                                                    $sql_u = "SELECT email FROM hcmp_rtk.user where usertype_id = 14 and partner='$partner_id'";
+                                                                                                                    $sql_u = "SELECT email FROM user where usertype_id = 14 and partner='$partner_id'";
                                                                                                                     $emails_partner = $this->db->query($sql_u)->result_array();
                                                                                                                     $email_address ="";
                                                                                                                     foreach ($emails_partner as $key => $value) {
