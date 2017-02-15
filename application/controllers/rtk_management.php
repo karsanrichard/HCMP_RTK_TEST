@@ -3054,6 +3054,7 @@ public function district_allocation_table(){        //karsan slow
         // $result2 = $this->db->query($sql2)->result_array();
         // echo "$sql2"; die;
         $sql3 = "SELECT amc,
+        commodity_id,
         closing_stock,
         days_out_of_stock,
         q_requested
@@ -3081,12 +3082,15 @@ public function district_allocation_table(){        //karsan slow
         // $final_dets[$fcode]['confirmatory_current_amount'] = $confirmatory_current_amount;
         // $final_dets[$fcode]['tiebreaker_current_amount'] = $tiebreaker_current_amount;
         // $final_dets[$fcode]['amcs'] = $result2;
+        $calculated_amc = $this->calculate_amc($fcode);
+
         $final_dets[$fcode]['code'] = $fcode;
         $final_dets[$fcode]['end_bal'] = $result3;
+        $final_dets[$fcode]['amc'] = $calculated_amc;
     }
 
         // echo "$sql3";die;
-    // echo "<pre>";print_r($result);exit;
+    // echo "<pre>";print_r($final_dets);exit;
     $data['title'] = "Sub-County Allocation";
     $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result[0]['county'].' ---- '.$result[0]['district'].'</h2>';
     $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation';        
@@ -3212,20 +3216,21 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
 public function calculate_amc($facility_code)
 {
     $query = "SELECT 
-            commodity_id, amc, created_at
+            commodity_id, AVG(amc) AS amc, created_at, days_out_of_stock
             FROM
                 rtk.lab_commodity_details
             WHERE
                 facility_code = '$facility_code'
-                    AND created_at > (NOW() - INTERVAL 3 MONTH)";
+            AND created_at > (NOW() -INTERVAL 4 MONTH)
+            AND created_at < (NOW() -INTERVAL 1 MONTH)
+            AND commodity_id IN (4 , 5, 6)
+            GROUP BY commodity_id";//Screening and confirmatory
     $result = $this->db->query($query)->result_array();
+    // echo "<pre>";print_r($result);exit;
 
     $final_amc_s = $final_amc_c = array();
-
-    foreach ($result as $key => $value) {
-        
-    }
-    echo "<pre>";print_r($result);exit;
+    //Was to build an array for this, chose to leave the bulk to the query
+    return $result;
 }
 
 function get_remaining_districts($district_id){

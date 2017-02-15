@@ -128,6 +128,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       if(count($final_dets)>0){
         $count = 0;
        foreach ($final_dets as $value) {
+        // echo "<pre>";print_r($value);exit;
         //$zone = str_replace(' ', '-',$value['zone']);
         $facil = $value['code'];
         $ending_bal_s =ceil($value['end_bal'][0]['closing_stock']); 
@@ -147,11 +148,16 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $amc_c = str_replace(',', '',$my_amcs[$count][1]);
         $amc_t = str_replace(',', '',$my_amcs[$count][2]);
         $amc_d = str_replace(',', '',$my_amcs[$count][3]);
+
         $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
         $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
         $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);        
         $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);  
 
+        $amc_s = $value['amc'][0]['amc'] + 0;
+        $amc_c = $value['amc'][1]['amc'] + 0;
+        $amc_t = $value['amc'][2]['amc'] + 0;        
+        $amc_d = $value['amc'][3]['amc'] + 0;  
         // echo "<pre>First ";print_r($my_amcs[$count][0]);
         // echo "<pre>";print_r($amc[$count][0]);
         // exit;      
@@ -175,9 +181,24 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           $amc_d_20 = '-';
           $amc_d_50 = ceil($amc_d/50);
         }
-        $mmos_s = ceil(($amc_s * 4)/50);
-        $mmos_c = ceil(($amc_c * 4)/30);
-        $mmos_t = ceil(($amc_t * 4)/20);
+
+        // $mmos_s = ceil(($amc_s * 4)/50);
+        // $mmos_c = ceil(($amc_c * 4)/30);
+        // $mmos_t = ceil(($amc_t * 4)/20);
+
+        $mmos_s = intval($ending_bal_s/$amc_s);
+        $mmos_c = intval($ending_bal_c/$amc_c);
+        $mmos_t = intval($ending_bal_t/$amc_t);
+
+        $recommended_s = ($amc_s * 4) - $ending_bal_s;
+        $recommended_c = ($amc_c * 4) - $ending_bal_c;
+        $recommended_t = ($amc_t * 4) - $ending_bal_t;
+
+        $recommended_s = ($recommended_s<0)? 0: $recommended_s;
+        $recommended_c = ($recommended_c<0)? 0: $recommended_c;
+        $recommended_t = ($recommended_t<0)? 0: $recommended_t;
+        // $mmos_c = ceil(($amc_c * 4));
+        // $mmos_t = ceil(($amc_t * 4));
       
         if ($mmos_s >6) {
           $style_s = "style='background-color:#ff7f50'"; //red
@@ -238,24 +259,30 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $ending_bal_s;?></td>     
           <td align="center"><?php echo $amc_s;?></td> 
           <td align="center"><?php echo $mmos_s;?></td> 
-          <td align="center"><?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*6)-$ending_bal_s);}?></td> 
-          <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*4)-$ending_bal_s);}?>'/></td> 
+          <td align="center"><?php echo $recommended_s;?></td> 
+          <!-- <td align="center"><?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*6)-$ending_bal_s);}?></td>  -->
+          <!-- <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*4)-$ending_bal_s);}?>'/></td>  -->
+          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_s; ?>'/></td> 
           <td align="center"><input style="width:40px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" /></td> 
           <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
 
           <td align="center"><?php echo $ending_bal_c;?></td>     
           <td align="center"><?php echo $amc_c;?></td> 
           <td align="center"><?php echo $mmos_c;?></td> 
-          <td align="center"><?php if(($amc_c-$ending_bal_c)>0){echo (($amc_c*4)-$ending_bal_c);}?></td> 
-          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php if(($amc_c-$ending_bal_c)>0){echo (($amc_c*4)-$ending_bal_c);}?>'/></td> 
+          <td align="center"><?php echo $recommended_c;?></td> 
+          <!-- <td align="center"><?php if(($amc_c-$ending_bal_c)>0){echo (($amc_c*4)-$ending_bal_c);}?></td>  -->
+          <!-- <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php if(($amc_c-$ending_bal_c)>0){echo (($amc_c*4)-$ending_bal_c);}?>'/></td>  -->
+          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_c; ?>'/></td> 
           <td align="center"><input style="width:40px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" /></td> 
           <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 
 
           <td align="center"><?php echo $ending_bal_t;?></td>     
           <td align="center"><?php echo $amc_t;?></td> 
           <td align="center"><?php echo $mmos_t;?></td> 
-          <td align="center"><?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?></td> 
-          <td align="center"><input style="width:40px" class="tiebreaker_input" id="q_allocate_t<?php echo $count ?>"name="q_allocate_t[<?php echo $count ?>]" value = '<?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?>'/></td> 
+          <td align="center"><?php echo $recommended_t;?></td> 
+          <!-- <td align="center"><?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?></td>  -->
+          <!-- <td align="center"><input style="width:40px" class="tiebreaker_input" id="q_allocate_t<?php echo $count ?>"name="q_allocate_t[<?php echo $count ?>]" value = '<?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?>'/></td>  -->
+          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_t; ?>'/></td> 
           <td align="center"><input style="width:40px" class="tiebreaker_input" id="feedback_t<?php echo $count ?>"name="feedback_t[<?php echo $count ?>]" /></td> 
           <td align="center" <?php echo $style_t;?>><?php echo $decision_t;?></td> 
           
