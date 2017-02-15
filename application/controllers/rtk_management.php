@@ -3215,8 +3215,11 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
 
 public function calculate_amc($facility_code)
 {
-    $query = "SELECT 
-            commodity_id, AVG(amc) AS amc, created_at, days_out_of_stock
+    $query_old = "SELECT 
+            commodity_id, 
+            AVG(amc) AS amc, 
+            created_at, 
+            days_out_of_stock
             FROM
                 lab_commodity_details
             WHERE
@@ -3225,6 +3228,21 @@ public function calculate_amc($facility_code)
             AND created_at < (NOW() -INTERVAL 1 MONTH)
             AND commodity_id IN (4 , 5, 6)
             GROUP BY commodity_id";//Screening and confirmatory
+
+    $query = "SELECT 
+            commodity_id, 
+            AVG(q_used) AS amc, 
+            created_at, 
+            days_out_of_stock
+            FROM
+                lab_commodity_details
+            WHERE
+                facility_code = '$facility_code'
+            AND created_at > (NOW() -INTERVAL 5 MONTH)
+            AND created_at < (NOW() -INTERVAL 1 MONTH)
+            AND commodity_id IN (4 , 5, 6)
+            GROUP BY commodity_id";//Screening and confirmatory
+            
     $result = $this->db->query($query)->result_array();
     // echo "<pre>";print_r($result);exit;
 
