@@ -154,10 +154,10 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);        
         $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);  
 
-        $amc_s = $value['amc'][0]['amc'] + 0;
-        $amc_c = $value['amc'][1]['amc'] + 0;
-        $amc_t = $value['amc'][2]['amc'] + 0;        
-        $amc_d = $value['amc'][3]['amc'] + 0;  
+        $amc_s = round($value['amc'][0]['amc'] + 0);
+        $amc_c = round($value['amc'][1]['amc'] + 0);
+        $amc_t = round($value['amc'][2]['amc'] + 0);        
+        $amc_d = round($value['amc'][3]['amc'] + 0);  
         // echo "<pre>First ";print_r($my_amcs[$count][0]);
         // echo "<pre>";print_r($amc[$count][0]);
         // exit;      
