@@ -78,7 +78,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="">Facility Name</th>     
       <th align="center" colspan="7">Screening</th>      
       <th align="center" colspan="7">Confirmatory</th>      
-      <th align="center" colspan="7">TieBreaker</th> 
+      <!-- <th align="center" colspan="7">TieBreaker</th> 9 -->
       <th align="center" colspan="7">DBS Bundles</th> 
     </tr>    
     <tr>
@@ -104,13 +104,13 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
 
-      <th align="center">Ending Balance</th>      
+      <!-- <th align="center">Ending Balance</th>      
       <th align="center">AMC</th> 
       <th align="center">Months of Stock</th>
       <th align="center">Recommended Quantity to Allocate</th>
       <th align="center">Quantity Allocated by SubCounty</th> 
       <th align="center">Feedback/Remarks</th>
-      <th align="center">Decision (Supply, Monitor, Distribute</th>
+      <th align="center">Decision (Supply, Monitor, Distribute</th> -->
 
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th> 
@@ -272,14 +272,14 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $recommended_c;?></td> 
           <!-- <td align="center"><?php if(($amc_c-$ending_bal_c)>0){echo (($amc_c*4)-$ending_bal_c);}?></td>  -->
           <!-- <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php if(($amc_c-$ending_bal_c)>0){echo (($amc_c*4)-$ending_bal_c);}?>'/></td>  -->
-          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_c; ?>'/></td> 
+          <!-- <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_c; ?>'/></td> 
           <td align="center"><input style="width:40px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" /></td> 
           <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 
 
           <td align="center"><?php echo $ending_bal_t;?></td>     
           <td align="center"><?php echo $amc_t;?></td> 
           <td align="center"><?php echo $mmos_t;?></td> 
-          <td align="center"><?php echo $recommended_t;?></td> 
+          <td align="center"><?php echo $recommended_t;?></td>  -->
           <!-- <td align="center"><?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?></td>  -->
           <!-- <td align="center"><input style="width:40px" class="tiebreaker_input" id="q_allocate_t<?php echo $count ?>"name="q_allocate_t[<?php echo $count ?>]" value = '<?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?>'/></td>  -->
           <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_t; ?>'/></td> 

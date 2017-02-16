@@ -3181,6 +3181,7 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
 
         $result3 = $this->db->query($sql3)->result_array();
         // echo "<pre>"; print_r($result3); die;
+        $calculated_amc = $this->calculate_amc($fcode);
 
         $final_dets[$fcode]['name'] = $facilityname;
         $final_dets[$fcode]['district'] = $district;
@@ -3193,6 +3194,7 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
         // $final_dets[$fcode]['amcs'] = $result2;
         $final_dets[$fcode]['code'] = $fcode;
         $final_dets[$fcode]['end_bal'] = $result3;
+        $final_dets[$fcode]['amc'] = $calculated_amc;
     }
 
         // echo "$sql3";die;
@@ -3376,6 +3378,7 @@ public function edit_county_allocation_report($district_id){
     $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result2[0]['county_name'].' ---- '.$result2[0]['district'].'Sub County</h2>';
     $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation_edit'; 
 
+    // echo "<pre>";print_r($data);exit;
     $this->load->view('rtk/template', $data); 
 }
 function edit_district_allocation_report(){
@@ -4249,7 +4252,7 @@ public function allocation_csv($value='')
         $screening_count = count($screening_data);
         $confirmatory_count = count($confirmatory_data);
 
-        // echo "<pre>";print_r($allocation_data_array);exit;
+        // echo "<pre>";print_r($confirmatory_data);exit;
         $screening_data_array = array();
         $confirmatory_data_array = array();
         $explanation = "Upload via excel";
@@ -4295,6 +4298,7 @@ public function allocation_csv($value='')
             array_push($screening_data_array, $screening_insert_data);
         }
 
+        // echo "<pre>";print_r($confirmatory_data);exit;
         foreach ($confirmatory_data as $data => $value) {
             //4 Screening
             //5 Confirmatory
@@ -4309,28 +4313,30 @@ public function allocation_csv($value='')
                 'facility_code' => $facility_code,
                 'commodity_id' => 5,
                 'unit_of_issue' => 1,
-                'beginning_bal' => $value['screening_beg_bal'],
+                'beginning_bal' => $value['confirmatory_beg_bal'],
                 'physical_beginning_bal' => 0,
-                'q_received' => $value['screening_qtt_received'],
-                'q_recieved_others' => $value['screening_qtt_received_other'],
-                'q_used' => $value['screening_qtt_used'],
+                'q_received' => $value['confirmatory_qtt_received'],
+                'q_recieved_others' => $value['confirmatory_qtt_received_other'],
+                'q_used' => $value['confirmatory_qtt_used'],
                 'newqused' => 0,
-                'no_of_tests_done' => $value['screening_no_of_tests'],
-                'losses' => $value['screening_losses'],
-                'positive_adj' => $value['screening_pos_adj'],
-                'negative_adj' => $value['screening_neg_adj'],
-                'physical_closing_stock' => $value['screening_end_month_phyc_count'],
-                'closing_stock' => $value['screening_end_month_phyc_count'],
+                'no_of_tests_done' => $value['confirmatory_no_of_tests'],
+                'losses' => $value['confirmatory_losses'],
+                'positive_adj' => $value['confirmatory_pos_adj'],
+                'negative_adj' => $value['confirmatory_neg_adj'],
+                'physical_closing_stock' => $value['confirmatory_end_month_phyc_count'],
+                'closing_stock' => $value['confirmatory_end_month_phyc_count'],
                 'newclosingstock' => 0,
-                'q_expiring' => $value['screening_qtt_expiring_6_months'],
-                'days_out_of_stock' => $value['screening_days_out_of_stock'],
-                'q_requested' => $value['screening_qtt_requested'],
+                'q_expiring' => $value['confirmatory_qtt_expiring_6_months'],
+                'days_out_of_stock' => $value['confirmatory_days_out_of_stock'],
+                'q_requested' => $value['confirmatory_qtt_requested'],
                 'amc' => 0,
                 'allocated' => 0,
                 'allocated_date' => 0,
                 );
-            array_push($confirmatory_data_array, $screening_insert_data);
+            array_push($confirmatory_data_array, $confirmatory_insert_data);
         }
+
+        // echo "<pre>";print_r($confirmatory_data_array);exit;
 
         //INSERT FOR SCREENING DATA
         $result_scr = $this -> db -> insert_batch('lab_commodity_details', $screening_data_array);
@@ -4341,11 +4347,11 @@ public function allocation_csv($value='')
         //INSERT FOR ALLOCATION DETAILS
         $result_alloc = $this -> db -> insert_batch('allocation_details', $allocation_data_array);
 
-    // echo "<pre>";print_r($result_alloc);echo"</pre>"; exit;
+        // echo "<pre>";print_r($result_conf);echo"</pre>"; exit;
 
 }        //end of file input if
 else{
-    echo "NO FILE";
+    echo "NO FILE UPLOADED";
 }
 
 redirect('rtk_management/allocation_csv_interface/1');
