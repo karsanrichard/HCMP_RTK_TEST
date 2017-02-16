@@ -3238,7 +3238,7 @@ public function calculate_amc($facility_code)
                 lab_commodity_details
             WHERE
                 facility_code = '$facility_code'
-            AND created_at > (NOW() -INTERVAL 5 MONTH)
+            AND created_at > (NOW() -INTERVAL 4 MONTH)
             AND created_at < (NOW() -INTERVAL 1 MONTH)
             AND commodity_id IN (4 , 5, 6)
             GROUP BY commodity_id";//Screening and confirmatory
