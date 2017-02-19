@@ -1,3 +1,4 @@
+<?php //echo "<pre>";print_r($final_dets);exit; ?>
 <style>
 .dataTables_filter{
   float: right;
@@ -201,19 +202,25 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         // $mmos_t = ceil(($amc_t * 4));
       
         if ($mmos_s >6) {
-          $style_s = "style='background-color:#ff7f50'"; //red
+          // $style_s = "style='background-color:#ff7f50'"; //red
+          $style_s = "style='background-color:#5efb6e'"; //green
           $decision_s = "REDISTRIBUTE";
         }
         elseif ($mmos_s>=4 && $mmos_s<6){
+          // $style_s = "style='background-color:#ffdb58'";//yellow
           $style_s = "style='background-color:#ffdb58'";//yellow
           $decision_s = "MONITOR";
         }
         elseif ($mmos_s<4){
-          $style_s = "style='background-color:#5efb6e'";//green
+          // $style_s = "style='background-color:#5efb6e'";//green
+          $style_s = "style='background-color:#ff7f50'";//red
           $decision_s = "RESUPPLY";
         }
+        
+
         if ($mmos_c >6) {
-          $style_c = "style='background-color:#ff7f50'";//red
+          // $style_c = "style='background-color:#ff7f50'";//red
+          $style_c = "style='background-color:#5efb6e'";//green
           $decision_c = "REDISTRIBUTE";
         }
         elseif ($mmos_c>=4 && $mmos_c<6){
@@ -221,11 +228,14 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           $decision_c = "MONITOR";
         }
         elseif ($mmos_c<4){
-          $style_c = "style='background-color:#5efb6e'";//green
+          // $style_c = "style='background-color:#5efb6e'";//green
+          $style_c = "style='background-color:#ff7f50'";//red
           $decision_c = "RESUPPLY";
         }
+
         if ($mmos_t >6) {
-          $style_t = "style='background-color:#ff7f50'";//red
+          // $style_t = "style='background-color:#ff7f50'";//red
+          $style_t = "style='background-color:#5efb6e'";//green
           $decision_t = "REDISTRIBUTE";
         }
         elseif ($mmos_t>=4 && $mmos_t<6){
@@ -233,7 +243,8 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           $decision_t = "MONITOR";
         }
         elseif ($mmos_t<4){
-          $style_t = "style='background-color:#5efb6e'";//green
+          // $style_t = "style='background-color:#5efb6e'";//green
+          $style_t = "style='background-color:#ff7f50'";//red
           $decision_t = "RESUPPLY";
         }
         
@@ -466,12 +477,13 @@ $(document).ready(function() {
             type : 'POST',
             data : data,
                 success : function (response) {                    
-                                    
-                    if(response==1)
+                 if(response==1)
                     {
-                        loadRemaining();
+                        var message = 'All Allocations have been Submitted.';          
+                        $('#next_modal').modal('show');   
+                        $('#report_status').html(message);
                     }else{
-                        loadRemaining2();
+                        // loadRemaining2();
                         console.log(response);
                     }
                         console.log(data);

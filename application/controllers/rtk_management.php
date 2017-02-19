@@ -149,12 +149,14 @@ class Rtk_Management extends Home_controller {
         $this->load->view('rtk/template', $data);
 
     }
+    
     public function scmlt_orders($msg = NULL) {
         $district = $this->session->userdata('district_id');        
         $district_name = Districts::get_district_name($district)->toArray();        
         $d_name = $district_name[0]['district'];
         $countyid = $this->session->userdata('county_id');
 
+        // echo $district;exit;
         $data['countyid'] = $countyid;
 
         $data['title'] = "Orders";
@@ -167,11 +169,18 @@ class Rtk_Management extends Home_controller {
         $last_month = date('m');
         //            $month_ago=date('Y-'.$last_month.'-d');
         $month_ago = date('Y-m-d', strtotime("last day of previous month"));
-        $sql = 'SELECT  
+        $sql_old = 'SELECT  
         facilities.facility_code,facilities.facility_name,lab_commodity_orders.id,lab_commodity_orders.order_date,lab_commodity_orders.district_id,lab_commodity_orders.compiled_by,lab_commodity_orders.facility_code
         FROM lab_commodity_orders, facilities
         WHERE lab_commodity_orders.facility_code = facilities.facility_code 
         AND lab_commodity_orders.order_date between ' . $month_ago . ' AND NOW()
+        AND facilities.district =' . $district . '
+        ORDER BY  lab_commodity_orders.id DESC ';
+
+        $sql = 'SELECT  
+        facilities.facility_code,facilities.facility_name,lab_commodity_orders.id,lab_commodity_orders.order_date,lab_commodity_orders.district_id,lab_commodity_orders.compiled_by,lab_commodity_orders.facility_code
+        FROM lab_commodity_orders, facilities
+        WHERE lab_commodity_orders.facility_code = facilities.facility_code 
         AND facilities.district =' . $district . '
         ORDER BY  lab_commodity_orders.id DESC ';
         /*$query = $this->db->query("SELECT  
@@ -1588,9 +1597,9 @@ public function get_lab_report($order_no, $report_type) {
                 $district_summary2 = $this->rtk_summary_district($district, $year_previous_2, $previous_month_2);
 
 
-                $sql_c = "SELECT commodity_name FROM hcmp_rtk.lab_commodities where category='1' and id='$commodity_id'";
+                $sql_c = "SELECT commodity_name FROM lab_commodities where category='1' and id='$commodity_id'";
                 $result_c = $this->db->query($sql_c)->result_array();   
-                $sql_all_c = "SELECT * FROM hcmp_rtk.lab_commodities where category='1'";
+                $sql_all_c = "SELECT * FROM lab_commodities where category='1'";
                 $result_all_c = $this->db->query($sql_all_c)->result_array();   
                 $county_id = districts::get_county_id($district);
                 $county_name = counties::get_county_name($county_id['county']);
@@ -3053,6 +3062,7 @@ public function district_allocation_table(){        //karsan slow
         // $result2 = $this->db->query($sql2)->result_array();
         // echo "$sql2"; die;
         $sql3 = "SELECT amc,
+        commodity_id,
         closing_stock,
         days_out_of_stock,
         q_requested
@@ -3080,12 +3090,15 @@ public function district_allocation_table(){        //karsan slow
         // $final_dets[$fcode]['confirmatory_current_amount'] = $confirmatory_current_amount;
         // $final_dets[$fcode]['tiebreaker_current_amount'] = $tiebreaker_current_amount;
         // $final_dets[$fcode]['amcs'] = $result2;
+        $calculated_amc = $this->calculate_amc($fcode);
+
         $final_dets[$fcode]['code'] = $fcode;
         $final_dets[$fcode]['end_bal'] = $result3;
+        $final_dets[$fcode]['amc'] = $calculated_amc;
     }
 
         // echo "$sql3";die;
-    // echo "<pre>";print_r($result);exit;
+    // echo "<pre>";print_r($final_dets);exit;
     $data['title'] = "Sub-County Allocation";
     $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result[0]['county'].' ---- '.$result[0]['district'].'</h2>';
     $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation';        
@@ -3176,6 +3189,7 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
 
         $result3 = $this->db->query($sql3)->result_array();
         // echo "<pre>"; print_r($result3); die;
+        $calculated_amc = $this->calculate_amc($fcode);
 
         $final_dets[$fcode]['name'] = $facilityname;
         $final_dets[$fcode]['district'] = $district;
@@ -3188,13 +3202,14 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
         // $final_dets[$fcode]['amcs'] = $result2;
         $final_dets[$fcode]['code'] = $fcode;
         $final_dets[$fcode]['end_bal'] = $result3;
+        $final_dets[$fcode]['amc'] = $calculated_amc;
     }
 
         // echo "$sql3";die;
     // echo "<pre>";print_r($result);exit;
     $data['title'] = "Sub-County Allocation";
     $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result[0]['county'].' ---- '.$result[0]['district'].'</h2>';
-    $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation';        
+    $data['content_view'] = 'rtk/rtk/clc/scmlt_district_allocation';        
     $data['final_dets'] = $final_dets;
     $data['county_name'] = $result4[0]['county'];
     $data['countyid'] = $result4[0]['id'];
@@ -3204,8 +3219,46 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
     $data['confirmatory_current_amount'] = $result4[0]['confirmatory_current_amount'];
     $data['tiebreaker_current_amount'] = $result4[0]['tiebreaker_current_amount'];
 
-    // echo "<pre>";print_r($data);exit;
+    // echo "<pre>";print_r($final_dets);exit;
     $this->load->view('rtk/template', $data); 
+}
+
+public function calculate_amc($facility_code)
+{
+    $query_old = "SELECT 
+            commodity_id, 
+            AVG(amc) AS amc, 
+            created_at, 
+            days_out_of_stock
+            FROM
+                lab_commodity_details
+            WHERE
+                facility_code = '$facility_code'
+            AND created_at > (NOW() -INTERVAL 4 MONTH)
+            AND created_at < (NOW() -INTERVAL 1 MONTH)
+            AND commodity_id IN (4 , 5, 6)
+            GROUP BY commodity_id";//Screening and confirmatory
+
+    $query = "SELECT 
+            commodity_id, 
+            AVG(q_used) AS amc, 
+            created_at, 
+            days_out_of_stock
+            FROM
+                lab_commodity_details
+            WHERE
+                facility_code = '$facility_code'
+            AND created_at > (NOW() -INTERVAL 4 MONTH)
+            AND created_at < (NOW() -INTERVAL 1 MONTH)
+            AND commodity_id IN (4 , 5, 6)
+            GROUP BY commodity_id";//Screening and confirmatory
+            
+    $result = $this->db->query($query)->result_array();
+    // echo "<pre>";print_r($result);exit;
+
+    $final_amc_s = $final_amc_c = array();
+    //Was to build an array for this, chose to leave the bulk to the query
+    return $result;
 }
 
 function get_remaining_districts($district_id){
@@ -3279,14 +3332,12 @@ function submit_district_allocation_report(){
                 'mmos_s' => $mmos_s[$i],
                 'remark_s' => $remark_s[$i],
                 'decision_s' => $decision_s[$i],
-
                 'amc_c' => $amc_c[$i],
                 'ending_bal_c' => $ending_bal_c[$i],
                 'allocate_c' => $q_allocate_c[$i],
                 'mmos_c' => $mmos_c[$i],
                 'remark_c' => $remark_c[$i],
                 'decision_c' => $decision_c[$i],
-
                 'month'=>$allocation_date, 
                 'user_id'=>$user_id);
             array_push($new_data,$mydata);
@@ -3299,7 +3350,7 @@ function submit_district_allocation_report(){
         $this->db->query($sql2);
 
         echo "1";
-        echo $sql2;
+        // echo $sql2;
         // print_r($mydata) ;
 
     }else{
@@ -3335,6 +3386,7 @@ public function edit_county_allocation_report($district_id){
     $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result2[0]['county_name'].' ---- '.$result2[0]['district'].'Sub County</h2>';
     $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation_edit'; 
 
+    // echo "<pre>";print_r($data);exit;
     $this->load->view('rtk/template', $data); 
 }
 function edit_district_allocation_report(){
@@ -4208,7 +4260,7 @@ public function allocation_csv($value='')
         $screening_count = count($screening_data);
         $confirmatory_count = count($confirmatory_data);
 
-        // echo "<pre>";print_r($allocation_data_array);exit;
+        // echo "<pre>";print_r($confirmatory_data);exit;
         $screening_data_array = array();
         $confirmatory_data_array = array();
         $explanation = "Upload via excel";
@@ -4254,6 +4306,7 @@ public function allocation_csv($value='')
             array_push($screening_data_array, $screening_insert_data);
         }
 
+        // echo "<pre>";print_r($confirmatory_data);exit;
         foreach ($confirmatory_data as $data => $value) {
             //4 Screening
             //5 Confirmatory
@@ -4268,28 +4321,30 @@ public function allocation_csv($value='')
                 'facility_code' => $facility_code,
                 'commodity_id' => 5,
                 'unit_of_issue' => 1,
-                'beginning_bal' => $value['screening_beg_bal'],
+                'beginning_bal' => $value['confirmatory_beg_bal'],
                 'physical_beginning_bal' => 0,
-                'q_received' => $value['screening_qtt_received'],
-                'q_recieved_others' => $value['screening_qtt_received_other'],
-                'q_used' => $value['screening_qtt_used'],
+                'q_received' => $value['confirmatory_qtt_received'],
+                'q_recieved_others' => $value['confirmatory_qtt_received_other'],
+                'q_used' => $value['confirmatory_qtt_used'],
                 'newqused' => 0,
-                'no_of_tests_done' => $value['screening_no_of_tests'],
-                'losses' => $value['screening_losses'],
-                'positive_adj' => $value['screening_pos_adj'],
-                'negative_adj' => $value['screening_neg_adj'],
-                'physical_closing_stock' => $value['screening_end_month_phyc_count'],
-                'closing_stock' => $value['screening_end_month_phyc_count'],
+                'no_of_tests_done' => $value['confirmatory_no_of_tests'],
+                'losses' => $value['confirmatory_losses'],
+                'positive_adj' => $value['confirmatory_pos_adj'],
+                'negative_adj' => $value['confirmatory_neg_adj'],
+                'physical_closing_stock' => $value['confirmatory_end_month_phyc_count'],
+                'closing_stock' => $value['confirmatory_end_month_phyc_count'],
                 'newclosingstock' => 0,
-                'q_expiring' => $value['screening_qtt_expiring_6_months'],
-                'days_out_of_stock' => $value['screening_days_out_of_stock'],
-                'q_requested' => $value['screening_qtt_requested'],
+                'q_expiring' => $value['confirmatory_qtt_expiring_6_months'],
+                'days_out_of_stock' => $value['confirmatory_days_out_of_stock'],
+                'q_requested' => $value['confirmatory_qtt_requested'],
                 'amc' => 0,
                 'allocated' => 0,
                 'allocated_date' => 0,
                 );
-            array_push($confirmatory_data_array, $screening_insert_data);
+            array_push($confirmatory_data_array, $confirmatory_insert_data);
         }
+
+        // echo "<pre>";print_r($confirmatory_data_array);exit;
 
         //INSERT FOR SCREENING DATA
         $result_scr = $this -> db -> insert_batch('lab_commodity_details', $screening_data_array);
@@ -4300,21 +4355,29 @@ public function allocation_csv($value='')
         //INSERT FOR ALLOCATION DETAILS
         $result_alloc = $this -> db -> insert_batch('allocation_details', $allocation_data_array);
 
-    // echo "<pre>";print_r($result_alloc);echo"</pre>"; exit;
+        // echo "<pre>";print_r($result_conf);echo"</pre>"; exit;
 
 }        //end of file input if
 else{
-    echo "NO FILE";
+    echo "NO FILE UPLOADED";
 }
 
 redirect('rtk_management/allocation_csv_interface/1');
+}
+
+public function get_facility_amc($facility_code)
+{
+    $amc_s ='';
+    $amc_c = '';
+    $amc_t = '';
+
 }
 
 public function labs_order_check($facility_code=NULL,$month=NULL,$year=NULL)
 {
         // echo $facility_code.' '.$month.' '.$year;exit;
 
-    $q = "SELECT * FROM rtk.lab_commodity_orders WHERE facility_code='$facility_code' AND report_for='$month' AND created_at > NOW() - INTERVAL 1 MONTH";
+    $q = "SELECT * FROM lab_commodity_orders WHERE facility_code='$facility_code' AND report_for='$month' AND created_at > NOW() - INTERVAL 1 MONTH";
     $check = $this->db->query($q)->result_array();
     $count_check = count($check);
         // echo "<pre>";print_r($check);exit;
@@ -9424,7 +9487,7 @@ public function national_reporting_rates() {
 
                             }
 
-                            $sql_u = "SELECT email FROM hcmp_rtk.user where usertype_id = 13 and county_id='$county_id'";
+                            $sql_u = "SELECT email FROM user where usertype_id = 13 and county_id='$county_id'";
                             $emails_county = $this->db->query($sql_u)->result_array();
                             $email_address ="";
                             foreach ($emails_county as $key => $value) {
@@ -9889,7 +9952,7 @@ public function national_reporting_rates() {
                                                                                                                     $partner_dets = $this->db->query($p)->result_array();
                                                                                                                     $partner_name = $partner_dets[0]['name'];
 
-                                                                                                                    $sql_u = "SELECT email FROM hcmp_rtk.user where usertype_id = 14 and partner='$partner_id'";
+                                                                                                                    $sql_u = "SELECT email FROM user where usertype_id = 14 and partner='$partner_id'";
                                                                                                                     $emails_partner = $this->db->query($sql_u)->result_array();
                                                                                                                     $email_address ="";
                                                                                                                     foreach ($emails_partner as $key => $value) {
