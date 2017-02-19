@@ -156,6 +156,7 @@ class Rtk_Management extends Home_controller {
         $d_name = $district_name[0]['district'];
         $countyid = $this->session->userdata('county_id');
 
+        // echo $district;exit;
         $data['countyid'] = $countyid;
 
         $data['title'] = "Orders";
@@ -168,11 +169,18 @@ class Rtk_Management extends Home_controller {
         $last_month = date('m');
         //            $month_ago=date('Y-'.$last_month.'-d');
         $month_ago = date('Y-m-d', strtotime("last day of previous month"));
-        $sql = 'SELECT  
+        $sql_old = 'SELECT  
         facilities.facility_code,facilities.facility_name,lab_commodity_orders.id,lab_commodity_orders.order_date,lab_commodity_orders.district_id,lab_commodity_orders.compiled_by,lab_commodity_orders.facility_code
         FROM lab_commodity_orders, facilities
         WHERE lab_commodity_orders.facility_code = facilities.facility_code 
         AND lab_commodity_orders.order_date between ' . $month_ago . ' AND NOW()
+        AND facilities.district =' . $district . '
+        ORDER BY  lab_commodity_orders.id DESC ';
+
+        $sql = 'SELECT  
+        facilities.facility_code,facilities.facility_name,lab_commodity_orders.id,lab_commodity_orders.order_date,lab_commodity_orders.district_id,lab_commodity_orders.compiled_by,lab_commodity_orders.facility_code
+        FROM lab_commodity_orders, facilities
+        WHERE lab_commodity_orders.facility_code = facilities.facility_code 
         AND facilities.district =' . $district . '
         ORDER BY  lab_commodity_orders.id DESC ';
         /*$query = $this->db->query("SELECT  
