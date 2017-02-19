@@ -3211,7 +3211,7 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
     $data['confirmatory_current_amount'] = $result4[0]['confirmatory_current_amount'];
     $data['tiebreaker_current_amount'] = $result4[0]['tiebreaker_current_amount'];
 
-    // echo "<pre>";print_r($data);exit;
+    // echo "<pre>";print_r($final_dets);exit;
     $this->load->view('rtk/template', $data); 
 }
 
