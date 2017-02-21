@@ -132,10 +132,16 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         // echo "<pre>";print_r($value);exit;
         //$zone = str_replace(' ', '-',$value['zone']);
         $facil = $value['code'];
-        $ending_bal_s =ceil($value['end_bal'][0]['closing_stock']); 
-        $ending_bal_c =ceil($value['end_bal'][1]['closing_stock']); 
-        $ending_bal_t =ceil($value['end_bal'][2]['closing_stock']);
-        $ending_bal_d =ceil($value['end_bal'][3]['closing_stock']);
+        // $ending_bal_s =ceil($value['end_bal'][0]['closing_stock']); 
+        // $ending_bal_c =ceil($value['end_bal'][1]['closing_stock']); 
+        // $ending_bal_t =ceil($value['end_bal'][2]['closing_stock']);
+        // $ending_bal_d =ceil($value['end_bal'][3]['closing_stock']);
+
+        $ending_bal_s =ceil($value['closing_stock'][0]['closing_stock']); 
+        $ending_bal_c =ceil($value['closing_stock'][1]['closing_stock']); 
+        $ending_bal_t =ceil($value['closing_stock'][2]['closing_stock']);
+        $ending_bal_d =ceil($value['closing_stock'][3]['closing_stock']);
+        
         $days_out_of_stock_s =ceil($value['end_bal'][0]['days_out_of_stock']); 
         $days_out_of_stock_c =ceil($value['end_bal'][1]['days_out_of_stock']); 
         $days_out_of_stock_t =ceil($value['end_bal'][2]['days_out_of_stock']);
