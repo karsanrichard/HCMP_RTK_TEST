@@ -3190,7 +3190,9 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
         $result3 = $this->db->query($sql3)->result_array();
         // echo "<pre>"; print_r($result3); die;
         $calculated_amc = $this->calculate_amc($fcode);
+        $closing_stock = $this->last_month_closing_stock($fcode);
 
+        // echo "<pre>";print_r($last_month_closing_stock);exit;
         $final_dets[$fcode]['name'] = $facilityname;
         $final_dets[$fcode]['district'] = $district;
         $final_dets[$fcode]['district_id'] = $districtid;
@@ -3203,6 +3205,7 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
         $final_dets[$fcode]['code'] = $fcode;
         $final_dets[$fcode]['end_bal'] = $result3;
         $final_dets[$fcode]['amc'] = $calculated_amc;
+        $final_dets[$fcode]['closing_stock'] = $closing_stock;
     }
 
         // echo "$sql3";die;
@@ -3258,6 +3261,26 @@ public function calculate_amc($facility_code)
 
     $final_amc_s = $final_amc_c = array();
     //Was to build an array for this, chose to leave the bulk to the query
+    return $result;
+}
+
+public function last_month_closing_stock($facility_code='')
+{
+    $query = "SELECT 
+                commodity_id,
+                closing_stock,
+                MONTH(created_at) as created_at
+            FROM
+                lab_commodity_details AS a
+            WHERE
+                facility_code = $facility_code
+                    AND commodity_id BETWEEN 4 AND 6
+                    AND created_at BETWEEN DATE_FORMAT(NOW() - INTERVAL 1 MONTH,
+                        '%Y-%m-01 00:00:00') AND DATE_FORMAT(LAST_DAY(NOW() - INTERVAL 1 MONTH),
+                        '%Y-%m-%d 23:59:59')";//Screening and confirmatory
+            
+    $result = $this->db->query($query)->result_array();
+    // echo "<pre>";print_r($result);exit;
     return $result;
 }
 
