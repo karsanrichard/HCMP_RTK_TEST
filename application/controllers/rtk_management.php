@@ -3266,7 +3266,24 @@ public function calculate_amc($facility_code)
 
 public function last_month_closing_stock($facility_code='')
 {
-    $query = "SELECT 
+    $query_latest = "SELECT 
+                commodity_id,
+                amc,
+                closing_stock,
+                days_out_of_stock,
+                q_requested,
+                created_at
+            FROM
+                lab_commodity_details AS a
+            WHERE
+                facility_code = $facility_code
+                    AND commodity_id BETWEEN 4 AND 6
+                    AND created_at IN (SELECT MAX(created_at) FROM lab_commodity_details where facility_code = $facility_code)";
+
+    $result = $this->db->query($query_latest)->result_array();
+
+    if (count($result) < 1) {
+        $query_last_month = "SELECT 
                 commodity_id,
                 closing_stock,
                 MONTH(created_at) as created_at
@@ -3279,9 +3296,13 @@ public function last_month_closing_stock($facility_code='')
                         '%Y-%m-01 00:00:00') AND DATE_FORMAT(LAST_DAY(NOW() - INTERVAL 1 MONTH),
                         '%Y-%m-%d 23:59:59')";//Screening and confirmatory
             
-    $result = $this->db->query($query)->result_array();
+        $result = $this->db->query($query_last_month)->result_array();
+        $final_result = $result;
+    }else{
+        $final_result = $result;
+    }
     // echo "<pre>";print_r($result);exit;
-    return $result;
+    return $final_result;
 }
 
 function get_remaining_districts($district_id){
