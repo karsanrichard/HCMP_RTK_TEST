@@ -3115,7 +3115,7 @@ public function district_allocation_table(){        //karsan slow
     $this->load->view('rtk/template', $data); 
 }
 
-public function scmlt_allocation_table($district_id = NULL){        //karsan slow
+public function scmlt_allocation_table($district_id = NULL){//karsan slow
     $county = (int) $this->session->userdata("county_id");
     $district_id = (int) $this->session->userdata("district_id");
 
@@ -3147,7 +3147,12 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
     ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
     $result = $this->db->query($sql)->result_array();
     $final_dets = array();
-    // echo "<pre>"; print_r($result4);die;
+    // echo "<pre>"; print_r($result);die;
+    // $all_fac_max_created_at = $this->get_max_created_at($district_id);
+    // echo "<pre>";print_r($all_fac_max_created_at);
+    // $key = array_search(14296, $all_fac_max_created_at);
+    // echo "<pre>";print_r($key);exit;
+    // $all_fac_max_created_at = $max_created_at['max_created_at'];
 
     foreach ($result as $key => $id_details) {
 
@@ -3158,19 +3163,6 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
         $countyid = $id_details['countyid'];
         $facilityname = $id_details['facility_name'];
 
-        // $sql2 = "SELECT 
-        //             facility_amc.amc as amc
-        //         FROM
-        //             facilities,
-        //             facility_amc
-        //         WHERE
-        //             facilities.facility_code = facility_amc.facility_code
-        //                 AND facilities.facility_code = '$fcode'
-        //                 AND facility_amc.commodity_id between 4 and 22            
-        //         ORDER BY facility_amc.commodity_id ASC";
-
-        // $result2 = $this->db->query($sql2)->result_array();
-        // echo "$sql2"; die;
         $sql3 = "SELECT amc,
         closing_stock,
         days_out_of_stock,
@@ -3180,16 +3172,12 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
         WHERE
         facility_code = $fcode
         AND commodity_id between 4 and 6
-        AND created_at in (SELECT 
-        MAX(created_at)
-        FROM
-        lab_commodity_details AS b
-        WHERE
-        a.facility_code = b.facility_code)";
+        AND created_at IN (SELECT MAX(created_at) FROM lab_commodity_details where facility_code = $fcode)";
 
         $result3 = $this->db->query($sql3)->result_array();
         // echo "<pre>"; print_r($result3); die;
         $calculated_amc = $this->calculate_amc($fcode);
+        // echo "<pre>";print_r($calculated_amc);exit;
         $closing_stock = $this->last_month_closing_stock($fcode);
 
         // echo "<pre>";print_r($last_month_closing_stock);exit;
@@ -3226,21 +3214,27 @@ public function scmlt_allocation_table($district_id = NULL){        //karsan slo
     $this->load->view('rtk/template', $data); 
 }
 
+public function get_max_created_at($district_id)
+{
+
+    $query = "SELECT 
+        MAX(l.created_at) as max_created_at,
+        f.facility_code,
+        d.id as district_id
+        FROM
+        districts d, facilities f,lab_commodity_details l
+        WHERE
+        d.id = $district_id AND
+        f.district = $district_id
+        GROUP BY f.facility_code";
+
+    $result = $this->db->query($query)->result_array();
+
+    return $result;
+}
 public function calculate_amc($facility_code)
 {
-    $query_old = "SELECT 
-            commodity_id, 
-            AVG(amc) AS amc, 
-            created_at, 
-            days_out_of_stock
-            FROM
-                lab_commodity_details
-            WHERE
-                facility_code = '$facility_code'
-            AND created_at > (NOW() -INTERVAL 4 MONTH)
-            AND created_at < (NOW() -INTERVAL 1 MONTH)
-            AND commodity_id IN (4 , 5, 6)
-            GROUP BY commodity_id";//Screening and confirmatory
+    // echo $facility_code;
 
     $query = "SELECT 
             commodity_id, 
@@ -3253,15 +3247,82 @@ public function calculate_amc($facility_code)
                 facility_code = '$facility_code'
             AND created_at > (NOW() -INTERVAL 4 MONTH)
             AND created_at < (NOW() -INTERVAL 1 MONTH)
-            AND commodity_id IN (4 , 5, 6)
-            GROUP BY commodity_id";//Screening and confirmatory
+            AND commodity_id IN (4 , 5)
+            GROUP BY commodity_id, month(created_at)";//Screening and confirmatory
             
     $result = $this->db->query($query)->result_array();
-    // echo "<pre>";print_r($result);exit;
+    // echo "<pre>THIS ";print_r($result); 
+    // $4_total = $5_total = $6_total = 0;
+    $total_4 = $total_5 = $total_6 = 0;
+    $dos_4 = $dos_5 = $dos_6 = 0;
+    $final_array = array();
 
+    foreach ($result as $key => $value) {
+        // echo "<pre>";print_r($value['commodity_id']);
+        switch ($value['commodity_id']) {
+            case '4':
+                // echo 4;
+                $total_4_qtt_used = $total_4_qtt_used + $value['amc'];
+                $dos_4 = $dos_4 + $value['days_out_of_stock'];
+                break;
+            case '5':
+                // echo 5;
+                $total_5_qtt_used = $total_5_qtt_used + $value['amc'];
+                $dos_5 = $dos_5 + $value['days_out_of_stock'];
+                break;
+            case '6':
+                // echo 6;
+                $total_6_qtt_used = $total_6_qtt_used + $value['amc'];
+                $dos_6 = $dos_6 + $value['days_out_of_stock'];
+                break;
+            
+            default:
+                // echo "Nothing";
+                break;
+        }
+
+    }
+
+
+    // echo "<pre>".$total_4_qtt_used;
+    // echo "<pre>".$total_5_qtt_used;
+    // echo "<pre>".$total_6_qtt_used;
+
+    //14th March
+
+    $total_before = 90;//Average total for 3 months
+    $total_4_after = $total_before - $dos_4;
+    $total_5_after = $total_before - $dos_5;
+    $total_6_after = $total_before - $dos_6;
+
+    $final_4_divisor = $total_4_after/30;//total days - days of stock divided by 30
+    $final_5_divisor = $total_5_after/30;
+    $final_6_divisor = $total_6_after/30;
+
+    $final_average_4 = $total_4_qtt_used/$final_4_divisor; 
+    $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
+    $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
+
+    $final_array_4['commodity_id'] = 4;
+    $final_array_4['amc'] = $final_average_4;
+    $final_array_4['days_out_of_stock'] = $dos_4;
+
+    $final_array_5['commodity_id'] = 5;
+    $final_array_5['amc'] = $final_average_5;
+    $final_array_5['days_out_of_stock'] = $dos_5;
+
+    $final_array_6['commodity_id'] = 6;
+    $final_array_6['amc'] = $final_average_6;
+    $final_array_6['days_out_of_stock'] = $dos_6;
+
+    array_push($final_array, $final_array_4);
+    array_push($final_array, $final_array_5);
+    array_push($final_array, $final_array_6);
+
+    // echo "<pre>";print_r($final_array);exit;
     $final_amc_s = $final_amc_c = array();
     //Was to build an array for this, chose to leave the bulk to the query
-    return $result;
+    return $final_array;
 }
 
 public function last_month_closing_stock($facility_code='')
