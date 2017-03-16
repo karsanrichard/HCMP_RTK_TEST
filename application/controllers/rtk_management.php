@@ -3211,7 +3211,7 @@ public function scmlt_allocation_table($district_id = NULL){//karsan slow
     $data['confirmatory_current_amount'] = $result4[0]['confirmatory_current_amount'];
     $data['tiebreaker_current_amount'] = $result4[0]['tiebreaker_current_amount'];
 
-    // echo "<pre>";print_r($final_dets);exit;
+    // echo "<pre>";print_r($data);exit;
     $this->load->view('rtk/template', $data); 
 }
 
@@ -3281,7 +3281,7 @@ public function calculate_amc($facility_code)
                 // echo 4;
                 $total_4_qtt_used = $total_4_qtt_used + $value['amc'];
                 $dos_4 = $dos_4 + $value['days_out_of_stock'];
-                if ($date > $latest_date_4) {
+                if (strtotime($date) > strtotime($latest_date_4)) {
                     $closing_stock_4 = $value['closing_stock'];
                     $latest_date_4 = $date;
                     // echo $date.' '.$closing_stock_4;exit;
@@ -12051,6 +12051,14 @@ public function edit_allocation_report_monthly($district_id,$month,$year,$succes
     // echo $month;exit;
     // echo $success_status;exit;
     
+    // $county = (int) $this->session->userdata("county_id");
+    // $district_id = (int) $this->session->userdata("district_id");
+
+    // echo "<pre>";print_r($district_id);exit;
+    // $district_id = $this->uri->segment(3);
+
+    // $sql4 = "select * from counties where id = '$county'";
+    // $result4 = $this->db->query($sql4)->result_array();
 
     if (is_numeric($month)) {
         $monthNum  = $month;
@@ -12069,7 +12077,7 @@ public function edit_allocation_report_monthly($district_id,$month,$year,$succes
     
     $sql = "select * from allocation_details where district_id = $district_id and created_at between '$firstdate' and '$lastdate'";
     // echo $sql;exit;
-    $result = $this->db->query($sql)->result_array();
+    $result_final = $this->db->query($sql)->result_array();
 
     // echo "<pre>";print_r($result);exit;
     $county_query = "SELECT county FROM districts WHERE id = $district_id";
@@ -12081,6 +12089,78 @@ public function edit_allocation_report_monthly($district_id,$month,$year,$succes
     // echo $sql2;exit;
     $result2 = $this->db->query($sql2)->result_array();
 
+    $sql = "SELECT 
+    facilities.facility_code,
+    facilities.facility_name,
+    districts.district,
+    districts.id as districtid,
+    counties.county,
+    counties.id as countyid,
+    counties.screening_current_amount,
+    counties.confirmatory_current_amount,
+    counties.tiebreaker_current_amount
+    FROM
+    facilities
+    inner JOIN   districts
+    ON    facilities.district = districts.id
+    inner JOIN counties
+    ON  districts.county = counties.id
+    WHERE
+    facilities.rtk_enabled = 1
+    AND districts.id = '$district_id'
+    ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
+    $result = $this->db->query($sql)->result_array();
+    $final_dets = array();
+    // echo "<pre>"; print_r($result);die;
+    // $all_fac_max_created_at = $this->get_max_created_at($district_id);
+    // echo "<pre>";print_r($all_fac_max_created_at);
+    // $key = array_search(14296, $all_fac_max_created_at);
+    // echo "<pre>";print_r($key);exit;
+    // $all_fac_max_created_at = $max_created_at['max_created_at'];
+
+    foreach ($result as $key => $id_details) {
+
+        $fcode = $id_details['facility_code'];
+        $county = $id_details['county'];
+        $district = $id_details['district'];
+        $districtid = $id_details['districtid'];
+        $countyid = $id_details['countyid'];
+        $facilityname = $id_details['facility_name'];
+
+        $sql3 = "SELECT amc,
+        closing_stock,
+        days_out_of_stock,
+        q_requested
+        FROM
+        lab_commodity_details AS a
+        WHERE
+        facility_code = $fcode
+        AND commodity_id between 4 and 6
+        AND created_at IN (SELECT MAX(created_at) FROM lab_commodity_details where facility_code = $fcode)";
+
+        $result3 = $this->db->query($sql3)->result_array();
+        // echo "<pre>"; print_r($result3); die;
+        $calculated_amc = $this->calculate_amc($fcode);
+        // echo "<pre>";print_r($calculated_amc);exit;
+        // $closing_stock = $this->last_month_closing_stock($fcode);
+
+        // echo "<pre>";print_r($last_month_closing_stock);exit;
+        $final_dets[$fcode]['name'] = $facilityname;
+        $final_dets[$fcode]['district'] = $district;
+        $final_dets[$fcode]['district_id'] = $districtid;
+        $final_dets[$fcode]['county'] = $county;
+        $final_dets[$fcode]['county_id'] = $countyid;
+        // $final_dets[$fcode]['screening_current_amount'] = $screening_current_amount;
+        // $final_dets[$fcode]['confirmatory_current_amount'] = $confirmatory_current_amount;
+        // $final_dets[$fcode]['tiebreaker_current_amount'] = $tiebreaker_current_amount;
+        // $final_dets[$fcode]['amcs'] = $result2;
+        $final_dets[$fcode]['code'] = $fcode;
+        $final_dets[$fcode]['end_bal'] = $result3;
+        $final_dets[$fcode]['amc'] = $calculated_amc;
+        $final_dets[$fcode]['closing_stock'] = $closing_stock;
+    }
+
+    $data['final_dets'] = $final_dets;
 
     $data['district_id'] = $district_id;
     $data['selected_month'] = $month;
@@ -12088,7 +12168,7 @@ public function edit_allocation_report_monthly($district_id,$month,$year,$succes
 
     $data['district_name'] = $result2[0]['district'];
     $data['county_name'] = $result2[0]['county_name'];
-    $data['allocation_details'] = $result;
+    $data['allocation_details'] = $result_final;
     $data['screening_current_amount'] = $result2[0]['screening_current_amount'];
     $data['confirmatory_current_amount'] = $result2[0]['confirmatory_current_amount'];
     $data['tiebreaker_current_amount'] = $result2[0]['tiebreaker_current_amount'];
