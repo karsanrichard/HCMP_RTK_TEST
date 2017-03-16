@@ -132,34 +132,35 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         // echo "<pre>";print_r($value);exit;
         //$zone = str_replace(' ', '-',$value['zone']);
         $facil = $value['code'];
-        // $ending_bal_s =ceil($value['end_bal'][0]['closing_stock']); 
-        // $ending_bal_c =ceil($value['end_bal'][1]['closing_stock']); 
-        // $ending_bal_t =ceil($value['end_bal'][2]['closing_stock']);
-        // $ending_bal_d =ceil($value['end_bal'][3]['closing_stock']);
-
-        $ending_bal_s =ceil($value['closing_stock'][0]['closing_stock']); 
-        $ending_bal_c =ceil($value['closing_stock'][1]['closing_stock']); 
-        $ending_bal_t =ceil($value['closing_stock'][2]['closing_stock']);
-        $ending_bal_d =ceil($value['closing_stock'][3]['closing_stock']);
+        // $ending_bal_s =ceil($value['closing_stock'][0]['closing_stock']); 
+        // $ending_bal_c =ceil($value['closing_stock'][1]['closing_stock']); 
+        // $ending_bal_t =ceil($value['closing_stock'][2]['closing_stock']);
+        // $ending_bal_d =ceil($value['closing_stock'][3]['closing_stock']);
         
         $days_out_of_stock_s =ceil($value['end_bal'][0]['days_out_of_stock']); 
         $days_out_of_stock_c =ceil($value['end_bal'][1]['days_out_of_stock']); 
         $days_out_of_stock_t =ceil($value['end_bal'][2]['days_out_of_stock']);
         $days_out_of_stock_d =ceil($value['end_bal'][3]['days_out_of_stock']);
+
         $q_requested_s =ceil($value['end_bal'][0]['q_requested']); 
         $q_requested_c =ceil($value['end_bal'][1]['q_requested']); 
         $q_requested_t =ceil($value['end_bal'][2]['q_requested']);
         $q_requested_d =ceil($value['end_bal'][3]['q_requested']);
 
-        $amc_s = str_replace(',', '',$my_amcs[$count][0]);
-        $amc_c = str_replace(',', '',$my_amcs[$count][1]);
-        $amc_t = str_replace(',', '',$my_amcs[$count][2]);
-        $amc_d = str_replace(',', '',$my_amcs[$count][3]);
+        // $amc_s = str_replace(',', '',$my_amcs[$count][0]);
+        // $amc_c = str_replace(',', '',$my_amcs[$count][1]);
+        // $amc_t = str_replace(',', '',$my_amcs[$count][2]);
+        // $amc_d = str_replace(',', '',$my_amcs[$count][3]);
 
         $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
         $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
         $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);        
-        $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);  
+        $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);
+
+        $ending_bal_s = str_replace(',', '',$value['amcs'][0]['closing_stock']);
+        $ending_bal_c = str_replace(',', '',$value['amcs'][1]['closing_stock']);
+        $ending_bal_t = str_replace(',', '',$value['amcs'][2]['closing_stock']);  
+        $ending_bal_d = str_replace(',', '',$value['amcs'][3]['closing_stock']);
 
         $amc_s = round($value['amc'][0]['amc'] + 0);
         $amc_c = round($value['amc'][1]['amc'] + 0);

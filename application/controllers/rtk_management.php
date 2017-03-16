@@ -19,7 +19,6 @@ class Rtk_Management extends Home_controller {
         // error_reporting(E_ALL);
         // ini_set('display_errors', TRUE);
         // ini_set('display_startup_errors', TRUE);
-        // $this -> load -> library(array('PHPExcel/PHPExcel', 'mpdf/mpdf'));
 
         $this->load->library('Excel');
     }
@@ -3180,7 +3179,7 @@ public function scmlt_allocation_table($district_id = NULL){//karsan slow
         // echo "<pre>"; print_r($result3); die;
         $calculated_amc = $this->calculate_amc($fcode);
         // echo "<pre>";print_r($calculated_amc);exit;
-        $closing_stock = $this->last_month_closing_stock($fcode);
+        // $closing_stock = $this->last_month_closing_stock($fcode);
 
         // echo "<pre>";print_r($last_month_closing_stock);exit;
         $final_dets[$fcode]['name'] = $facilityname;
@@ -3237,13 +3236,17 @@ public function get_max_created_at($district_id)
 public function calculate_amc($facility_code)
 {
     // echo $facility_code;
+    date_default_timezone_set('EUROPE/Moscow');
+
 
     $query = "SELECT 
             commodity_id, 
             AVG(q_used) AS amc, 
+            DAY(created_at) AS day, 
             MONTH(created_at) AS month, 
             YEAR(created_at) AS year, 
-            days_out_of_stock
+            days_out_of_stock,
+            closing_stock
             FROM
                 lab_commodity_details
             WHERE
@@ -3251,33 +3254,56 @@ public function calculate_amc($facility_code)
             AND created_at > (NOW() -INTERVAL 4 MONTH)
             AND created_at < (NOW() -INTERVAL 1 MONTH)
             AND commodity_id IN (4 , 5)
-            GROUP BY commodity_id, month(created_at)";//Screening and confirmatory
+            GROUP BY commodity_id, month(created_at) ORDER BY created_at DESC";//Screening and confirmatory
             
     $result = $this->db->query($query)->result_array();
-    // echo "<pre>";print_r($result); 
+    // echo "<pre>";print_r($result); exit;
     // $4_total = $5_total = $6_total = 0;
     $total_4 = $total_5 = $total_6 = 0;
     $dos_4 = $dos_5 = $dos_6 = 0;
+    $latest_date_4 = $latest_date_5 = $latest_date_6 = '1970-01-01';
+    $closing_stock_4 = $closing_stock_5 = $closing_stock_6 = 0;
     $final_array = array();
+    $latest_date = '';
 
+    $months = '';
     foreach ($result as $key => $value) {
         // echo "<pre>";print_r($value['commodity_id']);
-        $months .= $value['month'].'_'.$value['year'].',';
+        $months .= $value['month'].'-'.$value['year'].',';
+        $date = $value['year'].'-'.$value['month'].'-'.$value['day'];
+        $date = date('Y-m-d',strtotime($date));
+
+        // echo "<pre>".date('Y-m-d',strtotime($date))." ".strtotime($date);
+        // $date = date('Y-m-d',strtotime($date_);
+
         switch ($value['commodity_id']) {
             case '4':
                 // echo 4;
                 $total_4_qtt_used = $total_4_qtt_used + $value['amc'];
                 $dos_4 = $dos_4 + $value['days_out_of_stock'];
+                if ($date > $latest_date_4) {
+                    $closing_stock_4 = $value['closing_stock'];
+                    $latest_date_4 = $date;
+                    // echo $date.' '.$closing_stock_4;exit;
+                }
                 break;
             case '5':
                 // echo 5;
                 $total_5_qtt_used = $total_5_qtt_used + $value['amc'];
                 $dos_5 = $dos_5 + $value['days_out_of_stock'];
+                if (strtotime($date) > strtotime($latest_date_5)) {
+                    $closing_stock_5 = $value['closing_stock'];
+                    $latest_date_5 = $date;
+                }
                 break;
             case '6':
                 // echo 6;
                 $total_6_qtt_used = $total_6_qtt_used + $value['amc'];
                 $dos_6 = $dos_6 + $value['days_out_of_stock'];
+                if (strtotime($date) > strtotime($latest_date_6)) {
+                    $closing_stock_6 = $value['closing_stock'];
+                    $latest_date_6 = $date;
+                }
                 break;
             
             default:
@@ -3287,9 +3313,12 @@ public function calculate_amc($facility_code)
 
     }
 
+    // echo $closing_stock_4;exit;
     $months = rtrim($months,',');
     $str = implode(',',array_unique(explode(',', $months)));
     $months_array = explode(',', $str);
+
+    // echo "<pre>";print_r($months_array);exit;
 
     $months_count = count($months_array);
     // echo "<pre>".$total_4_qtt_used;
@@ -3309,17 +3338,6 @@ public function calculate_amc($facility_code)
         $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
         $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
 
-        $final_array_4['commodity_id'] = 4;
-        $final_array_4['amc'] = $final_average_4;
-        $final_array_4['days_out_of_stock'] = $dos_4;
-
-        $final_array_5['commodity_id'] = 5;
-        $final_array_5['amc'] = $final_average_5;
-        $final_array_5['days_out_of_stock'] = $dos_5;
-
-        $final_array_6['commodity_id'] = 6;
-        $final_array_6['amc'] = $final_average_6;
-        $final_array_6['days_out_of_stock'] = $dos_6;
     }elseif ($months_count == '2'){
         $total_before = 60;//Average total for 2 months
         $total_4_after = $total_before - $dos_4;
@@ -3333,18 +3351,7 @@ public function calculate_amc($facility_code)
         $final_average_4 = $total_4_qtt_used/$final_4_divisor; 
         $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
         $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
-
-        $final_array_4['commodity_id'] = 4;
-        $final_array_4['amc'] = $final_average_4;
-        $final_array_4['days_out_of_stock'] = $dos_4;
-
-        $final_array_5['commodity_id'] = 5;
-        $final_array_5['amc'] = $final_average_5;
-        $final_array_5['days_out_of_stock'] = $dos_5;
-
-        $final_array_6['commodity_id'] = 6;
-        $final_array_6['amc'] = $final_average_6;
-        $final_array_6['days_out_of_stock'] = $dos_6;
+        
     }elseif ($months_count == '1'){
         $total_before = 30;//Average total for 2 months
         $total_4_after = $total_before - $dos_4;
@@ -3358,20 +3365,24 @@ public function calculate_amc($facility_code)
         $final_average_4 = $total_4_qtt_used/$final_4_divisor; 
         $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
         $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
-
-        $final_array_4['commodity_id'] = 4;
-        $final_array_4['amc'] = $final_average_4;
-        $final_array_4['days_out_of_stock'] = $dos_4;
-
-        $final_array_5['commodity_id'] = 5;
-        $final_array_5['amc'] = $final_average_5;
-        $final_array_5['days_out_of_stock'] = $dos_5;
-
-        $final_array_6['commodity_id'] = 6;
-        $final_array_6['amc'] = $final_average_6;
-        $final_array_6['days_out_of_stock'] = $dos_6;
     }
-    
+
+
+    $final_array_4['commodity_id'] = 4;
+    $final_array_4['amc'] = $final_average_4;
+    $final_array_4['days_out_of_stock'] = $dos_4;
+    $final_array_4['closing_stock'] = $closing_stock_4;
+
+    $final_array_5['commodity_id'] = 5;
+    $final_array_5['amc'] = $final_average_5;
+    $final_array_5['days_out_of_stock'] = $dos_5;
+    $final_array_5['closing_stock'] = $closing_stock_5;
+
+    $final_array_6['commodity_id'] = 6;
+    $final_array_6['amc'] = $final_average_6;
+    $final_array_6['days_out_of_stock'] = $dos_6;
+    $final_array_6['closing_stock'] = $closing_stock_6;
+
     array_push($final_array, $final_array_4);
     array_push($final_array, $final_array_5);
     array_push($final_array, $final_array_6);
@@ -3400,6 +3411,7 @@ public function last_month_closing_stock($facility_code='')
 
     $result = $this->db->query($query_latest)->result_array();
 
+    echo "<pre>";print_r($result);exit;
     if (count($result) < 1) {
         $query_last_month = "SELECT 
                 commodity_id,
