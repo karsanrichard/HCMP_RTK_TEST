@@ -19,8 +19,8 @@
 				<td><?php echo $value['allocated_districts'].'/'.$value['total_districts']; ?></td>
 				<td><?php echo $value['allocation_status']; ?></td>
 				<td>
-					<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/cmlt_allocation_list_by_month/'.$county_id.'/'.$value['month_name'].'/'.$value['month_year'] ?>">View allocation</a>
-					<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>">Download list</a>
+					<a class="btn btn-success" href="<?php echo base_url().'rtk_management/cmlt_allocation_list_by_month/'.$county_id.'/'.$value['month_name'].'/'.$value['month_year'] ?>"><i class="glyphicon glyphicon-eye-open"></i> View/Edit</a>
+					<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>"><i class="glyphicon glyphicon-download"></i> Download</a>
 				</td>
 			</tr>
 		<?php } ?>

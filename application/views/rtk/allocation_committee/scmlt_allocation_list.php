@@ -20,9 +20,8 @@
 				<td><?php echo $value['allocation_status']; ?></td>
 				<td>
 				<?php if($value['allocation_status'] == 'Complete'): ?>
-					<a class="btn btn-primary" href="#">View allocations</a>
-					<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>">Download list</a>
-					<a class="btn btn-primary" href="#">Continue allocation</a>
+					<a class="btn btn-success" href="<?php echo base_url().'rtk_management/edit_allocation_report_monthly/'.$district_id.'/'.$value['month_name'].'/'.$value['month_year'] ?>"><i class="glyphicon glyphicon-eye-open"></i> View/Edit</a>
+					<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>"><i class="glyphicon glyphicon-download"></i> Download</a>
 				<?php else: ?>
 					<a class="btn btn-primary" href="#">Begin allocation</a>
 

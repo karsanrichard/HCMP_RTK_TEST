@@ -74,8 +74,8 @@
       <?php else: ?>
       <div class="col-md-12 no-padding facils"> <strong><?php echo $value['status']; ?></strong> <i class="glyphicon glyphicon-ok"></i></div> 
       <div class="col-md-12 no-padding no-margin">
-      	<a class="btn btn-primary" href="">View Allocation</a>
-      	<a class="btn btn-primary" href="">Download Allocation</a>
+      	<a class="btn btn-success" href="<?php echo base_url().'rtk_management/edit_allocation_report_monthly/'.$value['district_id'].'/'.$selected_month.'/'.$selected_year; ?>">View/Edit Allocation</a>
+      	<a class="btn btn-primary" href="#">Download Allocation</a>
       </div>
       <?php endif; ?>       
     </a>

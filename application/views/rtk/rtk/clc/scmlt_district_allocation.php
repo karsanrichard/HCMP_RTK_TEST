@@ -344,9 +344,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         <button type="button" class="btn btn-default" id="go_home">
             Back to Home
         </button>
-        <button type="button" class="btn btn-default" id="next_report_btn">
-            Next Report
-        </button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
