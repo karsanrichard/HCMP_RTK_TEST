@@ -11754,7 +11754,7 @@ public function cmlt_allocation_list($county_id = NULL)
         WHERE
         a.district_id = d.id  AND d.county = c.id AND f.district = d.id 
         $criteria
-        GROUP BY month";
+        GROUP BY month(month)";
 
     // echo $months_query;
     $months = $this->db->query($months_query)->result_array();
@@ -11778,7 +11778,7 @@ public function cmlt_allocation_list($county_id = NULL)
         $month_name_ = date('F',strtotime($month_));
         $month_year = date('Y',strtotime($month_));
 
-        // echo $month_year;exit;
+        // echo $month_;exit;
          $query = "
             SELECT 
             a.id,
@@ -11793,7 +11793,7 @@ public function cmlt_allocation_list($county_id = NULL)
             FROM
                 allocation_details a,districts d,counties c, facilities f
             WHERE
-            a.district_id = d.id  AND d.county = c.id AND f.district = d.id AND month = '$month_'
+            a.district_id = d.id  AND d.county = c.id AND f.district = d.id AND MONTH(month) = MONTH('$month_')
             $criteria
             GROUP BY d.district;
             ";
