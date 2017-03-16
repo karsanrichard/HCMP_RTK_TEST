@@ -8,7 +8,7 @@
 <table class="table table-bordered">
 	<thead>
 		<th>Allocation Month</th>
-		<th>Sites Allocated</th>
+		<!-- <th>Sites Allocated</th> -->
 		<th>Allocation Status</th>
 		<th>Actions</th>
 	</thead>
@@ -16,7 +16,9 @@
 		<?php foreach ($allocation_list as $key => $value) {?>
 			<tr>
 				<td><?php echo $value['month_name']; ?></td>
-				<td><?php echo $value['allocated_facilities'].'/'.$value['total_facilities']; ?></td>
+				<!--  <td> -->
+				<?php //echo $value['allocated_facilities'].'/'.$value['total_facilities']; ?>
+				<!-- </td> -->
 				<td><?php echo $value['allocation_status']; ?></td>
 				<td>
 				<?php if($value['allocation_status'] == 'Complete'): ?>

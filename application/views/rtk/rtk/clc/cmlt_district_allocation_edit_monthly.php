@@ -84,7 +84,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
   <input type="hidden" id="confirmatory_current_amount" value="<?php echo $confirmatory_current_amount;?>"> 
   <input type="hidden" id="tiebreaker_current_amount" value="<?php echo $tiebreaker_current_amount;?>"> 
           
-  <table id="allocation_table" class="data-table"> 
+  <table id="allocation_table" class="data-table table table-bordered"> 
     <thead>
     <tr>        
        <tr>        
@@ -126,24 +126,58 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $count = 0;
        foreach ($allocation_details as $value) {
         //$zone = str_replace(' ', '-',$value['zone']);
-        $facil = $value['code'];
+        // echo "<pre>";print_r($value);
+        $facility_code = $value['facility_code'];
 
-        $ending_bal_s =ceil($value['ending_bal_s']); 
-        $ending_bal_c =ceil($value['ending_bal_c']);
+        // echo $facility_code;
 
-        $amc_s =ceil($value['amc_s']); 
-        $amc_c =ceil($value['amc_c']); 
+        $ending_bal_s_latest =ceil($final_dets[$facility_code]['end_bal'][0]['closing_stock']); 
+        $ending_bal_c_latest =ceil($final_dets[$facility_code]['end_bal'][1]['closing_stock']); 
+        $ending_bal_t_latest =ceil($final_dets[$facility_code]['end_bal'][2]['closing_stock']);
+        $ending_bal_d_latest =ceil($final_dets[$facility_code]['end_bal'][3]['closing_stock']);
+        
 
-          
+        $days_out_of_stock_s =ceil($final_dets[$facility_code]['end_bal'][0]['days_out_of_stock']); 
+        $days_out_of_stock_c =ceil($final_dets[$facility_code]['end_bal'][1]['days_out_of_stock']); 
+        $days_out_of_stock_t =ceil($final_dets[$facility_code]['end_bal'][2]['days_out_of_stock']);
+        $days_out_of_stock_d =ceil($final_dets[$facility_code]['end_bal'][3]['days_out_of_stock']);
+
+        $q_requested_s =ceil($final_dets[$facility_code]['end_bal'][0]['q_requested']); 
+        $q_requested_c =ceil($final_dets[$facility_code]['end_bal'][1]['q_requested']); 
+        $q_requested_t =ceil($final_dets[$facility_code]['end_bal'][2]['q_requested']);
+        $q_requested_d =ceil($final_dets[$facility_code]['end_bal'][3]['q_requested']);
+
+        // $amc_s = str_replace(',', '',$my_amcs[$count][0]);
+        // $amc_c = str_replace(',', '',$my_amcs[$count][1]);
+        // $amc_t = str_replace(',', '',$my_amcs[$count][2]);
+        // $amc_d = str_replace(',', '',$my_amcs[$count][3]);
+
+        $amc_s = str_replace(',', '',$final_dets[$facility_code]['amcs'][0]['amc']);
+        $amc_c = str_replace(',', '',$final_dets[$facility_code]['amcs'][1]['amc']);
+        $amc_t = str_replace(',', '',$final_dets[$facility_code]['amcs'][2]['amc']);        
+        $amc_d = str_replace(',', '',$final_dets[$facility_code]['amcs'][3]['amc']);
+
+
+        $amc_s = round($final_dets[$facility_code]['amc'][0]['amc'] + 0);
+        $amc_c = round($final_dets[$facility_code]['amc'][1]['amc'] + 0);
+        $amc_t = round($final_dets[$facility_code]['amc'][2]['amc'] + 0);        
+        $amc_d = round($final_dets[$facility_code]['amc'][3]['amc'] + 0);  
+        
+        $ending_bal_s = str_replace(',', '',$final_dets[$facility_code]['amc'][0]['closing_stock']);
+        $ending_bal_c = str_replace(',', '',$final_dets[$facility_code]['amc'][1]['closing_stock']);
+        $ending_bal_t = str_replace(',', '',$final_dets[$facility_code]['amc'][2]['closing_stock']);  
+        $ending_bal_d = str_replace(',', '',$final_dets[$facility_code]['amc'][3]['closing_stock']);
+        // echo "<pre>First ";print_r($amc_s);exit;
+
+        // echo "<pre>";print_r($amc[$count][0]);
+        // exit;      
 
         if($amc_s==''){
           $amc_s = 0;
         }
-
         if($amc_c==''){
           $amc_c = 0;
         }
-
         if($amc_t==''){
           $amc_t = 0;
         }
@@ -158,82 +192,109 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           $amc_d_50 = ceil($amc_d/50);
         }
 
-        $mmos_s = $value['mmos_s'];
-        $mmos_c = $value['mmos_c'];
-
-        if ($value['decision_s'] =='REDISTRIBUTE' ) {
-          $style_s = "style='background-color:#ff7f50'"; //red
+        if($ending_bal_s==''){
+          $ending_bal_s = 0;
         }
-        elseif ($value['decision_s'] == "MONITOR"){
+        if($ending_bal_c==''){
+          $ending_bal_c = 0;
+        }
+        if($ending_bal_t==''){
+          $ending_bal_t = 0;
+        }
+        if($ending_bal_d==''){
+          $ending_bal_d = 0;
+        }
 
+        // $mmos_s = ceil(($amc_s * 4)/50);
+        // $mmos_c = ceil(($amc_c * 4)/30);
+        // $mmos_t = ceil(($amc_t * 4)/20);
+
+        $mmos_s = intval($ending_bal_s/$amc_s);
+        $mmos_c = intval($ending_bal_c/$amc_c);
+        $mmos_t = intval($ending_bal_t/$amc_t);
+
+        $recommended_s = ($amc_s * 4) - $ending_bal_s_latest;
+        $recommended_c = ($amc_c * 4) - $ending_bal_c_latest;
+        $recommended_t = ($amc_t * 4) - $ending_bal_t_latest;
+
+        $recommended_s = ($recommended_s<0)? 0: $recommended_s;
+        $recommended_c = ($recommended_c<0)? 0: $recommended_c;
+        $recommended_t = ($recommended_t<0)? 0: $recommended_t;
+        // $mmos_c = ceil(($amc_c * 4));
+        // $mmos_t = ceil(($amc_t * 4));
+      
+        if ($mmos_s >6) {
+          // $style_s = "style='background-color:#ff7f50'"; //red
+          $style_s = "style='background-color:#5efb6e'"; //green
+          $decision_s = "REDISTRIBUTE";
+        }
+        elseif ($mmos_s>=4 && $mmos_s<6){
+          // $style_s = "style='background-color:#ffdb58'";//yellow
           $style_s = "style='background-color:#ffdb58'";//yellow
+          $decision_s = "MONITOR";
         }
-        elseif ($value['decision_s'] == "RESUPPLY" ){
-
-          $style_s = "style='background-color:#5efb6e'";//green
-        }else{
-          $style_s = "style='background-color:#fff'";
+        elseif ($mmos_s<4){
+          // $style_s = "style='background-color:#5efb6e'";//green
+          $style_s = "style='background-color:#ff7f50'";//red
+          $decision_s = "RESUPPLY";
         }
-
-        if ($value['decision_c'] =='REDISTRIBUTE' ) {
-          $style_c = "style='background-color:#ff7f50'"; //red
-        }
-        elseif ($value['decision_c'] == "MONITOR"){
-
-          $style_c = "style='background-color:#ffdb58'";//yellow
-        }
-        elseif ($value['decision_c'] == "RESUPPLY" ){
-
-          $style_c = "style='background-color:#5efb6e'";//green
-        }else{
-          $style_c = "style='background-color:#fff'";
-        }
-
         
+
+        if ($mmos_c >6) {
+          // $style_c = "style='background-color:#ff7f50'";//red
+          $style_c = "style='background-color:#5efb6e'";//green
+          $decision_c = "REDISTRIBUTE";
+        }
+        elseif ($mmos_c>=4 && $mmos_c<6){
+          $style_c = "style='background-color:#ffdb58'";//yellow
+          $decision_c = "MONITOR";
+        }
+        elseif ($mmos_c<4){
+          // $style_c = "style='background-color:#5efb6e'";//green
+          $style_c = "style='background-color:#ff7f50'";//red
+          $decision_c = "RESUPPLY";
+        }
+
+        if ($mmos_t >6) {
+          // $style_t = "style='background-color:#ff7f50'";//red
+          $style_t = "style='background-color:#5efb6e'";//green
+          $decision_t = "REDISTRIBUTE";
+        }
+        elseif ($mmos_t>=4 && $mmos_t<6){
+          $style_t = "style='background-color:#ffdb58'";//yellow
+          $decision_t = "MONITOR";
+        }
+        elseif ($mmos_t<4){
+          // $style_t = "style='background-color:#5efb6e'";//green
+          $style_t = "style='background-color:#ff7f50'";//red
+          $decision_t = "RESUPPLY";
+        }
+        
+        // echo "THIS: <Pre>";print_r($ending_bal_s);
         ?> 
         <tr>  
 
-        <!-- <input type="hidden" name="county_id<?php echo $count ?>" value="<?php echo $value['county_id'];?>">  -->
-        <!-- <input type="hidden" name="county<?php echo $count ?>" value="<?php echo $value['county'];?>">  -->
-        <!-- <input type="hidden" name="district_id<?php echo $count ?>" value="<?php echo $district_id;?>">  -->
-        <!-- <input type="hidden" name="district<?php echo $count ?>" value="<?php echo $value['district']?>">  -->
-        <!-- <input type="hidden" name="zone<?php echo $count ?>" value="<?php echo $zone;?>">  -->
-        <!-- <input type="hidden" name="user_id<?php echo $count ?>" value="<?php echo 1;?>">  -->
-
         <input type="hidden" name="row_id[<?php echo $count ?>]" value="<?php echo $value['id'];?>">
         <input type="hidden" name="allocation_date[<?php echo $count ?>]" value="<?php echo $selected_year.'-'.$selected_month.'-'.date('d');?>">
-        <!-- <input type="hidden" name="facility_name[<?php echo $count ?>]" value="<?php echo $value['name'];?>"> -->
-        <!-- <input type="hidden" name="facility_code[<?php echo $count ?>]" value="<?php echo $value['code'];?>"> -->
-        <!-- <input type="hidden" name="commodity_id[<?php echo $count ?>]" value="<?php echo $count;?>"> -->
-
-        <!-- <input type="hidden" name="ending_bal_s[<?php echo $count ?>]" value="<?php echo $ending_bal_s;?>"> -->
-        <!-- <input type="hidden" name="mmos_s[<?php echo $count ?>]" value="<?php echo $mmos_s;?>"> -->
-        <!-- <input type="hidden" name="amc_s[<?php echo $count ?>]" value="<?php echo $amc_s;?>"> -->
-        <!-- <input type="hidden" name="decision_s[<?php echo $count ?>]" value="<?php echo $decision_s;?>"> -->
-        
-        <!-- <input type="hidden" name="ending_bal_c[<?php echo $count ?>]" value="<?php echo $ending_bal_c;?>">  -->
-        <!-- <input type="hidden" name="mmos_c[<?php echo $count ?>]" value="<?php echo $mmos_c;?>">  -->
-        <!-- <input type="hidden" name="amc_c[<?php echo $count ?>]" value="<?php echo $amc_c;?>">  -->
-        <!-- <input type="hidden" name="decision_c[<?php echo $count ?>]" value="<?php echo $decision_c;?>">  -->
 
           <td align=""><?php echo $county_name;?></td>
           <td align=""><?php echo $district_name;?></td>              
           <td align=""><?php echo $value['facility_code'];?></td>
           <td align=""><?php echo $value['facility_name'];?></td>  
 
-          <td align="center"><?php echo $ending_bal_s;?></td>     
+          <td align="center"><?php echo $ending_bal_s_latest;?></td>     
           <td align="center"><?php echo $amc_s;?></td> 
           <td align="center"><?php echo $mmos_s;?></td>
           <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $value['allocate_s'];?>'/></td> 
           <td align="center"><input style="width:100px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" value = '<?php echo $value['remark_s'];?>'/></td> 
-          <td align="center" <?php echo $style_s;?> > <?php echo $value['decision_s'];?></td> 
+          <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
 
-          <td align="center"><?php echo $ending_bal_c;?></td>     
+          <td align="center"><?php echo $ending_bal_c_latest;?></td>     
           <td align="center"><?php echo $amc_c;?></td> 
           <td align="center"><?php echo $mmos_c;?></td> 
           <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $value['allocate_c'];?>'/></td> 
           <td align="center"><input style="width:100px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" value = '<?php echo $value['remark_c'];?>'/></td> 
-          <td align="center"<?php echo $style_c;?>><?php echo $value['decision_c'];?></td> 
+          <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 
 
                     
         </tr>
