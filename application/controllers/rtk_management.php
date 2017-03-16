@@ -3241,7 +3241,8 @@ public function calculate_amc($facility_code)
     $query = "SELECT 
             commodity_id, 
             AVG(q_used) AS amc, 
-            created_at, 
+            MONTH(created_at) AS month, 
+            YEAR(created_at) AS year, 
             days_out_of_stock
             FROM
                 lab_commodity_details
@@ -3253,7 +3254,7 @@ public function calculate_amc($facility_code)
             GROUP BY commodity_id, month(created_at)";//Screening and confirmatory
             
     $result = $this->db->query($query)->result_array();
-    // echo "<pre>THIS ";print_r($result); 
+    // echo "<pre>";print_r($result); 
     // $4_total = $5_total = $6_total = 0;
     $total_4 = $total_5 = $total_6 = 0;
     $dos_4 = $dos_5 = $dos_6 = 0;
@@ -3261,6 +3262,7 @@ public function calculate_amc($facility_code)
 
     foreach ($result as $key => $value) {
         // echo "<pre>";print_r($value['commodity_id']);
+        $months .= $value['month'].'_'.$value['year'].',';
         switch ($value['commodity_id']) {
             case '4':
                 // echo 4;
@@ -3285,38 +3287,91 @@ public function calculate_amc($facility_code)
 
     }
 
+    $months = rtrim($months,',');
+    $str = implode(',',array_unique(explode(',', $months)));
+    $months_array = explode(',', $str);
 
+    $months_count = count($months_array);
     // echo "<pre>".$total_4_qtt_used;
     // echo "<pre>".$total_5_qtt_used;
     // echo "<pre>".$total_6_qtt_used;
+    if ($months_count == '3') {
+        $total_before = 90;//Average total for 3 months
+        $total_4_after = $total_before - $dos_4;
+        $total_5_after = $total_before - $dos_5;
+        $total_6_after = $total_before - $dos_6;
 
-    //14th March
+        $final_4_divisor = $total_4_after/30;//total days - days of stock divided by 30
+        $final_5_divisor = $total_5_after/30;
+        $final_6_divisor = $total_6_after/30;
 
-    $total_before = 90;//Average total for 3 months
-    $total_4_after = $total_before - $dos_4;
-    $total_5_after = $total_before - $dos_5;
-    $total_6_after = $total_before - $dos_6;
+        $final_average_4 = $total_4_qtt_used/$final_4_divisor; 
+        $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
+        $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
 
-    $final_4_divisor = $total_4_after/30;//total days - days of stock divided by 30
-    $final_5_divisor = $total_5_after/30;
-    $final_6_divisor = $total_6_after/30;
+        $final_array_4['commodity_id'] = 4;
+        $final_array_4['amc'] = $final_average_4;
+        $final_array_4['days_out_of_stock'] = $dos_4;
 
-    $final_average_4 = $total_4_qtt_used/$final_4_divisor; 
-    $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
-    $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
+        $final_array_5['commodity_id'] = 5;
+        $final_array_5['amc'] = $final_average_5;
+        $final_array_5['days_out_of_stock'] = $dos_5;
 
-    $final_array_4['commodity_id'] = 4;
-    $final_array_4['amc'] = $final_average_4;
-    $final_array_4['days_out_of_stock'] = $dos_4;
+        $final_array_6['commodity_id'] = 6;
+        $final_array_6['amc'] = $final_average_6;
+        $final_array_6['days_out_of_stock'] = $dos_6;
+    }elseif ($months_count == '2'){
+        $total_before = 60;//Average total for 2 months
+        $total_4_after = $total_before - $dos_4;
+        $total_5_after = $total_before - $dos_5;
+        $total_6_after = $total_before - $dos_6;
 
-    $final_array_5['commodity_id'] = 5;
-    $final_array_5['amc'] = $final_average_5;
-    $final_array_5['days_out_of_stock'] = $dos_5;
+        $final_4_divisor = $total_4_after/30;//Average days in a month - days of stock divided by 30
+        $final_5_divisor = $total_5_after/30;
+        $final_6_divisor = $total_6_after/30;
 
-    $final_array_6['commodity_id'] = 6;
-    $final_array_6['amc'] = $final_average_6;
-    $final_array_6['days_out_of_stock'] = $dos_6;
+        $final_average_4 = $total_4_qtt_used/$final_4_divisor; 
+        $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
+        $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
 
+        $final_array_4['commodity_id'] = 4;
+        $final_array_4['amc'] = $final_average_4;
+        $final_array_4['days_out_of_stock'] = $dos_4;
+
+        $final_array_5['commodity_id'] = 5;
+        $final_array_5['amc'] = $final_average_5;
+        $final_array_5['days_out_of_stock'] = $dos_5;
+
+        $final_array_6['commodity_id'] = 6;
+        $final_array_6['amc'] = $final_average_6;
+        $final_array_6['days_out_of_stock'] = $dos_6;
+    }elseif ($months_count == '1'){
+        $total_before = 30;//Average total for 2 months
+        $total_4_after = $total_before - $dos_4;
+        $total_5_after = $total_before - $dos_5;
+        $total_6_after = $total_before - $dos_6;
+
+        $final_4_divisor = $total_4_after/30;//Average days in a month - days of stock divided by 30
+        $final_5_divisor = $total_5_after/30;
+        $final_6_divisor = $total_6_after/30;
+
+        $final_average_4 = $total_4_qtt_used/$final_4_divisor; 
+        $final_average_5 = $total_5_qtt_used/$final_5_divisor; 
+        $final_average_6 = $total_6_qtt_used/$final_6_divisor; 
+
+        $final_array_4['commodity_id'] = 4;
+        $final_array_4['amc'] = $final_average_4;
+        $final_array_4['days_out_of_stock'] = $dos_4;
+
+        $final_array_5['commodity_id'] = 5;
+        $final_array_5['amc'] = $final_average_5;
+        $final_array_5['days_out_of_stock'] = $dos_5;
+
+        $final_array_6['commodity_id'] = 6;
+        $final_array_6['amc'] = $final_average_6;
+        $final_array_6['days_out_of_stock'] = $dos_6;
+    }
+    
     array_push($final_array, $final_array_4);
     array_push($final_array, $final_array_5);
     array_push($final_array, $final_array_6);
