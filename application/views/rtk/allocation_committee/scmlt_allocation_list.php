@@ -19,9 +19,14 @@
 				<td><?php echo $value['allocated_facilities'].'/'.$value['total_facilities']; ?></td>
 				<td><?php echo $value['allocation_status']; ?></td>
 				<td>
+				<?php if($value['allocation_status'] == 'Complete'): ?>
 					<a class="btn btn-primary" href="#">View allocations</a>
-					<a class="btn btn-primary" href="#">Download list</a>
+					<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>">Download list</a>
 					<a class="btn btn-primary" href="#">Continue allocation</a>
+				<?php else: ?>
+					<a class="btn btn-primary" href="#">Begin allocation</a>
+
+				<?php endif; ?>
 				</td>
 			</tr>
 		<?php } ?>
