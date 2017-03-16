@@ -19,6 +19,7 @@ class Rtk_Management extends Home_controller {
         // error_reporting(E_ALL);
         // ini_set('display_errors', TRUE);
         // ini_set('display_startup_errors', TRUE);
+        // $this -> load -> library(array('PHPExcel/PHPExcel', 'mpdf/mpdf'));
 
         $this->load->library('Excel');
     }
@@ -2939,14 +2940,14 @@ public function get_lab_report($order_no, $report_type) {
 
 
 
-                        public function test_php(){
-                            phpinfo();
-                        }
+public function test_php(){
+    phpinfo();
+}
 
-                        public function sess(){
+public function sess(){
 
-                            print_r($this->session->all_userdata());
-                        }
+    print_r($this->session->all_userdata());
+}
 public function cmlt_allocation_dashboard(){        //karsan
     $month = date('m');
     $current_month = date('mY', time());
@@ -3474,7 +3475,7 @@ public function edit_county_allocation_report($district_id){
     $firstdate = $year . '-' . $month . '-01';
     $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
     $lastdate = $year . '-' . $month . '-' . $num_days;
-
+    
     $sql = "select * from allocation_details where district_id = $district_id and created_at between '$firstdate' and '$lastdate'";
     $result = $this->db->query($sql)->result_array();
     $countyid = $result[0]['county_id'];
@@ -11569,6 +11570,9 @@ public function get_duplicates_orders($month=null){
 public function scmlt_allocation_list($district_id=NULL)//Karsan
 {
     // echo $user_type;exit;
+    $district = $this->session->userdata('district_id');                
+    $user_id = $this->session->userdata('user_id');     
+
     $county_id = (isset($county_id) && $county_id>0)? $county_id:NULL;
     $district_id = (isset($district_id) && $district_id>0)? $district_id:NULL;
 
@@ -11594,6 +11598,15 @@ public function scmlt_allocation_list($district_id=NULL)//Karsan
 
     $final_array_ = array();
     $month_count = count($months);
+
+    $total_count_query = "SELECT COUNT(*) as total_facilities FROM facilities WHERE district = $district_id";
+            $total = $this->db->query($total_count_query)->result_array();
+
+
+    $total_facilities = $total[0]['total_facilities'];
+    $final_total_facilities = $total_facilities;
+    // echo $final_total_facilities;exit;
+
     for ($i=0; $i < $month_count; $i++) { 
         // $month = '';
         $month_ = $months[$i]['month'];
@@ -11643,12 +11656,14 @@ public function scmlt_allocation_list($district_id=NULL)//Karsan
 
 
             $total_facilities = $total[0]['total_facilities'];
+            $final_total_facilities = $total_facilities;
             $allocated = $total_facilities-$unallocated_facilities;
 
             $allocation_ratio = $total_facilities/$allocated;
-            // echo $allocation_ratio;exit;
+            // echo "this".$total_facilities;exit;
             $allocation_status = ($allocation_ratio>1)? "Incomplete":"Complete";
             // array_push($final_array_, $result); 
+            $months_with_data[$i] = $month_name_;
             $final_array_[$i]['month_name'] = $month_name_;
             $final_array_[$i]['allocated_facilities'] = $allocated;
             $final_array_[$i]['total_facilities'] = $total_facilities;
@@ -11658,13 +11673,49 @@ public function scmlt_allocation_list($district_id=NULL)//Karsan
             // $final_array_[$i][$month_name_]['allocated'] = $total_facilities-$unallocated_facilities;
     }//end of array making loop
 
-    // echo "<pre>";print_r($final_array_);exit;
+    // echo "<pre>";print_r($total_facilities);exit;
 
-    if (empty($final_array_)) {
+    // if (empty($final_array_)) {
+    //     $status_message = "You have no previous allocations to list";
+    // }else{
+    //     $status_message = "Below is the allocation data you have in months";
+    // }
+
+    if (empty($months_with_data)) {
+        /*
+        $three_months_ago = date('F', strtotime('-3 month'));
+        $two_months_ago = date('F', strtotime('-2 month'));
+        $one_months_ago = date('F', strtotime('-1 month'));
+
+        $filler_final_3['month_name'] = $three_months_ago;
+        $filler_final_3['allocated_facilities'] = 0;
+        $filler_final_3['total_facilities'] = $final_total_facilities;
+        $filler_final_3['allocation_status'] = "Incomplete";
+
+        array_push($final_array_, $filler_final_3);
+
+        $filler_final_2['month_name'] = $two_months_ago;
+        $filler_final_2['allocated_facilities'] = 0;
+        $filler_final_2['total_facilities'] = $final_total_facilities;
+        $filler_final_2['allocation_status'] = "Incomplete";
+
+        array_push($final_array_, $filler_final_2);
+
+        $filler_final_1['month_name'] = $one_months_ago;
+        $filler_final_1['allocated_facilities'] = 0;
+        $filler_final_1['total_facilities'] = $final_total_facilities;
+        $filler_final_1['allocation_status'] = "Incomplete";
+
+        array_push($final_array_, $filler_final_1);
+        */
+        // echo $three_months_ago;exit;
         $status_message = "You have no previous allocations to list";
     }else{
         $status_message = "Below is the allocation data you have in months";
     }
+
+    // echo "<pre>";print_r($final_array_);exit;
+    
 
     $data['title'] = "Allocation List";
     $data['banner_text'] = '';
@@ -11674,11 +11725,299 @@ public function scmlt_allocation_list($district_id=NULL)//Karsan
     $data['allocation_list'] = $final_array_;
     $data['status_message'] = $status_message;
     $data['content_view'] = 'rtk/allocation_committee/scmlt_allocation_list'; 
-
+    $data['district_id'] = $district;
     // echo "<pre>";print_r($data);exit;
 
     $this->load->view('rtk/template', $data); 
-}//end of allocation list function
+}//end of scmlt allocation list function
+
+public function cmlt_allocation_list($county_id = NULL)
+{
+   // echo $user_type;exit;
+    // $district = $this->session->userdata('district_id');                
+    $county_id = $this->session->userdata('county_id');    
+    $user_id = $this->session->userdata('user_id');     
+
+    $county_id = (isset($county_id) && $county_id>0)? $county_id:NULL;
+    // $district_id = (isset($district_id) && $district_id>0)? $district_id:NULL;
+
+    $criteria = '';
+    $criteria .= ($county_id>0)? "AND c.id = $county_id":NULL;
+    // $criteria .= ($district_id>0)? "AND d.id = $district_id AND a.district_id = d.id":NULL;
+
+    $months_query = "
+        SELECT 
+        a.month,
+        a.created_at
+        FROM
+            allocation_details a,districts d,counties c, facilities f
+        WHERE
+        a.district_id = d.id  AND d.county = c.id AND f.district = d.id 
+        $criteria
+        GROUP BY month";
+
+    // echo $months_query;
+    $months = $this->db->query($months_query)->result_array();
+
+    // echo "<pre>";print_r($months);exit;
+
+    $final_array_ = array();
+    $month_count = count($months);
+
+    $total_count_query = "SELECT COUNT(*) as total_districts FROM districts WHERE county = $county_id";
+    $total = $this->db->query($total_count_query)->result_array();
+
+
+    $total_districts = $total[0]['total_districts'];
+    $final_total_districts = $total_districts;
+    // echo $month_count;exit;
+
+    for ($i=0; $i < $month_count; $i++) { 
+        // $month = '';
+        $month_ = $months[$i]['month'];
+        $month_name_ = date('F',strtotime($month_));
+        $month_year = date('Y',strtotime($month_));
+
+        // echo $month_year;exit;
+         $query = "
+            SELECT 
+            a.id,
+            c.id,
+            a.district_id,
+            f.facility_code,
+            a.month,
+            a.created_at,
+            c.id,c.county,
+            d.id,
+            d.district
+            FROM
+                allocation_details a,districts d,counties c, facilities f
+            WHERE
+            a.district_id = d.id  AND d.county = c.id AND f.district = d.id AND month = '$month_'
+            $criteria
+            GROUP BY d.district;
+            ";
+
+            // echo $query;
+            $result = $this->db->query($query)->result_array(); 
+
+            // echo "<pre>";print_r($result);exit;
+
+            $district_list = '';
+            foreach ($result as $key => $value) {
+                $district_list .= $value['district_id'].',';
+            }
+            $district_list = rtrim($district_list,',');
+
+            // echo $district_list;exit;
+            $unallocated_query = "SELECT * FROM districts WHERE county = $county_id AND id NOT IN($district_list)";
+            // echo $unallocated_query;
+            $unallocated_districts = $this->db->query($unallocated_query)->result_array();
+            // echo "<pre>";print_r($unallocated_districts);exit;
+            if (empty($unallocated_districts)) {
+                $unallocated_districts_count = 0;
+            }else{
+                $unallocated_districts_count = count($unallocated_districts);
+            }
+
+            $total_count_query = "SELECT COUNT(*) as total_districts FROM districts WHERE county = $county_id";
+            $total = $this->db->query($total_count_query)->result_array();
+
+            
+
+            $total_districts = $total[0]['total_districts'];
+            $final_total_districts = $total_districts;
+
+            $allocated = $final_total_districts - $unallocated_districts_count;
+
+            $allocation_ratio = $final_total_districts/$allocated;
+            // echo "<pre>";print_r($allocation_ratio);exit;
+            // echo "this".$total_facilities;exit;
+            $allocation_status = ($allocation_ratio>1)? "Incomplete":"Complete";
+            // array_push($final_array_, $result); 
+            $months_with_data[$i] = $month_name_;
+            $final_array_[$i]['month_name'] = $month_name_;
+            $final_array_[$i]['month_year'] = $month_year;
+            $final_array_[$i]['allocated_districts'] = $allocated;
+            $final_array_[$i]['total_districts'] = $final_total_districts;
+            // $final_array_[$i]['allocation_data'] = $result;
+            $final_array_[$i]['allocation_status'] = $allocation_status;
+
+            // $final_array_[$i][$month_name_]['allocated'] = $total_facilities-$unallocated_facilities;
+    }//end of array making loop
+
+    // echo "<pre>";print_r($final_array_);exit;
+
+    // if (empty($final_array_)) {
+    //     $status_message = "You have no previous allocations to list";
+    // }else{
+    //     $status_message = "Below is the allocation data you have in months";
+    // }
+
+    if (empty($months_with_data)) {
+        /*
+        $three_months_ago = date('F', strtotime('-3 month'));
+        $two_months_ago = date('F', strtotime('-2 month'));
+        $one_months_ago = date('F', strtotime('-1 month'));
+
+        $filler_final_3['month_name'] = $three_months_ago;
+        $filler_final_3['allocated_facilities'] = 0;
+        $filler_final_3['total_facilities'] = $final_total_facilities;
+        $filler_final_3['allocation_status'] = "Incomplete";
+
+        array_push($final_array_, $filler_final_3);
+
+        $filler_final_2['month_name'] = $two_months_ago;
+        $filler_final_2['allocated_facilities'] = 0;
+        $filler_final_2['total_facilities'] = $final_total_facilities;
+        $filler_final_2['allocation_status'] = "Incomplete";
+
+        array_push($final_array_, $filler_final_2);
+
+        $filler_final_1['month_name'] = $one_months_ago;
+        $filler_final_1['allocated_facilities'] = 0;
+        $filler_final_1['total_facilities'] = $final_total_facilities;
+        $filler_final_1['allocation_status'] = "Incomplete";
+
+        array_push($final_array_, $filler_final_1);
+        */
+        // echo $three_months_ago;exit;
+        $status_message = "You have no previous allocations to list";
+    }else{
+        $status_message = "Below is the allocation data you have in months";
+    }
+
+    // echo "<pre>";print_r($final_array_);exit;
+    
+
+    $data['title'] = "County Allocation List";
+    $data['banner_text'] = '';
+    // $data['success'] = $success;
+    // $data['months'] = $allowed_months;
+    // echo $status_message;exit;
+    $data['allocation_list'] = $final_array_;
+    $data['status_message'] = $status_message;
+    $data['content_view'] = 'rtk/allocation_committee/cmlt_allocation_list'; 
+    $data['county_id'] = $county_id;
+    // echo "<pre>";print_r($data);exit;
+
+    $this->load->view('rtk/template', $data); 
+}//end of cmlt allocation list function
+
+public function cmlt_allocation_list_by_month($county_id = NULL,$month_name=NULL,$month_year = NULL)
+{
+    // echo $month_name;
+    $month = date('m',strtotime($month_name));
+    $start_date = $month_year.'-'.$month.'-01';
+    $end_date = $month_year.'-'.$month.'-31';
+    // echo $month_name.' '.$month_year;exit;
+    $current_month = date('mY', time());
+    $year_current = substr($current_month, -4);
+
+    $all_districts_query = "SELECT * FROM districts WHERE county = $county_id";
+    $all_districts = $this->db->query($all_districts_query)->result_array();
+    $district_count = count($all_districts);
+    $final_array = array();
+    for ($i=0; $i < $district_count; $i++) { 
+        $final_array[$i]['district_id'] = $all_districts[$i]['id'];
+        $final_array[$i]['district_name'] = $all_districts[$i]['district'];
+    }
+    // echo "<pre>";print_r($final_array);exit;
+
+    $query = "
+    SELECT 
+        districts.*
+    FROM
+        allocation_details,
+        counties,
+        districts
+    WHERE
+        counties.id = $county_id
+            AND month BETWEEN '$start_date' AND '$end_date'
+            AND counties.id = districts.county
+            AND allocation_details.district_id = districts.id
+            GROUP BY districts.id
+    ";
+
+    $allocated_districts = $this->db->query($query)->result_array();
+
+    // echo "<pre>";print_r($final_array);exit;
+    foreach ($allocated_districts as $key => $value) {
+        // echo $value['id'];
+        $key = array_search($value['id'], array_column($final_array, 'district_id'));
+        $final_array[$key]['status'] = "Allocated";
+        // echo "<pre>".$key;    
+    }
+    // exit;
+    // echo "<pre>";print_r($final_array);exit;
+
+    $district_list = '';
+    foreach ($allocated_districts as $key => $value) {
+        $district_list .= $value['id'].',';
+    }
+    $district_list = rtrim($district_list,',');
+
+    // echo $district_list;exit;
+    $unallocated_query = "SELECT * FROM districts WHERE county = $county_id AND id NOT IN($district_list)";
+    // echo $unallocated_query;
+    $unallocated_districts = $this->db->query($unallocated_query)->result_array();
+
+    foreach ($unallocated_districts as $key => $value) {
+        // echo $value['id'];
+        $key = array_search($value['id'], array_column($final_array, 'district_id'));
+        $final_array[$key]['status'] = "Unallocated";
+        // echo "<pre>".$key;    
+    }
+    // echo "<pre>";print_r($final_array);exit;
+
+    $data['title'] = "County Allocation";
+    $data['banner_text'] = "$county_name County Allocation";
+    $data['content_view'] = 'rtk/allocation_committee/cmlt_allocation_list_monthly';     
+    $data['allocation_details'] = $final_array;
+    $data['allocation_date'] = $month_name.' '.$month_year;
+
+    // echo "<pre>";print_r($data);exit;
+    $this->load->view('rtk/template', $data); 
+}
+public function download_allocation_list($user_type, $county_id = NULL, $district_id = NULL)
+{
+    $county_id = (isset($county_id) && $county_id>0)? $county_id:NULL;
+    $district_id = (isset($district_id) && $district_id>0)? $district_id:NULL;
+
+
+    $query = "
+    SELECT 
+        allocation_details.*,
+        counties.county AS county_name,
+        districts.district AS district_name
+    FROM
+        allocation_details,
+        counties,
+        districts
+    WHERE
+        districts.id = 11
+            AND created_at BETWEEN '2017-01-01' AND '2017-01-31'
+            AND counties.id = districts.county
+            AND allocation_details.district_id = districts.id";
+
+    $results = $this->db->query($query)->result_array();
+     // echo FCPATH . 'errors/error_php_custom.php';
+    // echo "<pre>";print_r($results);exit;
+
+    $doc = new PHPExcel();
+    $doc->setActiveSheetIndex(0);
+    $doc->getActiveSheet()->fromArray($results, null, 'A1');
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="Allocation list.xls"');
+    header('Cache-Control: max-age=0');
+
+    echo "<pre>";print_r($doc);exit;
+    // Do your stuff here
+    $writer = PHPExcel_IOFactory::createWriter($doc, 'Excel5');
+
+    $writer->save('php://output');
+
+}
 
 }
 

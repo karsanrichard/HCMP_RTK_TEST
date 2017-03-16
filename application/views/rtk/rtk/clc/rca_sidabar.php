@@ -102,6 +102,7 @@
 
         ?> -->
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/cmlt_allocation_dashboard'?>">RTK Allocation </a></li>
+        <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/cmlt_allocation_list/'.$county_id?>">RTK Allocation List</a></li>
         <li class = "side_links"><a class = "side_links_a" href="<?php echo base_url().'rtk_management/county_trend' ?>">Trends</a></li>
     </ul>
 </div>
