@@ -12620,20 +12620,128 @@ AND allocation_details.district_id = districts.id";
         // $district = $this->session->userdata('district_id');
         // $district_name = Districts::get_district_name($district)->toArray();
         // $d_name = $district_name[0]['district'];
-        echo $county_id;exit;
+        // echo $county_id;exit;
+        $query = "SELECT * FROM county_drawing_rights WHERE county_id = $county_id";
+        $result = $this->db->query($query)->result_array();
+
+        // $query_current = "SELECT screening_current_amount, confirmatory_current_amount FROM counties WHERE id = $county_id";
+        // $result_current = $this->db->query($query_current)->result_array();
+
+        // echo "<pre>";print_r($result);exit;
+        $drawing_rights = $drawing_rights_final = array();
+        foreach ($result as $key => $value) {
+            $drawing_rights['year'] = date('Y',strtotime($value['created_at']));
+            $used_confirmatory = ($value['confirmatory_used']>0)?$value['confirmatory_used']:0;
+            $used_screening = ($value['screening_used']>0)?$value['screening_used']:0;
+
+            $drawing_rights['duration'] = $value['duration'];
+            $drawing_rights['zone'] = $value['zone'];
+
+            $drawing_rights['screening_total'] = $value['screening_total'];
+            $drawing_rights['screening_allocated'] = $used_screening;
+            $drawing_rights['screening_balance'] = $value['screening_total'] - $used_screening;
+            
+            $drawing_rights['confirmatory_total'] = $value['confirmatory_total'];
+            $drawing_rights['confirmatory_allocated'] = $used_confirmatory;
+            $drawing_rights['confirmatory_balance'] = $value['confirmatory_total'] - $used_confirmatory;
+
+            // $drawing_rights['confirmatory_balance'] = $value['screening_amount'] - 
+            array_push($drawing_rights_final, $drawing_rights);
+        }
+        // echo "<pre>";print_r($drawing_rights_final);exit;
+
         $data['title'] = "County Drawing Rights";
         $data['banner_text'] = 'Drawing Rights';
-        // $data['success'] = $success;
-        // $data['months'] = $allowed_months;
-        // echo $status_message;exit;
-        $data['allocation_list'] = $final_array_;
-        $data['status_message'] = $status_message;
-        $data['content_view'] = 'rtk/allocation_committee/cmlt_allocation_list';
+        $data['drawing_rights'] = $drawing_rights_final;
+        $data['content_view'] = 'rtk/rtk/drawing_rights/county_drawing_rights';
         $data['county_id'] = $county_id;
         // echo "<pre>";print_r($data);exit;
 
         $this->load->view('rtk/template', $data);
     }
+
+    public function county_drawing_rights_details($county_id = NULL)
+    {
+        // echo $county_id;exit;
+        $county_id = (isset($county_id) && $county_id > 0)? $county_id : $this->session->userdata('county_id');
+        $query = "SELECT * FROM district_drawing_rights WHERE county_id = $county_id";
+        $result = $this->db->query($query)->result_array();
+
+        $sc_query = "SELECT * FROM districts WHERE county = $county_id";
+        $subcounties = $this->db->query($sc_query)->result_array();
+        $subcounty_count = count($subcounties);
+
+        $c_drawing_query = "SELECT * FROM county_drawing_rights WHERE county_id = $county_id ORDER BY created_at DESC LIMIT 1";
+        $county_drawing_data = $this->db->query($c_drawing_query)->result_array();
+        // echo "<pre>";print_r($county_drawing_data[0]);exit;
+
+        // echo "<pre>";print_r($result);exit;
+
+        $drawing_rights = array();
+        if (!empty($result)) {
+            $distributed = '1'; 
+            foreach ($result as $key => $value) {
+                $district_key = array_search($value['district_id'], array_column($subcounties, 'id'));
+                $drawing_right['subcounty'] = $subcounties[$district_key]['district'];
+
+                $drawing_right['screening_total'] = $value['screening_allocated'];
+                $drawing_right['screening_allocated'] = $value['screening_used'];
+                $drawing_right['screening_balance'] = $value['screening_allocated'] - $value['screening_used'];
+
+                $drawing_right['confirmatory_total'] = $value['confirmatory_allocated'];
+                $drawing_right['confirmatory_allocated'] = $value['confirmatory_used'];
+                $drawing_right['confirmatory_balance'] = $value['confirmatory_allocated'] - $value['confirmatory_used'];
+
+                array_push($drawing_rights, $drawing_right);
+            }
+
+            // echo "<pre>";print_r($drawing_rights);exit;
+        }else{
+            $drawing_rights = NULL;
+            $distributed = '0';
+        }
+
+        $data['title'] = "County Drawing Rights";
+        $data['banner_text'] = 'Drawing Rights';
+        $data['drawing_rights'] = $drawing_rights;
+        $data['distribution_status'] = $distributed;
+        $data['subcounties'] = $subcounties;
+        $data['subcounty_count'] = $subcounty_count;
+        $data['content_view'] = 'rtk/rtk/drawing_rights/county_drawing_rights_specific';
+        $data['county_drawing_data'] = $county_drawing_data[0];
+        $data['county_id'] = $county_id;
+        // echo "<pre>";print_r($data);exit;
+
+        $this->load->view('rtk/template', $data);
+    }
+
+    public function save_subcounty_drawing_rights($value='')
+    {
+        $data = $this->input->post();
+
+        // echo "<pre>";print_r($data);exit;
+
+        $counter = count($data['subcounty_id']);
+
+        // echo "<pre>";print_r($counter);exit;
+        $final_array = $final_array_ = array();
+        for ($i=0; $i < $counter; $i++) { 
+            $final_array_['county_id'] = $data['county_id'][$i];
+            $final_array_['district_id'] = $data['subcounty_id'][$i];
+            $final_array_['screening_allocated'] = $data['screening_allocated'][$i];
+            $final_array_['confirmatory_allocated'] = $data['confirmatory_allocated'][$i];
+            $final_array_['user_id'] = $this->session->userdata('user_id');
+
+            array_push($final_array, $final_array_);
+        }
+
+        // echo "<pre>";print_r($final_array);exit;
+        $insert = $this->db->insert_batch('district_drawing_rights',$final_array);
+
+        redirect('rtk_management/county_drawing_rights_details');
+
+    }
+
 }        //END OF RTK_MANAGEMENT CLASS
 
 ?>
