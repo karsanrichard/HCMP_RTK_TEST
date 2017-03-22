@@ -315,7 +315,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <!-- <td align="center"><?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?></td>  -->
           <!-- <td align="center"><input style="width:40px" class="tiebreaker_input" id="q_allocate_t<?php echo $count ?>"name="q_allocate_t[<?php echo $count ?>]" value = '<?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?>'/></td>  -->
           <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_t; ?>'/></td> 
-          <td align="center"><input style="width:40px" class="tiebreaker_input" id="feedback_t<?php echo $count ?>"name="feedback_t[<?php echo $count ?>]" /></td> 
+          <td align="center"><input style="width:40px" class="tiebreaker_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" /></td> 
           <td align="center" <?php echo $style_t;?>><?php echo $decision_t;?></td> 
           
           <td align="center"><?php echo $ending_bal_d;?></td>     
