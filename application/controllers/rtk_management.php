@@ -12593,8 +12593,8 @@ AND allocation_details.district_id = districts.id";
                     $data_array['county_id'] = $county_id;
                     $data_array['zone'] = $zone;
                     $data_array['duration'] = $duration;
-                    $data_array['screening_amount'] = $screening_amt;
-                    $data_array['confirmatory_amount'] = $confirmatory_amt;
+                    $data_array['screening_total'] = $screening_amt;
+                    $data_array['confirmatory_total'] = $confirmatory_amt;
 
                     array_push($drawing_rights_final_array, $data_array);
                 } else {
