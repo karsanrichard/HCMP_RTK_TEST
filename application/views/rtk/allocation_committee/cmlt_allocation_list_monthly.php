@@ -7,7 +7,8 @@
 		color: red;
 	}
 	.margin-sm{
-		margin:10px 10px!important;
+		margin:10px 0px!important;
+    padding:  10px!important;
 	}
 
 	.no-margin{
@@ -17,14 +18,14 @@
 		padding:0!important;
 	}
 .dash{    
-    padding: 15px;
+    /*padding: 15px;*/
     border: 1px #ECE8E8 solid;
     border-bottom: 8px solid #428bca;
     border-radius: 0px 6px 6px 10px;
-    min-width: 20%;
-    width: 30%;
+    /*min-width: 20%;*/
+    /*width: 30%;*/
     height: auto;
-    margin-top: 20px;
+    /*margin-top: 20px;*/
     color: #428bca;
 }
 .dash a{
@@ -64,7 +65,7 @@
 </div>
 <div class="col-md-12 clearfix ">
 <?php foreach($allocation_details as $key => $value) : ?>
-	<div id="rtk" class="dash col-md-3 margin-sm">
+	<div id="rtk" class="dash col-md-4 margin-sm">
       <div class="details"><?php echo $value['district_name'];?> Sub - County</div><br/>
       <?php if($value['status'] == "Unallocated"): ?>
       <div class="col-md-12 no-padding facils red"> <strong><?php echo $value['status']; ?></strong> <i class="glyphicon glyphicon-warning-sign"></i></div>
