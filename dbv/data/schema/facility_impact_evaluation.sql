@@ -1,0 +1,23 @@
+CREATE TABLE `facility_impact_evaluation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `facility_code` int(11) NOT NULL,
+  `user_id` varchar(30) NOT NULL,
+  `no_of_personnel` varchar(30) NOT NULL,
+  `no_still_using_tool` varchar(30) NOT NULL,
+  `cadres_of_users` varchar(255) NOT NULL,
+  `no_of_times_a_week` int(10) NOT NULL,
+  `does_physical_count_tally` int(2) NOT NULL,
+  `amount_of_commodities_stocked` varchar(30) NOT NULL,
+  `duration_of_stockout` varchar(30) NOT NULL,
+  `amount_of_expired_commodities` varchar(30) NOT NULL,
+  `amount_of_overstocked_commodities` varchar(30) NOT NULL,
+  `adequate_storage` int(2) NOT NULL,
+  `date_of_last_order` date NOT NULL,
+  `quarter_served` varchar(30) NOT NULL,
+  `discrepancies` int(2) NOT NULL,
+  `reasons_for_discrepancies` varchar(255) NOT NULL,
+  `date_of_delivery` date NOT NULL,
+  `general_challenges` varchar(255) NOT NULL,
+  `report_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1

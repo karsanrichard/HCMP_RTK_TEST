@@ -1,0 +1,21 @@
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fname` varchar(255) NOT NULL,
+  `lname` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `activation` varchar(255) NOT NULL,
+  `usertype_id` int(11) NOT NULL,
+  `telephone` varchar(255) NOT NULL,
+  `district` varchar(255) DEFAULT NULL,
+  `partner` int(11) NOT NULL,
+  `facility` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
+  `county_id` int(11) NOT NULL,
+  `email_recieve` int(1) NOT NULL DEFAULT '1',
+  `sms_recieve` int(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1

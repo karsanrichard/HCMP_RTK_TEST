@@ -1,0 +1,20 @@
+CREATE TABLE `tuberculosis_data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `facility_code` int(11) NOT NULL,
+  `beginning_date` date NOT NULL,
+  `currently_recieved` int(11) NOT NULL,
+  `ending_date` date NOT NULL,
+  `beginning_balance` int(11) NOT NULL,
+  `quantity_dispensed` int(11) NOT NULL,
+  `positive_adjustment` int(11) NOT NULL,
+  `negative_adjustment` int(11) NOT NULL,
+  `losses` int(11) NOT NULL,
+  `physical_count` int(11) NOT NULL,
+  `earliest_expiry` date NOT NULL,
+  `quantity_needed` int(11) NOT NULL,
+  `report_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL,
+  `report_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `facility_id` (`facility_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
