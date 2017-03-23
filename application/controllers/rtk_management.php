@@ -3230,7 +3230,7 @@ public function district_allocation_table()
             ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
         $result = $this->db->query($sql)->result_array();
         $final_dets = array();
-        echo "<pre>"; print_r($result);die;
+        // echo "<pre>"; print_r($result);die;
         // $all_fac_max_created_at = $this->get_max_created_at($district_id);
         // echo "<pre>";print_r($all_fac_max_created_at);
         // $key = array_search(14296, $all_fac_max_created_at);
@@ -11893,15 +11893,15 @@ AND '$last_date' order by id asc";
         $criteria .= ($district_id > 0) ? "AND d.id = $district_id AND a.district_id = d.id" : NULL;
 
         $months_query = "
-SELECT 
-a.month,
-a.created_at
-FROM
-allocation_details a,districts d,counties c, facilities f
-WHERE
-a.district_id = d.id  AND d.county = c.id AND f.district = d.id 
-$criteria
-GROUP BY MONTH(month)";
+            SELECT 
+            a.month,
+            a.created_at
+            FROM
+            allocation_details a,districts d,counties c, facilities f
+            WHERE
+            a.district_id = d.id  AND d.county = c.id AND f.district = d.id 
+            $criteria
+            GROUP BY MONTH(month)";     
 
         // echo $months_query;
         $months = $this->db->query($months_query)->result_array();
@@ -11927,28 +11927,28 @@ GROUP BY MONTH(month)";
 
         // echo $month_year;exit;
             $query = "
-SELECT 
-a.id,
-c.id,
-a.district_id,
-f.facility_code,
-a.month,
-a.created_at,
-c.id,c.county,
-d.id,
-d.district
-FROM
-allocation_details a,districts d,counties c, facilities f
-WHERE
-a.district_id = d.id  AND d.county = c.id AND f.district = d.id AND MONTH(month) = MONTH('$month_')
-$criteria
-GROUP BY f.facility_code;
-";
+                SELECT 
+                a.id,
+                c.id,
+                a.district_id,
+                f.facility_code,
+                a.month,
+                a.created_at,
+                c.id,c.county,
+                d.id,
+                d.district
+                FROM
+                allocation_details a,districts d,counties c, facilities f
+                WHERE
+                a.district_id = d.id  AND d.county = c.id AND f.district = d.id AND MONTH(month) = MONTH('$month_')
+                $criteria
+                GROUP BY f.facility_code;
+                ";
 
-        // echo $query;
-            $result = $this->db->query($query)->result_array();
+                // echo $query;exit;
+                    $result = $this->db->query($query)->result_array();
 
-        // echo "<pre>";print_r($result);exit;
+                // echo "<pre>";print_r($result);exit;
 
             $facilities_list = '';
             foreach ($result as $key => $value) {
@@ -12233,19 +12233,19 @@ array_push($final_array_, $filler_final_1);
         // echo "<pre>";print_r($final_array);exit;
 
         $query = "
-SELECT 
-districts.*
-FROM
-allocation_details,
-counties,
-districts
-WHERE
-counties.id = $county_id
-AND month BETWEEN '$start_date' AND '$end_date'
-AND counties.id = districts.county
-AND allocation_details.district_id = districts.id
-GROUP BY districts.id
-";
+            SELECT 
+            districts.*
+            FROM
+            allocation_details,
+            counties,
+            districts
+            WHERE
+            counties.id = $county_id
+            AND month BETWEEN '$start_date' AND '$end_date'
+            AND counties.id = districts.county
+            AND allocation_details.district_id = districts.id
+            GROUP BY districts.id
+            ";
 
         $allocated_districts = $this->db->query($query)->result_array();
 
@@ -12334,25 +12334,25 @@ GROUP BY districts.id
         $result2 = $this->db->query($sql2)->result_array();
 
         $sql = "SELECT 
-facilities.facility_code,
-facilities.facility_name,
-districts.district,
-districts.id as districtid,
-counties.county,
-counties.id as countyid,
-counties.screening_current_amount,
-counties.confirmatory_current_amount,
-counties.tiebreaker_current_amount
-FROM
-facilities
-inner JOIN   districts
-ON    facilities.district = districts.id
-inner JOIN counties
-ON  districts.county = counties.id
-WHERE
-facilities.rtk_enabled = 1
-AND districts.id = '$district_id'
-ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
+            facilities.facility_code,
+            facilities.facility_name,
+            districts.district,
+            districts.id as districtid,
+            counties.county,
+            counties.id as countyid,
+            counties.screening_current_amount,
+            counties.confirmatory_current_amount,
+            counties.tiebreaker_current_amount
+            FROM
+            facilities
+            inner JOIN   districts
+            ON    facilities.district = districts.id
+            inner JOIN counties
+            ON  districts.county = counties.id
+            WHERE
+            facilities.rtk_enabled = 1
+            AND districts.id = '$district_id'
+            ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
         $result = $this->db->query($sql)->result_array();
         $final_dets = array();
         // echo "<pre>"; print_r($result);die;
@@ -12372,15 +12372,15 @@ ORDER BY counties.county asc, districts.district asc, facilities.facility_code A
             $facilityname = $id_details['facility_name'];
 
             $sql3 = "SELECT amc,
-closing_stock,
-days_out_of_stock,
-q_requested
-FROM
-lab_commodity_details AS a
-WHERE
-facility_code = $fcode
-AND commodity_id between 4 and 6
-AND created_at IN (SELECT MAX(created_at) FROM lab_commodity_details where facility_code = $fcode)";
+                closing_stock,
+                days_out_of_stock,
+                q_requested
+                FROM
+                lab_commodity_details AS a
+                WHERE
+                facility_code = $fcode
+                AND commodity_id between 4 and 6
+                AND created_at IN (SELECT MAX(created_at) FROM lab_commodity_details where facility_code = $fcode)";
 
             $result3 = $this->db->query($sql3)->result_array();
         // echo "<pre>"; print_r($result3); die;
