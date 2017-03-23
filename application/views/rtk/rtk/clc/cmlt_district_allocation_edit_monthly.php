@@ -105,6 +105,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
+      <th align="center">Recommended Quantity to Allocate</th>
       <th align="center">Quantity Allocated by County</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
@@ -112,6 +113,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
+      <th align="center">Recommended Quantity to Allocate</th>
       <th align="center">Quantity Allocated by County</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>     
@@ -285,6 +287,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $ending_bal_s_latest;?></td>     
           <td align="center"><?php echo $amc_s;?></td> 
           <td align="center"><?php echo $mmos_s;?></td>
+          <td align="center"><?php echo $recommended_s;?></td> 
           <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $value['allocate_s'];?>'/></td> 
           <td align="center"><input style="width:100px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" value = '<?php echo $value['remark_s'];?>'/></td> 
           <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
@@ -292,6 +295,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $ending_bal_c_latest;?></td>     
           <td align="center"><?php echo $amc_c;?></td> 
           <td align="center"><?php echo $mmos_c;?></td> 
+          <td align="center"><?php echo $recommended_c;?></td> 
           <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $value['allocate_c'];?>'/></td> 
           <td align="center"><input style="width:100px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" value = '<?php echo $value['remark_c'];?>'/></td> 
           <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 

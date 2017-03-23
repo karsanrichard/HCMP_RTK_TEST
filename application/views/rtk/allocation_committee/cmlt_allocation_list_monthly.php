@@ -69,13 +69,14 @@
       <?php if($value['status'] == "Unallocated"): ?>
       <div class="col-md-12 no-padding facils red"> <strong><?php echo $value['status']; ?></strong> <i class="glyphicon glyphicon-warning-sign"></i></div>
       <div class="col-md-12 no-padding no-margin">
-      	<a class="btn btn-primary" href="">Begin Allocation</a>
+        <!-- <a class="btn btn-primary" href="<?php echo base_url().'rtk_management/allocate_from_list/'.$value['district_id'].'/'.$selected_month.'/'.$selected_year; ?>">Begin Allocation</a> -->
+      	<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/district_allocation_table/'.$value['district_id'].'/'.$selected_month.'/'.$selected_year; ?>">Begin Allocation</a>
       </div> 
       <?php else: ?>
       <div class="col-md-12 no-padding facils"> <strong><?php echo $value['status']; ?></strong> <i class="glyphicon glyphicon-ok"></i></div> 
       <div class="col-md-12 no-padding no-margin">
       	<a class="btn btn-success" href="<?php echo base_url().'rtk_management/edit_allocation_report_monthly/'.$value['district_id'].'/'.$selected_month.'/'.$selected_year; ?>">View/Edit Allocation</a>
-      	<a class="btn btn-primary" href="#">Download Allocation</a>
+      	<!-- <a class="btn btn-primary" href="#">Download Allocation</a> -->
       </div>
       <?php endif; ?>       
     </a>

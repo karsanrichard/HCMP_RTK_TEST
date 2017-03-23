@@ -62,7 +62,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
     $attributes = array('name' => 'myform', 'id' => 'myform');
     echo form_open('rtk_management/submit_district_allocation_report', $attributes);
 ?>
-<form id="myform">
   <input type="hidden" id="countyid" name="county_id" value="<?php echo $countyid;?>"> 
   <input type="hidden" name="district_id" id = "district_id" value="<?php echo $districtid;?>"> 
   <input type="hidden" id="screening_current_amount" value="<?php echo $screening_current_amount;?>"> 
@@ -294,7 +293,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $recommended_s;?></td> 
           <!-- <td align="center"><?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*6)-$ending_bal_s);}?></td>  -->
           <!-- <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*4)-$ending_bal_s);}?>'/></td>  -->
-          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_s; ?>'/></td> 
+          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_s<?php echo $count ?>"name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $recommended_s; ?>'/></td> 
           <td align="center"><input style="width:40px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" /></td> 
           <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
 
@@ -338,7 +337,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 
     </tbody>
   </table>
-  </form>
+        <input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save" style="margin-left: 0%; width:100px" >
 <?php form_close(); ?>
 
 </div>
@@ -346,7 +345,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 <br/>
 <br/>
     <!-- <div id="message" type="text" style="margin-left: 0%; width:200px;color:blue;font-size:120%">lalaaa</div> -->
-        <input class="btn btn-primary" type="submit"   id="confirm"  value="Save" style="margin-left: 0%; width:100px" >
     
 
     <div class="modal fade" id="next_modal">
@@ -511,17 +509,13 @@ $(document).ready(function() {
        // }
         
     });
-$('#next_report_btn').button().click(function(e)
-{
-    var next_id = $('#next_report_btn').val();
-    var url = "<?php echo base_url() . 'rtk_management/district_allocation_table/'; ?>";
-    var site_url_link = url+next_id;
-    window.location.href = site_url_link;
-});
+
 $('#go_home').button().click(function(e)
 {    
     // var countyid = $('#countyid');
-    var url = "<?php echo base_url() . 'rtk_management/scmlt_home/'; ?>"; 
+    var district_id = $('#district_id').val();
+
+    var url = "<?php echo base_url() . 'rtk_management/scmlt_allocation_list/'.$districtid; ?>"; 
     var site_url_link = url+countyid;
     window.location.href = url;
 });

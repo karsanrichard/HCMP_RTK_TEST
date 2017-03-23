@@ -3009,7 +3009,8 @@ public function cmlt_allocation_dashboard(){        //karsan
     $this->load->view('rtk/template', $data); 
 }
 
-public function district_allocation_table(){        //karsan slow
+public function district_allocation_table($district_id = NULL){//karsan slow
+
     $county = (int) $this->session->userdata("county_id");
     $district_id = $this->uri->segment(3);
 
@@ -3532,7 +3533,8 @@ function submit_district_allocation_report(){
     }else{
         echo "2";           
 
-    }          
+    }    
+    redirect('rtk_management/scmlt_allocation_list/'.$district_id);      
 }
 public function edit_county_allocation_report($district_id){
     $month = date('mY');
@@ -12221,6 +12223,111 @@ function edit_district_allocation_report_monthly($district_id,$month,$year){
     $monthName = $dateObj->format('F'); // March
 
     redirect('rtk_management/edit_allocation_report_monthly/'.$district_id.'/'.$monthName.'/'.$year.'/1');      
+}
+
+public function allocate_from_list($district_id = NULL,$month = NULL, $year = NULL){//karsan slow
+    // echo $district_id.' '.$month.' '.$year;exit;
+    $district_id = (isset($district_id) && $district_id > 0)? $district_id : (int) $this->session->userdata("district_id") ;
+    $county = (int) $this->session->userdata("county_id");//Assumed that county_id set in session by default on login and such
+
+    $sql4 = "select * from counties where id = '$county'";
+    $result4 = $this->db->query($sql4)->result_array();
+
+    // echo "<pre>";print_r($result4);exit;
+    $sql = "SELECT 
+    facilities.facility_code,
+    facilities.facility_name,
+    districts.district,
+    districts.id as districtid,
+    counties.county,
+    counties.id as countyid,
+    counties.screening_current_amount,
+    counties.confirmatory_current_amount,
+    counties.tiebreaker_current_amount
+    FROM
+    facilities
+    inner JOIN   districts
+    ON    facilities.district = districts.id
+    inner JOIN counties
+    ON  districts.county = counties.id
+    WHERE
+    facilities.rtk_enabled = 1
+    AND districts.id = '$district_id'
+    ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
+    $result = $this->db->query($sql)->result_array();
+    $final_dets = array();
+    // echo "<pre>"; print_r($result4);die;
+
+    foreach ($result as $key => $id_details) {
+
+        $fcode = $id_details['facility_code'];
+        $county = $id_details['county'];
+        $district = $id_details['district'];
+        $districtid = $id_details['districtid'];
+        $countyid = $id_details['countyid'];
+        $facilityname = $id_details['facility_name'];
+
+        // $sql2 = "SELECT 
+        //             facility_amc.amc as amc
+        //         FROM
+        //             facilities,
+        //             facility_amc
+        //         WHERE
+        //             facilities.facility_code = facility_amc.facility_code
+        //                 AND facilities.facility_code = '$fcode'
+        //                 AND facility_amc.commodity_id between 4 and 22            
+        //         ORDER BY facility_amc.commodity_id ASC";
+
+        // $result2 = $this->db->query($sql2)->result_array();
+        // echo "$sql2"; die;
+        $sql3 = "SELECT amc,
+        commodity_id,
+        closing_stock,
+        days_out_of_stock,
+        q_requested
+        FROM
+        lab_commodity_details AS a
+        WHERE
+        facility_code = $fcode
+        AND commodity_id between 4 and 6
+        AND MONTH(created_at) = '$month' and YEAR(created_at) = '$year'";
+
+        $result3 = $this->db->query($sql3)->result_array();
+        // echo "<pre>"; print_r($result3); die;
+
+        $final_dets[$fcode]['name'] = $facilityname;
+        $final_dets[$fcode]['district'] = $district;
+        $final_dets[$fcode]['district_id'] = $districtid;
+        $final_dets[$fcode]['county'] = $county;
+        $final_dets[$fcode]['county_id'] = $countyid;
+        // $final_dets[$fcode]['screening_current_amount'] = $screening_current_amount;
+        // $final_dets[$fcode]['confirmatory_current_amount'] = $confirmatory_current_amount;
+        // $final_dets[$fcode]['tiebreaker_current_amount'] = $tiebreaker_current_amount;
+        // $final_dets[$fcode]['amcs'] = $result2;
+        $calculated_amc = $this->calculate_amc($fcode);
+
+        $final_dets[$fcode]['code'] = $fcode;
+        $final_dets[$fcode]['end_bal'] = $result3;
+        $final_dets[$fcode]['amc'] = $calculated_amc;
+    }
+
+        // echo "$sql3";die;
+    // echo "<pre>";print_r($final_dets);exit;
+    $data['title'] = "Sub-County Allocation";
+    $data['banner_text'] = '<h2 align="center"> RTK Allocation '.$result[0]['county'].' ---- '.$result[0]['district'].'</h2>';
+    $data['content_view'] = 'rtk/rtk/clc/cmlt_district_allocation';        
+    $data['final_dets'] = $final_dets;
+    $data['districtid'] = $district_id;
+    $data['district_name'] = $result['district'];
+    
+    $data['county_name'] = $result4[0]['county'];
+    $data['countyid'] = $result4[0]['id'];
+    $data['screening_current_amount'] = $result4[0]['screening_current_amount'];
+    $data['confirmatory_current_amount'] = $result4[0]['confirmatory_current_amount'];
+    $data['tiebreaker_current_amount'] = $result4[0]['tiebreaker_current_amount'];
+
+    // echo "<pre>";print_r($data);exit;
+    $this->load->view('rtk/template', $data); 
 }
 
 public function download_allocation_list($user_type, $county_id = NULL, $district_id = NULL)
