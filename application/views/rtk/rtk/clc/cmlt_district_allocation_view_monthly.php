@@ -40,10 +40,17 @@ input{
     width: auto;
 }
 
+.margin-top{
+  margin:10px 0 !important;
+}
+
+.padding-sm{
+  padding:10px!important;
+}
 </style>
 
 
-<div class="main-container" style="width: 100%;float: right;">
+<div class="container" style="width: 100%;float: right;">
 
 <div class="span12" style="align:center; font-size:16px;  width:100% margin-left: 10%"> 
 <b>Available amount of Kits in <?php echo $county_name;?>:</b><br/>
@@ -75,7 +82,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
     $tiebreaker_current_amount = str_replace(',', '',$tiebreaker_current_amount);
 
     $attributes = array('name' => 'myform', 'id' => 'myform');
-    echo form_open('rtk_management/edit_district_allocation_report_monthly/'.$district_id.'/'.$selected_month.'/'.$selected_year, $attributes);
+    echo form_open('rtk_management/save_allocation_county/'.$county_id.'/'.$district_id.'/'.$selected_month.'/'.$selected_year, $attributes);
 
 ?>
   <input type="hidden" id="countyid" name="county_id" value="<?php echo $county_id;?>"> 
@@ -288,16 +295,20 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $amc_s;?></td> 
           <td align="center"><?php echo $mmos_s;?></td>
           <td align="center"><?php echo $recommended_s;?></td> 
-          <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $value['allocate_s'];?>'/></td> 
-          <td align="center"><input style="width:100px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" value = '<?php echo $value['remark_s'];?>'/></td> 
+          <td align="center"><?php echo $value['allocate_s'];?></td> 
+          <td align="center">
+          <textarea readonly="true" class="screening_input form-control" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" value = '<?php echo $value['remark_s'];?>'>
+          <?php echo $value['remark_s'];?>
+          </textarea></td> 
           <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
 
           <td align="center"><?php echo $ending_bal_c_latest;?></td>     
           <td align="center"><?php echo $amc_c;?></td> 
           <td align="center"><?php echo $mmos_c;?></td> 
           <td align="center"><?php echo $recommended_c;?></td> 
-          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $value['allocate_c'];?>'/></td> 
-          <td align="center"><input style="width:100px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" value = '<?php echo $value['remark_c'];?>'/></td> 
+          <td align="center"><?php echo $value['allocate_c'];?></td> 
+          <td align="center">
+          <textarea readonly="true" class="confirm_input form-control" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" value = '<?php echo $value['remark_c'];?>'><?php echo $value['remark_c'];?></textarea></td> 
           <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 
 
                     
@@ -320,12 +331,33 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 <br/>
 <br/>
     <!-- <div id="message" type="text" style="margin-left: 0%; width:200px;color:blue;font-size:120%"></div> -->
-        <!-- <input class="btn btn-primary" type="submit"   id="confirm"  value="Save Data" style="margin-left: 0%; width:100px" /> -->
-        <input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save Allocation" style="margin-left: 0%; width:100px" />
-<?php form_close(); ?>
-    
 
-    <div class="modal fade" id="next_modal">
+</div>
+
+ <div class="col-md-12 margin-top">
+   <h4>Comments</h4>
+      <textarea name="county_comment" class="form-control col-md-12 margin-top"></textarea>
+
+    <div class="form-check form-check-inline col-md-2">
+      <label class="form-check-label btn-success padding-sm">
+      <input class="form-check-input" type="radio" name="approval_status" id="reject" value="APPROVED">
+      APPROVE
+    </label>
+  </div>
+  <div class="form-check form-check-inline col-md-2">
+    <label class="form-check-label btn-danger padding-sm">
+        <input class="form-check-input" type="radio" name="approval_status" id="approve" value="REJECTED" checked>
+        REJECT
+      </label>
+  </div>
+  <div class="col-md-12">
+    <input class="btn btn-primary col-md-5" type="submit"   id="confirm_new"  value="Save" style="" />
+  </div>
+  </div>
+<?php form_close(); ?>
+
+        <!-- <input class="btn btn-primary" type="submit"   id="confirm"  value="Save Data" style="margin-left: 0%; width:100px" /> -->
+<div class="modal fade" id="next_modal">
   <div class="modal-dialog">
     <div class="modal-content">      
       <div class="modal-body">
