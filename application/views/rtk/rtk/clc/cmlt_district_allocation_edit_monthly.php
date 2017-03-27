@@ -40,15 +40,32 @@ input{
     width: auto;
 }
 
+.margin-vert{
+  margin:10px 0!important;
+}
+
 </style>
 
 
 <div class="main-container" style="width: 100%;float: right;">
 
 <div class="span12" style="align:center; font-size:16px;  width:100% margin-left: 10%"> 
+<?php if ($status == "Pending") {
+  $status_message = '<span class="label label-warning"> Pending </span>';
+}elseif ($status == "Rejected") {
+  $status_message = '<span class="label label-danger"> Rejected </span>';
+}elseif ($status == "Approved") {
+  $status = '<span class="label label-warning"> Approved </span>';
+}else{
+  $status_message = '<span class="label label-info"> Unreachable. Kindly contact system administrator. </span>';
+}
+ ?>
+<center><p>Allocation approval status: <?php echo $status_message; ?></p></center>
+
 <b>Available amount of Kits in <?php echo $county_name;?>:</b><br/>
 Screening: <?php echo $screening_current_amount?>, Confirmatory: <?php echo $confirmatory_current_amount?>. <br/><br/>
 Guide:<b style="color:green;"> Green :- Resupply, </b> <b style="background-color:yellow;"> Yellow :- Monitor, &nbsp;</b><b style="color:red;"> Red :- Redistribute</b>
+
 <div>
   <?php if ($success_status == '1'): ?>
     <div class="col-md-6 col-md-offset-3 alert alert-success">
@@ -105,7 +122,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
-      <th align="center">Recommended Quantity to Allocate</th>
       <th align="center">Quantity Allocated by County</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>
@@ -113,7 +129,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <th align="center">Ending Balance</th>      
       <th align="center">AMC</th>
       <th align="center">Months of Stock</th>
-      <th align="center">Recommended Quantity to Allocate</th>
       <th align="center">Quantity Allocated by County</th>
       <th align="center">Feedback/Remarks</th>
       <th align="center">Decision (Supply, Monitor, Distribute</th>     
@@ -222,6 +237,13 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $recommended_s = ($recommended_s<0)? 0: $recommended_s;
         $recommended_c = ($recommended_c<0)? 0: $recommended_c;
         $recommended_t = ($recommended_t<0)? 0: $recommended_t;
+
+        $recommended_s = round($recommended_s / 100) * 100;
+        $recommended_c = round($recommended_c / 30) * 30;
+
+        
+        
+
         // $mmos_c = ceil(($amc_c * 4));
         // $mmos_t = ceil(($amc_t * 4));
       
@@ -287,17 +309,19 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><?php echo $ending_bal_s_latest;?></td>     
           <td align="center"><?php echo $amc_s;?></td> 
           <td align="center"><?php echo $mmos_s;?></td>
-          <td align="center"><?php echo $recommended_s;?></td> 
           <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $value['allocate_s'];?>'/></td> 
-          <td align="center"><input style="width:100px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" value = '<?php echo $value['remark_s'];?>'/></td> 
+          <td align="center">
+          <textarea style="width:100px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" value = '<?php echo $value['remark_s'];?>'><?php echo $value['remark_s'];?></textarea>
+          </td> 
           <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
 
           <td align="center"><?php echo $ending_bal_c_latest;?></td>     
           <td align="center"><?php echo $amc_c;?></td> 
           <td align="center"><?php echo $mmos_c;?></td> 
-          <td align="center"><?php echo $recommended_c;?></td> 
-          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $value['allocate_c'];?>'/></td> 
-          <td align="center"><input style="width:100px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" value = '<?php echo $value['remark_c'];?>'/></td> 
+          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>" name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $value['allocate_c'];?>'/></td> 
+          <td align="center">
+          <textarea style="width:100px" class="confirm_input" id="feedback_c<?php echo $count ?>" name="feedback_c[<?php echo $count ?>]" value = '<?php echo $value['remark_c'];?>'><?php echo $value['remark_c'];?></textarea>
+          </td> 
           <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 
 
                     
@@ -321,7 +345,12 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 <br/>
     <!-- <div id="message" type="text" style="margin-left: 0%; width:200px;color:blue;font-size:120%"></div> -->
         <!-- <input class="btn btn-primary" type="submit"   id="confirm"  value="Save Data" style="margin-left: 0%; width:100px" /> -->
-        <input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save Allocation" style="margin-left: 0%; width:100px" />
+
+        <div class="col-md-12">
+          <h3>County comments: </h3>
+          <textarea class="form-control margin-vert" readonly="true"><?php echo $status_comment; ?></textarea>
+        </div>
+        <input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save Allocation" style="margin-left: 0%; width:300px" />
 <?php form_close(); ?>
     
 
@@ -343,22 +372,22 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 <script>
 $(document).ready(function() {
  
-  // $('#allocation_table').dataTable({
-  //    "sDom": "T lfrtip",
-  //    "aaSorting": [],
-  //    "bJQueryUI": false,
-  //     "bPaginate": false,
-  //     "oLanguage": {
-  //       "sLengthMenu": "_MENU_ Records per page",
-  //       "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
-  //     },
-  //     "oTableTools": {
-  //     "aButtons": [      
+  $('#allocation_table').dataTable({
+     "sDom": "T lfrtip",
+     "aaSorting": [],
+     "bJQueryUI": false,
+      "bPaginate": false,
+      "oLanguage": {
+        "sLengthMenu": "_MENU_ Records per page",
+        "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
+      },
+      "oTableTools": {
+      "aButtons": [      
       
-  //     ],  
-  //     "sSwfPath": "<?php echo base_url();?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
-  //   }
-  // });
+      ],  
+      "sSwfPath": "<?php echo base_url();?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
+    }
+  });
    
   // $("#allocation_table").tablecloth({theme: "paper",         
   //   bordered: true,

@@ -12339,7 +12339,7 @@ array_push($final_array_, $filler_final_1);
         $num_days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
         $lastdate = $year . '-' . $month . '-' . $num_days;
 
-        // echo "<pre>";print_r($firstdate);exit;
+        // echo "<pre>";print_r($month);exit;
 
         $sql = "select * from allocation_details where district_id = $district_id and created_at between '$firstdate' and '$lastdate'";
         // echo $sql;exit;
@@ -12383,6 +12383,11 @@ array_push($final_array_, $filler_final_1);
         // $key = array_search(14296, $all_fac_max_created_at);
         // echo "<pre>";print_r($key);exit;
         // $all_fac_max_created_at = $max_created_at['max_created_at'];
+        $status_query = "SELECT * FROM allocations WHERE district_id = $district_id AND MONTH(created_at) = MONTH('$firstdate') LIMIT 1";
+
+        $allocation_status = $this->db->query($status_query)->result_array();
+
+        // echo "<pre>";print_r($allocation_status);exit;
 
         foreach ($result as $key => $id_details) {
 
@@ -12426,11 +12431,16 @@ array_push($final_array_, $filler_final_1);
             $final_dets[$fcode]['closing_stock'] = $closing_stock;
         }
 
+        
+
         $data['final_dets'] = $final_dets;
 
         $data['district_id'] = $district_id;
         $data['selected_month'] = $month;
         $data['selected_year'] = $year;
+
+        $data['status_comment'] = $allocation_status[0]['county_comment'];
+        $data['status'] = $allocation_status[0]['status'];
 
         $data['district_name'] = $result2[0]['district'];
         $data['county_name'] = $result2[0]['county_name'];
