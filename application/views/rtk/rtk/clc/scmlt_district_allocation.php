@@ -62,7 +62,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
     $attributes = array('name' => 'myform', 'id' => 'myform');
     echo form_open('rtk_management/submit_district_allocation_report', $attributes);
 ?>
-<form id="myform">
   <input type="hidden" id="countyid" name="county_id" value="<?php echo $countyid;?>"> 
   <input type="hidden" name="district_id" id = "district_id" value="<?php echo $districtid;?>"> 
   <input type="hidden" id="screening_current_amount" value="<?php echo $screening_current_amount;?>"> 
@@ -132,34 +131,42 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         // echo "<pre>";print_r($value);exit;
         //$zone = str_replace(' ', '-',$value['zone']);
         $facil = $value['code'];
-        $ending_bal_s =ceil($value['end_bal'][0]['closing_stock']); 
-        $ending_bal_c =ceil($value['end_bal'][1]['closing_stock']); 
-        $ending_bal_t =ceil($value['end_bal'][2]['closing_stock']);
-        $ending_bal_d =ceil($value['end_bal'][3]['closing_stock']);
+        $ending_bal_s_latest =ceil($value['end_bal'][0]['closing_stock']); 
+        $ending_bal_c_latest =ceil($value['end_bal'][1]['closing_stock']); 
+        $ending_bal_t_latest =ceil($value['end_bal'][2]['closing_stock']);
+        $ending_bal_d_latest =ceil($value['end_bal'][3]['closing_stock']);
+        
         $days_out_of_stock_s =ceil($value['end_bal'][0]['days_out_of_stock']); 
         $days_out_of_stock_c =ceil($value['end_bal'][1]['days_out_of_stock']); 
         $days_out_of_stock_t =ceil($value['end_bal'][2]['days_out_of_stock']);
         $days_out_of_stock_d =ceil($value['end_bal'][3]['days_out_of_stock']);
+
         $q_requested_s =ceil($value['end_bal'][0]['q_requested']); 
         $q_requested_c =ceil($value['end_bal'][1]['q_requested']); 
         $q_requested_t =ceil($value['end_bal'][2]['q_requested']);
         $q_requested_d =ceil($value['end_bal'][3]['q_requested']);
 
-        $amc_s = str_replace(',', '',$my_amcs[$count][0]);
-        $amc_c = str_replace(',', '',$my_amcs[$count][1]);
-        $amc_t = str_replace(',', '',$my_amcs[$count][2]);
-        $amc_d = str_replace(',', '',$my_amcs[$count][3]);
+        // $amc_s = str_replace(',', '',$my_amcs[$count][0]);
+        // $amc_c = str_replace(',', '',$my_amcs[$count][1]);
+        // $amc_t = str_replace(',', '',$my_amcs[$count][2]);
+        // $amc_d = str_replace(',', '',$my_amcs[$count][3]);
 
         $amc_s = str_replace(',', '',$value['amcs'][0]['amc']);
         $amc_c = str_replace(',', '',$value['amcs'][1]['amc']);
         $amc_t = str_replace(',', '',$value['amcs'][2]['amc']);        
-        $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);  
+        $amc_d = str_replace(',', '',$value['amcs'][3]['amc']);
+
 
         $amc_s = round($value['amc'][0]['amc'] + 0);
         $amc_c = round($value['amc'][1]['amc'] + 0);
         $amc_t = round($value['amc'][2]['amc'] + 0);        
         $amc_d = round($value['amc'][3]['amc'] + 0);  
-        // echo "<pre>First ";print_r($my_amcs[$count][0]);
+        
+        $ending_bal_s = str_replace(',', '',$value['amc'][0]['closing_stock']);
+        $ending_bal_c = str_replace(',', '',$value['amc'][1]['closing_stock']);
+        $ending_bal_t = str_replace(',', '',$value['amc'][2]['closing_stock']);  
+        $ending_bal_d = str_replace(',', '',$value['amc'][3]['closing_stock']);
+        // echo "<pre>First ";print_r($amc_s);exit;
         // echo "<pre>";print_r($amc[$count][0]);
         // exit;      
 
@@ -183,6 +190,19 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           $amc_d_50 = ceil($amc_d/50);
         }
 
+        if($ending_bal_s==''){
+          $ending_bal_s = 0;
+        }
+        if($ending_bal_c==''){
+          $ending_bal_c = 0;
+        }
+        if($ending_bal_t==''){
+          $ending_bal_t = 0;
+        }
+        if($ending_bal_d==''){
+          $ending_bal_d = 0;
+        }
+
         // $mmos_s = ceil(($amc_s * 4)/50);
         // $mmos_c = ceil(($amc_c * 4)/30);
         // $mmos_t = ceil(($amc_t * 4)/20);
@@ -191,9 +211,9 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $mmos_c = intval($ending_bal_c/$amc_c);
         $mmos_t = intval($ending_bal_t/$amc_t);
 
-        $recommended_s = ($amc_s * 4) - $ending_bal_s;
-        $recommended_c = ($amc_c * 4) - $ending_bal_c;
-        $recommended_t = ($amc_t * 4) - $ending_bal_t;
+        $recommended_s = ($amc_s * 4) - $ending_bal_s_latest;
+        $recommended_c = ($amc_c * 4) - $ending_bal_c_latest;
+        $recommended_t = ($amc_t * 4) - $ending_bal_t_latest;
 
         $recommended_s = ($recommended_s<0)? 0: $recommended_s;
         $recommended_c = ($recommended_c<0)? 0: $recommended_c;
@@ -267,17 +287,17 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align=""><?php echo $value['code'];?></td>
           <td align=""><?php echo $value['name'];?></td>  
 
-          <td align="center"><?php echo $ending_bal_s;?></td>     
+          <td align="center"><?php echo $ending_bal_s_latest;?></td>     
           <td align="center"><?php echo $amc_s;?></td> 
           <td align="center"><?php echo $mmos_s;?></td> 
           <td align="center"><?php echo $recommended_s;?></td> 
           <!-- <td align="center"><?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*6)-$ending_bal_s);}?></td>  -->
           <!-- <td align="center"><input style="width:40px" class="screening_input" id="q_allocate_s<?php echo $count ?>" name="q_allocate_s[<?php echo $count ?>]" value = '<?php if(($amc_s-$ending_bal_s)>0){echo (($amc_s*4)-$ending_bal_s);}?>'/></td>  -->
-          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_s; ?>'/></td> 
+          <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_s<?php echo $count ?>"name="q_allocate_s[<?php echo $count ?>]" value = '<?php echo $recommended_s; ?>'/></td> 
           <td align="center"><input style="width:40px" class="screening_input" id="feedback_s<?php echo $count ?>" name="feedback_s[<?php echo $count ?>]" /></td> 
           <td align="center" <?php echo $style_s;?> > <?php echo $decision_s;?></td> 
 
-          <td align="center"><?php echo $ending_bal_c;?></td>     
+          <td align="center"><?php echo $ending_bal_c_latest;?></td>     
           <td align="center"><?php echo $amc_c;?></td> 
           <td align="center"><?php echo $mmos_c;?></td> 
           <td align="center"><?php echo $recommended_c;?></td> 
@@ -287,14 +307,14 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
           <td align="center"><input style="width:40px" class="confirm_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" /></td> 
           <td align="center"<?php echo $style_c;?>><?php echo $decision_c;?></td> 
 
-          <td align="center"><?php echo $ending_bal_t;?></td>     
+          <td align="center"><?php echo $ending_bal_t_latest;?></td>     
           <td align="center"><?php echo $amc_t;?></td> 
           <td align="center"><?php echo $mmos_t;?></td> 
           <td align="center"><?php echo $recommended_t;?></td>  -->
           <!-- <td align="center"><?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?></td>  -->
           <!-- <td align="center"><input style="width:40px" class="tiebreaker_input" id="q_allocate_t<?php echo $count ?>"name="q_allocate_t[<?php echo $count ?>]" value = '<?php if(($amc_t-$ending_bal_t)>0){echo (($amc_t*4)-$ending_bal_t);}?>'/></td>  -->
           <td align="center"><input style="width:40px" class="confirm_input" id="q_allocate_c<?php echo $count ?>"name="q_allocate_c[<?php echo $count ?>]" value = '<?php echo $recommended_t; ?>'/></td> 
-          <td align="center"><input style="width:40px" class="tiebreaker_input" id="feedback_t<?php echo $count ?>"name="feedback_t[<?php echo $count ?>]" /></td> 
+          <td align="center"><input style="width:40px" class="tiebreaker_input" id="feedback_c<?php echo $count ?>"name="feedback_c[<?php echo $count ?>]" /></td> 
           <td align="center" <?php echo $style_t;?>><?php echo $decision_t;?></td> 
           
           <td align="center"><?php echo $ending_bal_d;?></td>     
@@ -317,7 +337,7 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 
     </tbody>
   </table>
-  </form>
+        <input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save" style="margin-left: 0%; width:100px" >
 <?php form_close(); ?>
 
 </div>
@@ -325,7 +345,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
 <br/>
 <br/>
     <!-- <div id="message" type="text" style="margin-left: 0%; width:200px;color:blue;font-size:120%">lalaaa</div> -->
-        <input class="btn btn-primary" type="submit"   id="confirm"  value="Save" style="margin-left: 0%; width:100px" >
     
 
     <div class="modal fade" id="next_modal">
@@ -337,9 +356,6 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
       <div class="modal-footer">
         <button type="button" class="btn btn-default" id="go_home">
             Back to Home
-        </button>
-        <button type="button" class="btn btn-default" id="next_report_btn">
-            Next Report
         </button>
       </div>
     </div><!-- /.modal-content -->
@@ -493,18 +509,15 @@ $(document).ready(function() {
        // }
         
     });
-$('#next_report_btn').button().click(function(e)
-{
-    var next_id = $('#next_report_btn').val();
-    var url = "<?php echo base_url() . 'rtk_management/district_allocation_table/'; ?>";
-    var site_url_link = url+next_id;
-    window.location.href = site_url_link;
-});
+
 $('#go_home').button().click(function(e)
-{    var countyid = $('#countyid');
-    var url = "<?php echo base_url() . 'rtk_management/cmlt_allocation_dashboard/'; ?>"; 
+{    
+    // var countyid = $('#countyid');
+    var district_id = $('#district_id').val();
+
+    var url = "<?php echo base_url() . 'rtk_management/scmlt_allocation_list/'.$districtid; ?>"; 
     var site_url_link = url+countyid;
-    window.location.href = site_url_link;
+    window.location.href = url;
 });
 });
 </script>

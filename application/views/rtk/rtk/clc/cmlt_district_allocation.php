@@ -469,7 +469,9 @@ $(document).ready(function() {
                                     
                     if(response==1)
                     {
-                        loadRemaining();
+                      var message = 'All Allocations have been Submitted.';
+                      $('#next_modal').modal('show');   
+                      $('#report_status').html(message);
                     }else{
                         loadRemaining2();
                         console.log(response);

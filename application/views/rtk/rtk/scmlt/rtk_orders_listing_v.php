@@ -132,8 +132,8 @@ $district_name = Districts::get_district_name($district)->toArray();
                 <?php
                 foreach ($lab_order_list as $order) {
                   $english_date = date('D dS M Y',strtotime($order['order_date']));
-                  // $reportmonth = date('F Y',strtotime('-1 month',strtotime($order['order_date'])));
-                  $reportmonth = date('F Y',strtotime($order['order_date']));
+                  $reportmonth = date('F Y',strtotime('-1 month',strtotime($order['order_date'])));
+                  // $reportmonth = date('F Y',strtotime($order['order_date']));
 
                   ?>
                   <tr>
