@@ -4406,14 +4406,14 @@ public function allocation_csv($value = ''){
                 $rowData_final[] = array_pop($rowData_temp);
             }
 
-        // echo "<pre>";print_r($rowData_final);exit;
+                // echo "<pre>";print_r($rowData_final);exit;
 
             $rowData_final_count = count($rowData_final);
             $blank_cells = 0;
 
             $screening = $confirmatory = $allocation_data_array = array();
             foreach ($rowData_final as $row_data => $data) {
-        // echo "<pre>";print_r($data);
+                // echo "<pre>";print_r($data);
                 $facility_code = $data[2];
 
 
@@ -4421,7 +4421,7 @@ public function allocation_csv($value = ''){
                     $q = "select district from facilities where facility_code = $facility_code";
                     $district_id = $this->db->query($q)->result_array();
 
-        // echo "<pre> ";print_r($district_id);exit;
+                // echo "<pre> ";print_r($district_id);exit;
 
                     if ($district_id != '' && $district_id > 0 && !empty($district_id)):
                         $district_id = $district_id[0]['district'];
@@ -4430,39 +4430,39 @@ public function allocation_csv($value = ''){
                         $county_id = $this->db->query($c)->result_array();
                         $county_id = $county_id[0]['county'];
 
-        // echo "<pre> ";print_r($county_id);exit;
+                // echo "<pre> ";print_r($county_id);exit;
 
                         $screening['district_id'] = $district_id;
                         $screening['facility_code'] = $facility_code;
-                        $screening['screening_beg_bal'] = $data[4];
-                        $screening['screening_days_out_of_stock'] = $data[5];
-                        $screening['screening_end_month_phyc_count'] = $data[6];
-                        $screening['screening_losses'] = $data[7];
-                        $screening['screening_neg_adj'] = $data[8];
-                        $screening['screening_no_of_tests'] = $data[9];
-                        $screening['screening_pos_adj'] = $data[10];
-                        $screening['screening_qtt_received_other'] = $data[11];
-                        $screening['screening_qtt_received'] = $data[12];
-                        $screening['screening_qtt_requested'] = $data[13];
-                        $screening['screening_qtt_used'] = $data[14];
-                        $screening['screening_qtt_expiring_6_months'] = $data[15];
+                        $screening['screening_beg_bal'] = ($data[4] < 1)?'0':$data[4];
+                        $screening['screening_days_out_of_stock'] = ($data[5] < 1)?'0':$data[5];
+                        $screening['screening_end_month_phyc_count'] = ($data[6] <1)?'0':$data[6];
+                        $screening['screening_losses'] = ($data[7] < 1)?'0':$data[7];
+                        $screening['screening_neg_adj'] = ($data[8] < 1)?'0':$data[8];
+                        $screening['screening_no_of_tests'] = ($data[9] < 1)?'0':$data[9];
+                        $screening['screening_pos_adj'] = ($data[10] < 1)?'0':$data[10];
+                        $screening['screening_qtt_received_other'] = ($data[11] < 1)?'0':$data[11];
+                        $screening['screening_qtt_received'] = ($data[12] < 1)?'0':$data[12];
+                        $screening['screening_qtt_requested'] = ($data[13] < 1)?'0':$data[13];
+                        $screening['screening_qtt_used'] = ($data[14] < 1)?'0':$data[14];
+                        $screening['screening_qtt_expiring_6_months'] = ($data[15] < 1)?'0':$data[15];
 
                         $screening_data[] = $screening;
 
                         $confirmatory['district_id'] = $district_id;
                         $confirmatory['facility_code'] = $facility_code;
-                        $confirmatory['confirmatory_beg_bal'] = $data[16];
-                        $confirmatory['confirmatory_days_out_of_stock'] = $data[17];
-                        $confirmatory['confirmatory_end_month_phyc_count'] = $data[18];
-                        $confirmatory['confirmatory_neg_adj'] = $data[19];
-                        $confirmatory['confirmatory_losses'] = $data[20];
-                        $confirmatory['confirmatory_no_of_tests'] = $data[21];
-                        $confirmatory['confirmatory_pos_adj'] = $data[22];
-                        $confirmatory['confirmatory_qtt_received_other'] = $data[23];
-                        $confirmatory['confirmatory_qtt_received'] = $data[24];
-                        $confirmatory['confirmatory_qtt_requested'] = $data[25];
-                        $confirmatory['confirmatory_qtt_used'] = $data[26];
-                        $confirmatory['confirmatory_qtt_expiring_6_months'] = $data[27];
+                        $confirmatory['confirmatory_beg_bal'] = ($data[16] < 1)?'0':$data[16];
+                        $confirmatory['confirmatory_days_out_of_stock'] = ($data[17] < 1)?'0':$data[17];
+                        $confirmatory['confirmatory_end_month_phyc_count'] = ($data[18] < 1)?'0':$data[18];
+                        $confirmatory['confirmatory_neg_adj'] = ($data[19] < 1)?'0':$data[19];
+                        $confirmatory['confirmatory_losses'] = ($data[20] < 1)?'0':$data[20];
+                        $confirmatory['confirmatory_no_of_tests'] = ($data[21] < 1)?'0':$data[21];
+                        $confirmatory['confirmatory_pos_adj'] = ($data[22] < 1)?'0':$data[22];
+                        $confirmatory['confirmatory_qtt_received_other'] = ($data[23] < 1)?'0':$data[23];
+                        $confirmatory['confirmatory_qtt_received'] = ($data[24] < 1)?'0':$data[24];
+                        $confirmatory['confirmatory_qtt_requested'] = ($data[25] < 1)?'0':$data[25];
+                        $confirmatory['confirmatory_qtt_used'] = ($data[26] < 1)?'0':$data[26];
+                        $confirmatory['confirmatory_qtt_expiring_6_months'] = ($data[27] < 1)?'0':$data[27];
 
                         $confirmatory_data[] = $confirmatory;
 
