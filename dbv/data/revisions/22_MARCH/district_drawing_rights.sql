@@ -1,4 +1,4 @@
-ALTER TABLE `rtk`.`district_drawing_rights` 
+ALTER TABLE `district_drawing_rights` 
 CHANGE COLUMN `user_id` `user_id` INT(11) NULL AFTER `confirmatory_used`,
 CHANGE COLUMN `screening` `screening_allocated` INT(11) NOT NULL ,
 CHANGE COLUMN `screening_current_amount` `screening_used` INT(11) NOT NULL ,
