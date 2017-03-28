@@ -44,6 +44,10 @@ input{
   margin:10px 0!important;
 }
 
+.margin-hor{
+  margin:0px 5px!important;
+}
+
 </style>
 
 
@@ -52,19 +56,61 @@ input{
 <div class="span12" style="align:center; font-size:16px;  width:100% margin-left: 10%"> 
 <?php if ($status == "Pending") {
   $status_message = '<span class="label label-warning"> Pending </span>';
+  $button_business = '<input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save Allocation" style="margin-left: 0%; width:300px" />';
 }elseif ($status == "Rejected") {
+  $button_business = '<input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save Allocation" style="margin-left: 0%; width:300px" />';
   $status_message = '<span class="label label-danger"> Rejected </span>';
 }elseif ($status == "Approved") {
-  $status = '<span class="label label-warning"> Approved </span>';
+  $status_message = '<span class="label label-success"> Approved </span>';
+  $button_business = '<input class="btn btn-success" type="" disabled="true" id="confirm_approved"  value="Allocation can not be edited" style="margin-left: 0%; width:300px" />';
 }else{
   $status_message = '<span class="label label-info"> Unreachable. Kindly contact system administrator. </span>';
+  $button_business = '<input class="btn btn-success" type="" disabled="true" id="confirm_new"  value="Allocation can not be edited" style="margin-left: 0%; width:300px" />';
 }
  ?>
 <center><p>Allocation approval status: <?php echo $status_message; ?></p></center>
 
 <b>Available amount of Kits in <?php echo $county_name;?>:</b><br/>
-Screening: <?php echo $screening_current_amount?>, Confirmatory: <?php echo $confirmatory_current_amount?>. <br/><br/>
-Guide:<b style="color:green;"> Green :- Resupply, </b> <b style="background-color:yellow;"> Yellow :- Monitor, &nbsp;</b><b style="color:red;"> Red :- Redistribute</b>
+
+<div class="col-md-6">
+    <table class="table table-bordered table-condensed">
+    <tbody>
+      <tr>
+        <td><strong>Screening Total</strong></td>
+        <td><?php echo $screening_total; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Screening Used</strong></td>
+        <td><?php echo $screening_used; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Screening Available</strong></td>
+        <td><?php echo $screening_total-$screening_used; ?></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="col-md-6">
+    <table class="table table-bordered table-condensed">
+    <tbody>
+      <tr>
+        <td><strong>Confirmatory Total</strong></td>
+        <td><?php echo $confirmatory_total; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Confirmatory Used</strong></td>
+        <td><?php echo $confirmatory_used; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Confirmatory Available</strong></td>
+        <td><?php echo $confirmatory_total-$confirmatory_used; ?></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+Guide:<b class="label label-success margin-hor"> Green :- Redistribute </b> <b class="label label-warning margin-hor"> Yellow :- Monitor &nbsp;</b><b class="label label-danger margin-hor"> Red :- Ressuply</b>
 
 <div>
   <?php if ($success_status == '1'): ?>
@@ -349,8 +395,9 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         <div class="col-md-12">
           <h3>County comments: </h3>
           <textarea class="form-control margin-vert" readonly="true"><?php echo $status_comment; ?></textarea>
+          <?php echo $button_business; ?>
         </div>
-        <input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save Allocation" style="margin-left: 0%; width:300px" />
+        <!-- <input class="btn btn-primary" type="submit"   id="confirm_new"  value="Save Allocation" style="margin-left: 0%; width:300px" /> -->
 <?php form_close(); ?>
     
 

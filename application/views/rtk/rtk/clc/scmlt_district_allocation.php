@@ -35,6 +35,15 @@ input{
     margin: 0 0 10px 0;
     width: auto;
 }
+
+.margin-vert{
+  margin:10px 0!important;
+}
+
+.margin-hor{
+  margin:0px 5px!important;
+}
+
 </style>
 
 
@@ -43,12 +52,46 @@ input{
  <div class="span3" style="float:center; font-size:16px;  width:100%"> 
 <!--<b>Available amount of Kits in <?php echo $county_name;?>:</b><br/>
 Screening: <?php echo $screening_current_amount?>, Confirmatory: <?php echo $confirmatory_current_amount?>, Tie Breaker: <?php echo $tiebreaker_current_amount?>.-->
-Guide:<b style="color:green;"> Green :- Ressupply,</b> <b style="color:yellow;">Yellow :- Monitor, &nbsp;</b><b style="color:red;">Red :- Redistribute</b>
+<div class="col-md-6">
+    <table class="table table-bordered table-condensed">
+    <tbody>
+      <tr>
+        <td><strong>Screening Total</strong></td>
+        <td><?php echo $screening_total; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Screening Used</strong></td>
+        <td><?php echo $screening_used; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Screening Available</strong></td>
+        <td><?php echo $screening_total-$screening_used; ?></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="col-md-6">
+    <table class="table table-bordered table-condensed">
+    <tbody>
+      <tr>
+        <td><strong>Confirmatory Total</strong></td>
+        <td><?php echo $confirmatory_total; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Confirmatory Used</strong></td>
+        <td><?php echo $confirmatory_used; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Confirmatory Available</strong></td>
+        <td><?php echo $confirmatory_total-$confirmatory_used; ?></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+Guide:<b class="label label-success margin-hor"> Green :- Redistribute </b> <b class="label label-warning margin-hor"> Yellow :- Monitor &nbsp;</b><b class="label label-danger margin-hor"> Red :- Ressuply</b>
 </div> 
-<br/>
-<br/>
-<br/>
-<br/>
 <!-- <div class="span3" style="float:left">
 ul class="nav nav-tabs nav-stacked" style="width:100%;"
 <ul class="nav nav-tabs nav-stacked " style="width:100%;">
@@ -220,6 +263,9 @@ ul class="nav nav-tabs nav-stacked" style="width:100%;"
         $recommended_t = ($recommended_t<0)? 0: $recommended_t;
         // $mmos_c = ceil(($amc_c * 4));
         // $mmos_t = ceil(($amc_t * 4));
+
+        $recommended_s = round($recommended_s / 100) * 100;
+        $recommended_c = round($recommended_c / 30) * 30;
       
         if ($mmos_s >6) {
           // $style_s = "style='background-color:#ff7f50'"; //red
