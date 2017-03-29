@@ -36,17 +36,39 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <select id="switch_month" class="form-control" style="max-width: 220px;background-color: #ffffff;border: 1px solid #cccccc;">       
         <?php 
+            $all_month_text = '';
+            $new_all_month_text = '';
 
-            for ($i=1; $i <=21 ; $i++) { 
-            $month = date('m', strtotime("-$i month")); 
-            $year = date('Y', strtotime("-$i month")); 
-            $month_value = $month.$year;
-            $month_text =  date('F', strtotime("-$i month")); 
-            $month_text = "-- ".$month_text." ".$year." --";
+            for ($i=0; $i <=21 ; $i++) { 
+            // $month = date('m', strtotime("-$i month")); 
+            // $year = date('Y', strtotime("-$i month")); 
+            // $month_value = $month.$year;
+            // $month_text =  date('F', strtotime("-$i month")); 
+            // $month_text = "-- ".$month_text." ".$year." --";  
+            // $all_month_text .= $month_text."\n";
+
+            // echo "<pre>";print_r($month_text);exit;
+
+            $tmp = date('Y-m-15'); // Get the middle of the month to avoid PHP date bug.
+            $begin_date = date('Y-m-01', strtotime($tmp . '-'.$i.' month')); // First day of calendar month in future.
+            $end_date = date('Y-m-t', strtotime($begin_date)); // Last day of calendar months in future.
+            $monthTitle = date('F Y', strtotime($begin_date));
+
+            $month = date('F', strtotime($begin_date));
+            $month_num = date('m', strtotime($begin_date));
+            $year = date('Y', strtotime($begin_date));
+            $month_text = "-- ".$month." ".$year." --"; 
+            $month_value = $month_num.$year;
+
+            // $new_all_month_text .= $month_value."\n";
+
          ?>
         <option value="<?php echo $month_value ?>"><?php echo $month_text ?></option>;
         <?php } ?>
     </select>
+    <?php 
+        //echo "<pre>";print_r($new_all_month_text);exit;
+     ?>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
  <div id="switch"><button id="switch_back" class="btn btn-primary">Switch to Current Month</button></div>

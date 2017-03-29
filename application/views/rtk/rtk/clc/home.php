@@ -20,6 +20,7 @@ foreach ($res->result_array() as $key => $value) {
 }
 $current_month = date('mY', strtotime('-1 month'));    
 
+//echo "<pre>";print_r($current_month);exit;
 ?>
 <style type="text/css">
     #switch_back{    
