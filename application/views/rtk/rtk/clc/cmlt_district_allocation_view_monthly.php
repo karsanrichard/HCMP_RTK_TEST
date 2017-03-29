@@ -54,7 +54,43 @@ input{
 
 <div class="span12" style="align:center; font-size:16px;  width:100% margin-left: 10%"> 
 <b>Available amount of Kits in <?php echo $county_name;?>:</b><br/>
-Screening: <?php echo $screening_current_amount?>, Confirmatory: <?php echo $confirmatory_current_amount?>. <br/><br/>
+<div class="col-md-6">
+    <table class="table table-bordered table-condensed">
+    <tbody>
+      <tr>
+        <td><strong>Screening Total</strong></td>
+        <td><?php echo $screening_total; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Screening Used</strong></td>
+        <td><?php echo $screening_used; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Screening Available</strong></td>
+        <td><?php echo $screening_total-$screening_used; ?></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="col-md-6">
+    <table class="table table-bordered table-condensed">
+    <tbody>
+      <tr>
+        <td><strong>Confirmatory Total</strong></td>
+        <td><?php echo $confirmatory_total; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Confirmatory Used</strong></td>
+        <td><?php echo $confirmatory_used; ?></td>
+      </tr>
+      <tr>
+        <td><strong>Confirmatory Available</strong></td>
+        <td><?php echo $confirmatory_total-$confirmatory_used; ?></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
 Guide:<b style="color:green;"> Green :- Resupply, </b> <b style="background-color:yellow;"> Yellow :- Monitor, &nbsp;</b><b style="color:red;"> Red :- Redistribute</b>
 <div>
   <?php if ($success_status == '1'): ?>

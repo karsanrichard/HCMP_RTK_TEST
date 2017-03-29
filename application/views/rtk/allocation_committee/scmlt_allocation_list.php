@@ -3,12 +3,9 @@
 	.margin-top{
 		margin-top: 30px!important;
 	}
-	.margin-sm{
-		margin: 0 10px !important;
-	}
 </style>
 <div class="col-md-12 clearfix margin-top">
-<table class="table table-bordered datatable" id="allocation_list_table">
+<table class="table table-bordered datatable">
 	<thead>
 		<th>Allocation Month</th>
 		<!-- <th>Sites Allocated</th> -->
@@ -24,18 +21,26 @@
 				<?php //echo $value['allocated_facilities'].'/'.$value['total_facilities']; ?>
 				<!-- </td> -->
 				<td><?php echo $value['allocation_status']; ?></td>
-				<td><?php echo $value['approval_status']; ?></td>
 				<td>
 				<?php if($value['approval_status'] == 'Approved'): ?>
-					<a class="btn btn-primary col-md-5 margin-sm" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>"> 
-					<i class="glyphicon glyphicon-download"></i> Download
-					</a>
+					<p class="label label-success">Approved</p>
+				<?php elseif($value['approval_status'] == 'Pending'): ?>					
+					<p class="label label-warning">Pending</p>
+				<?php elseif($value['approval_status'] == 'Rejected'): ?>
+					<p class="label label-danger">Rejected</p>
 				<?php else: ?>
-					<a class="btn btn-success col-md-5 margin-sm" href="<?php echo base_url().'rtk_management/edit_allocation_report_monthly/'.$district_id.'/'.$value['month_name'].'/'.$value['month_year'] ?>"><i class="glyphicon glyphicon-eye-open"></i> View/Edit</a>
-					
-					<a class="btn btn-primary col-md-5 margin-sm" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>"> 
-					<i class="glyphicon glyphicon-download"></i> Download
-					</a>
+					<p class="label label-info">Unable to retrieve status, contact system administrator</p>
+				<?php endif; ?>					
+				</td>
+				<td>
+				<?php if($value['allocation_status'] == 'Complete'): ?>
+					<a class="btn btn-success" href="<?php echo base_url().'rtk_management/edit_allocation_report_monthly/'.$district_id.'/'.$value['month_name'].'/'.$value['month_year'] ?>"><i class="glyphicon glyphicon-eye-open"></i> View/Edit</a>
+					<?php if($value['approval_status'] == 'Approved'): ?>
+						<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/download_allocation_list/scmlt/'.$county_id.'/'.$district_id.'/'.$value['month_name'].'/'.$value['month_year'] ?>"><i class="glyphicon glyphicon-download"></i> Download</a>
+					<?php endif; ?>
+				<?php else: ?>
+					<a class="btn btn-primary" href="#">Begin allocation</a>
+
 				<?php endif; ?>
 				</td>
 			</tr>
@@ -44,20 +49,25 @@
 </table>
 
 </div>
-
 <script>
-	$('#allocation_list_table').dataTable({
+$('.datatable').dataTable({
      "sDom": "T lfrtip",
      "aaSorting": [],
      "bJQueryUI": false,
-      "bPaginate": false,
+      "bPaginate": true,
       "oLanguage": {
         "sLengthMenu": "_MENU_ Records per page",
         "sInfo": "Showing _START_ to _END_ of _TOTAL_ records",
       },
       "oTableTools": {
       "aButtons": [      
-      
+      "copy",
+      "print",
+      {
+        "sExtends": "collection",
+        "sButtonText": 'Save',
+        "aButtons": ["csv", "xls", "pdf"]
+      }
       ],  
       "sSwfPath": "<?php echo base_url();?>assets/datatable/media/swf/copy_csv_xls_pdf.swf"
     }
