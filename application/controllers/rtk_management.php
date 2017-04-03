@@ -12885,7 +12885,7 @@ array_push($final_array_, $filler_final_1);
                 // $confirmatory_amt = $data[4];
 
                 // $duration = $data[2];
-                $screening_amt = $data[3];
+                $screening_amt = $data[2];
                 $confirmatory_amt = $data[3];
 
                 if ($county_name !='') {
