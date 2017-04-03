@@ -1790,6 +1790,8 @@ where county_id='$countyid' and month='$month_db'");
         $this->load->view('rtk/template', $data);
     }
 
+
+
     public function partner_super_home()
     {
         $data = array();
@@ -12878,9 +12880,13 @@ array_push($final_array_, $filler_final_1);
                 // echo "<pre>";print_r($data);
                 $county_name = $data[0];
                 $zone = $data[1];
-                $duration = $data[2];
+                // $duration = $data[2];
+                // $screening_amt = $data[3];
+                // $confirmatory_amt = $data[4];
+
+                // $duration = $data[2];
                 $screening_amt = $data[3];
-                $confirmatory_amt = $data[4];
+                $confirmatory_amt = $data[3];
 
                 if ($county_name !='') {
                     $county_name = trim($county_name,' ');
@@ -12894,7 +12900,7 @@ array_push($final_array_, $filler_final_1);
 
                     $data_array['county_id'] = $county_id;
                     $data_array['zone'] = $zone;
-                    $data_array['duration'] = $duration;
+                    // $data_array['duration'] = $duration;
                     $data_array['screening_total'] = $screening_amt;
                     $data_array['confirmatory_total'] = $confirmatory_amt;
 
