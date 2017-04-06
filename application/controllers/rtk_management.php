@@ -1790,8 +1790,6 @@ where county_id='$countyid' and month='$month_db'");
         $this->load->view('rtk/template', $data);
     }
 
-
-
     public function partner_super_home()
     {
         $data = array();
@@ -12385,7 +12383,7 @@ array_push($final_array_, $filler_final_1);
 
         // echo "<pre>";print_r($month);exit;
 
-        $sql = "select * from allocation_details where district_id = $district_id and created_at between '$firstdate' and '$lastdate'";
+        $sql = "select * from allocation_details where district_id = $district_id and DATE(created_at) between '$firstdate' and '$lastdate'";
         // echo $sql;exit;
         $result_final = $this->db->query($sql)->result_array();
 
@@ -12526,11 +12524,11 @@ array_push($final_array_, $filler_final_1);
 
         // echo "<pre>";print_r($firstdate);exit;
 
-        $sql = "select * from allocation_details where district_id = $district_id and created_at between '$firstdate' and '$lastdate'";
+        $sql = "select * from allocation_details where district_id = $district_id and DATE(created_at) between '$firstdate' and '$lastdate'";
         // echo $sql;exit;
         $result_final = $this->db->query($sql)->result_array();
 
-        // echo "<pre>";print_r($result);exit;
+        // echo "<pre>";print_r($result_final);exit;
         $county_query = "SELECT county FROM districts WHERE id = $district_id";
         $county_id = $this->db->query($county_query)->result_array();
         $county_id = $county_id[0]['county'];
@@ -12614,6 +12612,7 @@ array_push($final_array_, $filler_final_1);
             $final_dets[$fcode]['closing_stock'] = $closing_stock;
         }
 
+            // echo "<pre>";print_r($final_dets);exit;
         $status_query = "SELECT * FROM allocations WHERE district_id = $district_id AND MONTH(created_at) = MONTH('$firstdate') LIMIT 1";
 
         $allocation_status = $this->db->query($status_query)->result_array();
@@ -12708,13 +12707,18 @@ array_push($final_array_, $filler_final_1);
             $month = $dateObj->format('m');         // March
         }
 
+        $criteria = '';
+        $criteria .= ($district_id > 0)?" and districts.id = $district_id":NULL;
+
         $first_date = $year . '-' . $month . '-01';
         $last_date = $year . '-' . $month . '-31';
 
-        // echo $firstdate;exit;
-        $sql2 = "select *, counties.county as county_name from counties, districts where counties.id = $county_id and districts.id = $district_id and districts.county = counties.id";
+        // echo $first_date;exit;
+        $sql2 = "select *, counties.county as county_name from counties, districts where counties.id = $county_id  $criteria and districts.county = counties.id";
 
         // echo $sql2;exit;
+        $facilities_criteria = '';
+        $facilities_criteria .=($district_id>0)?" AND districts.id = '$district_id'":" AND counties.id = '$county_id'";
         $result2 = $this->db->query($sql2)->result_array();
 
         $sql = "SELECT 
@@ -12735,13 +12739,20 @@ array_push($final_array_, $filler_final_1);
             ON  districts.county = counties.id
             WHERE
             facilities.rtk_enabled = 1
-            AND districts.id = '$district_id'
+            $facilities_criteria
             ORDER BY counties.county asc, districts.district asc, facilities.facility_code ASC ";
+
         $result = $this->db->query($sql)->result_array();
+        // echo "<pre>";print_r($result);exit;
         $final_dets = array();
 
-        $status_query = "SELECT * FROM allocations WHERE district_id = $district_id AND MONTH(created_at) = MONTH('$firstdate') LIMIT 1";
+        $status_criteria = '';
+        $status_criteria .= ($county_id > 0)?" AND county_id = $county_id":NULL;
+        $status_criteria .= ($district_id > 0)?" AND district_id = $district_id":NULL;
 
+        $status_query = "SELECT * FROM allocations WHERE MONTH(created_at) = MONTH('$first_date') $status_criteria LIMIT 1";
+
+        // echo $status_query;exit;
         $allocation_status = $this->db->query($status_query)->result_array();
 
         // echo "<pre>";print_r($allocation_status);exit;
@@ -12755,7 +12766,8 @@ array_push($final_array_, $filler_final_1);
             $countyid = $id_details['countyid'];
             $facilityname = $id_details['facility_name'];
 
-            $sql3 = "SELECT amc,
+            $sql3 = "SELECT 
+                commodity_id,amc,
                 closing_stock,
                 days_out_of_stock,
                 q_requested
@@ -12767,40 +12779,104 @@ array_push($final_array_, $filler_final_1);
                 AND created_at IN (SELECT MAX(created_at) FROM lab_commodity_details where facility_code = $fcode)";
 
             $result3 = $this->db->query($sql3)->result_array();
-        // echo "<pre>"; print_r($result3); die;
+            // echo "<pre>"; print_r($result3); die;
             $calculated_amc = $this->calculate_amc($fcode);
+            // echo "<pre>"; print_r($calculated_amc); die;
 
-            $final_dets[$fcode]['name'] = $facilityname;
+            $final_dets[$fcode]['facility_name'] = $facilityname;
             $final_dets[$fcode]['district'] = $district;
             $final_dets[$fcode]['district_id'] = $districtid;
             $final_dets[$fcode]['county'] = $county;
             $final_dets[$fcode]['county_id'] = $countyid;
-            $final_dets[$fcode]['code'] = $fcode;
+            $final_dets[$fcode]['facility_code'] = $fcode;
             $final_dets[$fcode]['end_bal'] = $result3;
             $final_dets[$fcode]['amc'] = $calculated_amc;
             $final_dets[$fcode]['closing_stock'] = $closing_stock;
         }
 
         // echo FCPATH . 'errors/error_php_custom.php';
-        echo "<pre>";print_r($final_dets);exit;
+        // echo "<pre>";print_r($final_dets);exit;
 
-        // $data['district_id'] = $district_id;
-        // $data['selected_month'] = $month;
-        // $data['selected_year'] = $year;
+        $final_array = array();
 
-        // $data['status_comment'] = $allocation_status[0]['county_comment'];
-        // $data['status'] = $allocation_status[0]['status'];
+        foreach ($final_dets as $key => $value) {
+            $final_array_data = array();
+            $final_array_data[] = $value['facility_code'];
+            $final_array_data[] = $value['facility_name'];
+            $final_array_data[] = $value['district'];
+            $final_array_data[] = $value['county'];
 
-        // $data['district_name'] = $result2[0]['district'];
-        // $data['county_name'] = $result2[0]['county_name'];
-        // $data['allocation_details'] = $result_final;
-        // $data['screening_current_amount'] = $result2[0]['screening_current_amount'];
-        // $data['confirmatory_current_amount'] = $result2[0]['confirmatory_current_amount'];
-        // $data['tiebreaker_current_amount'] = $result2[0]['tiebreaker_current_amount'];
+            foreach ($value['end_bal'] as $key1 => $value1) {
+                $commodity_id = $value1['commodity_id'];
+                //searches array for value and returns first key with the value
+                $commodity_amc_key = array_search($commodity_id, array_column($value['amc'], 'commodity_id'));
+                if (!is_null($commodity_amc_key)) {
+                    $closing_stock = $value['amc'][$commodity_amc_key]['closing_stock'];
+                    $amc = round($value['amc'][$commodity_amc_key]['amc'],1);
+                    $amc = ($amc>0)? $amc:0;
+                    $closing_stock = ($closing_stock>0)? $closing_stock:0;
+                    $final_array_data[] = $amc;
+                    $final_array_data[] = $closing_stock;
+                }else{
+                    $final_array_data[] = '-';
+                    $final_array_data[] = '-';
+                }
+                $final_array_data[] = $value1['q_requested'];
+            }
+            array_push($final_array, $final_array_data);
+          }  
+
+        // echo "<pre>";print_r($final_array);exit;
+        $titles[] = 'FACILITY CODE';
+        $titles[] = 'FACILITY NAME';
+        $titles[] = 'SUBCOUNTY';
+        $titles[] = 'COUNTY';
+        $titles[] = 'SCREENING AMC';
+        $titles[] = 'SCREENING CLOSING STOCK';
+        $titles[] = 'SCREENING REQUESTED';
+        $titles[] = 'CONFIRMATORY AMC';
+        $titles[] = 'CONFIRMATORY CLOSING STOCK';
+        $titles[] = 'CONFIRMATORY REQUESTED';
+        $titles[] = 'TIEBREAKER AMC';
+        $titles[] = 'TIEBREAKER CLOSING STOCK';
+        $titles[] = 'TIEBREAKER REQUESTED';
 
         $doc = new PHPExcel();
         $doc->setActiveSheetIndex(0);
-        $doc->getActiveSheet()->fromArray($final_dets, null, 'A1');
+
+        $rowCount = 1;
+        $doc->getActiveSheet()->SetCellValue('A'.$rowCount, $titles[0]);
+        $doc->getActiveSheet()->SetCellValue('B'.$rowCount, $titles[1]);
+        $doc->getActiveSheet()->SetCellValue('C'.$rowCount, $titles[2]);
+        $doc->getActiveSheet()->SetCellValue('D'.$rowCount, $titles[3]);
+        $doc->getActiveSheet()->SetCellValue('E'.$rowCount, $titles[4]);
+        $doc->getActiveSheet()->SetCellValue('F'.$rowCount, $titles[5]);
+        $doc->getActiveSheet()->SetCellValue('G'.$rowCount, $titles[6]);
+        $doc->getActiveSheet()->SetCellValue('H'.$rowCount, $titles[7]);
+        $doc->getActiveSheet()->SetCellValue('I'.$rowCount, $titles[8]);
+        $doc->getActiveSheet()->SetCellValue('J'.$rowCount, $titles[9]);
+        $rowCount++;
+
+        $array_count = count($final_array);
+
+        /*for ($i=0; $i < $array_count; $i++) { 
+            $j = $i+2;
+            $doc->getActiveSheet()->SetCellValue('A'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('B'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('C'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('D'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('E'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('F'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('G'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('H'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('I'.$j, $final_array[$i]);
+            $doc->getActiveSheet()->SetCellValue('J'.$j, $final_array[$i]);
+            // $rowCount++;
+            // echo "<pre>".$rowCount;
+        }*/
+        // echo "<pre>".$array_count;
+
+        $doc->getActiveSheet()->fromArray($final_array, null, 'A2',true);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="Allocation list.xls"');
         header('Cache-Control: max-age=0');
@@ -12811,7 +12887,7 @@ array_push($final_array_, $filler_final_1);
 
         $writer->save('php://output');
 
-        echo "<pre>";print_r($writer);exit;
+        // echo "<pre>";print_r($writer);exit;
     }
 
     public function drawing_rights_csv_interface($value='')
@@ -13134,6 +13210,25 @@ array_push($final_array_, $filler_final_1);
         }
         
         return $data;
+    }
+
+    public function karsan_download()
+    {
+        // Load the DB utility class
+        $this->load->dbutil();
+
+        // Backup your entire database and assign it to a variable
+        $backup =& $this->dbutil->backup(); 
+
+        // Load the file helper and write the file to your server
+        $this->load->helper('file');
+
+        write_file('/path/to/mybackup.sql', $backup); 
+
+        // Load the download helper and send the file to your desktop
+        $this->load->helper('download');
+
+        force_download('mybackup.sql', $backup);
     }
 
 }        //END OF RTK_MANAGEMENT CLASS

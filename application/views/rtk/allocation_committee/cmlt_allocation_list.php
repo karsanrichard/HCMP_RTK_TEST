@@ -1,4 +1,4 @@
-<?php //echo "<pre>";print_r($allocation_list); ?>
+<?php //echo "<pre>";print_r($allocation_list);exit; ?>
 <style type="text/css">
 	.margin-top{
 		margin-top: 30px!important;
@@ -19,9 +19,15 @@
 				<td><?php echo $value['allocated_districts'].'/'.$value['total_districts']; ?></td>
 				<td><?php echo $value['allocation_status']; ?></td>
 				<td>
-					<a class="btn btn-success" href="<?php echo base_url().'rtk_management/cmlt_allocation_list_by_month/'.$county_id.'/'.$value['month_name'].'/'.$value['month_year'] ?>"><i class="glyphicon glyphicon-eye-open"></i> View/Edit</a>
-					<!-- <a class="btn btn-primary" href="<?php //echo base_url().'rtk_management/download_allocation_list/scmlt/NULL/'.$district_id?>">
-					<!-- <i class="glyphicon glyphicon-download"></i> Download</a> -->
+					<a class="btn btn-success" href="<?php echo base_url().'rtk_management/cmlt_allocation_list_by_month/'.$county_id.'/'.$value['month_name'].'/'.$value['month_year']; ?>"><i class="glyphicon glyphicon-eye-open"></i> View/Edit</a>
+
+					<?php if($value['allocated_districts'] > 0){ ?>
+						<a class="btn btn-primary" href="<?php echo base_url().'rtk_management/download_allocation_list/cmlt/'.$county_id.'/NULL/'.$value['month_name'].'/'.$value['month_year'];?>">
+						<i class="glyphicon glyphicon-download"></i> Download</a>
+					<?php }else{ ?>
+						<a class="btn btn-primary" disabled="true" href="#">
+						<i class="glyphicon glyphicon-download"></i> No allocations to download</a>
+					<?php } ?>
 				</td>
 			</tr>
 		<?php } ?>
